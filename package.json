@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-community/geolocation": "^3.4.0",
+    "@react-native-picker/picker": "2.9.0",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "expo": "~52.0.20",
@@ -40,7 +42,7 @@
     "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "@react-native-picker/picker": "2.9.0"
+    "expo-dev-client": "~5.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

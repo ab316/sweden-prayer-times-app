@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import { StyleSheet, Text, View } from "react-native";
 
 interface ICitySelectorProps {
-  cities: Array<IOptionData>;
+  cities: IOptionData[];
   selectedCity: string;
   onCityChange: (city: IOptionData) => void;
 }

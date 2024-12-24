@@ -34,7 +34,6 @@ export const usePrayerTimes = ({ city, date }: IPrayerTimeState) => {
   }, []);
 
   useEffect(() => {
-    console.log("City changed to:", city);
     async function onCityChanged() {
       try {
         setLoading(true);

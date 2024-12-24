@@ -20,7 +20,6 @@ export const useGeoLocation = () => {
       fetchCityFromCoordinates(newCoords.lat, newCoords.lon).then((city) => {
         if (city) {
           setCity(city);
-          console.log("City found from coordinates:", city);
         } else {
           console.log("No city found from coordinates");
           setCity(null);

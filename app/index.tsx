@@ -56,7 +56,6 @@ export default function Index() {
           cities={cities}
           selectedCity={city.value}
           onCityChange={(newCity) => {
-            console.log("City changed to:", newCity);
             setCity(newCity);
           }}
         />

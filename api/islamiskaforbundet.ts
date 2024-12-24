@@ -8,7 +8,7 @@ const PRAYER_TIME_URL = `${BASE_URL}/wp-content/plugins/bonetider/Bonetider_Widg
 const CITIES_URL = `${BASE_URL}/bonetider/`;
 
 export async function fetchCitiesPage(): Promise<IOptionData[]> {
-  console.log("Fetching cities page");
+  // console.log("Fetching cities page");
   const response = await fetch(CITIES_URL);
 
   if (!response.ok) {

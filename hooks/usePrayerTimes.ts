@@ -1,4 +1,4 @@
-import { fetchCitiesPage, fetchPrayerTimes } from "@/api/islamiskaforbundet";
+import { fetchCitiesPage, fetchPrayerTimes } from "@/api/islamiskaForbundet";
 import { IOptionData } from "@/types/IOptionData";
 import { PrayerTimesByDay } from "@/types/PrayerTimes";
 import { useEffect, useState } from "react";
@@ -8,18 +8,11 @@ interface IPrayerTimeState {
   date: Date;
 }
 
-interface IApiData {
-  cities: IOptionData[];
-  prayerTimes: PrayerTimesByDay;
-}
-
 export const usePrayerTimes = ({ city, date }: IPrayerTimeState) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [apiData, setApiData] = useState<IApiData>({
-    cities: [],
-    prayerTimes: {},
-  });
+  const [cities, setCities] = useState<IOptionData[]>([]);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDay>({});
 
   const month = date.getMonth() + 1;
 
@@ -28,12 +21,7 @@ export const usePrayerTimes = ({ city, date }: IPrayerTimeState) => {
       try {
         setLoading(true);
         const cities = await fetchCitiesPage();
-        const prayerTimes = await fetchPrayerTimes({
-          city: city,
-          month,
-        });
-
-        setApiData({ cities, prayerTimes });
+        setCities(cities);
         setError(null);
       } catch (error) {
         setError(error as Error);
@@ -47,15 +35,12 @@ export const usePrayerTimes = ({ city, date }: IPrayerTimeState) => {
 
   useEffect(() => {
     console.log("City changed to:", city);
-    async function doIt() {
+    async function onCityChanged() {
       try {
         setLoading(true);
 
-        const prayerTimes = await fetchPrayerTimes({
-          city: city,
-          month,
-        });
-        setApiData({ ...apiData, prayerTimes: prayerTimes });
+        const prayerTimes = await fetchPrayerTimes({ city, month });
+        setPrayerTimes(prayerTimes);
 
         setError(null);
       } catch (error) {
@@ -65,12 +50,12 @@ export const usePrayerTimes = ({ city, date }: IPrayerTimeState) => {
       }
     }
 
-    doIt();
+    onCityChanged();
   }, [city, month]);
 
   return {
-    cities: apiData.cities,
-    prayerTimes: apiData.prayerTimes,
+    cities,
+    prayerTimes,
     loading,
     error,
   };

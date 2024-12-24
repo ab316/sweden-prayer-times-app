@@ -1,24 +1,39 @@
 import { CitySelector } from "@/components/CitySelector";
 import { PrayerTimes } from "@/components/PrayerTimes";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
-import { useState } from "react";
-import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [date, setDate] = useState(new Date());
   const [city, setCity] = useState<IOptionData>({
-    value: "Göteborg, SE",
-    label: "Göteborg",
+    value: "Stockholm, SE",
+    label: "Stockholm",
   });
   const { cities, prayerTimes, loading, error } = usePrayerTimes({
     city: city.value,
     date,
   });
+  const { city: geoCity } = useGeoLocation();
+
+  useEffect(() => {
+    if (!geoCity) return;
+
+    const cityOption = cities.find(
+      (c) =>
+        c.label.toLocaleLowerCase().includes(geoCity.toLocaleLowerCase()) ||
+        c.value.toLocaleLowerCase().includes(geoCity.toLocaleLowerCase())
+    );
+
+    if (cityOption) {
+      setCity(cityOption);
+    }
+  }, [cities, geoCity]);
 
   const todayPrayers = prayerTimes[date.getDate()];
-  console.log(`City: ${city.label}, Day: ${date.getDate()}`);
 
   if (error) {
     return <Text>Error: {error.message}</Text>;

@@ -3,7 +3,8 @@ import { PrayerTimes } from "@/components/PrayerTimes";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [date, setDate] = useState(new Date());
@@ -23,9 +24,19 @@ export default function Index() {
     return <Text>Error: {error.message}</Text>;
   }
 
+  if (loading) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <View style={{ padding: 10 }}>
-      <View style={{ marginBottom: 10, padding: 10, width: "100%" }}>
+      <View style={{ marginBottom: 20 }}>
         <CitySelector
           cities={cities}
           selectedCity={city.value}
@@ -36,25 +47,40 @@ export default function Index() {
         />
       </View>
 
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-          width: "100%",
-        }}
-      >
-        <Text style={{ fontSize: 20, marginBottom: 20 }}>
-          {date.toDateString()}
-        </Text>
-
-        <View style={{ flexDirection: "row", marginBottom: 10, minWidth: 200 }}>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Prayer</Text>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Time</Text>
+      <View>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontSize: 20, marginBottom: 20 }}>
+            {date.toDateString()}
+          </Text>
         </View>
 
-        {todayPrayers && <PrayerTimes date={new Date()} times={todayPrayers} />}
+        <View
+          style={{
+            paddingHorizontal: 10,
+            minWidth: 200,
+            alignSelf: "center",
+          }}
+        >
+          {todayPrayers && <PrayerTimes times={todayPrayers} />}
+        </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
+  },
+});

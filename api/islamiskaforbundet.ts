@@ -13,6 +13,7 @@ export async function fetchCitiesPage(): Promise<string> {
 
 export async function fetchPrayerTimes(input: { city: string; month: Month }) {
   const { city, month } = input;
+  console.log('Fetching prayer times for city:', city, 'month:', month);
   const response = await fetch(PRAYER_TIME_URL, {
     method: "POST",
     headers: {

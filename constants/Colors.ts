@@ -14,6 +14,7 @@ export const Colors: ColorsType = {
     primaryText: "#2E7D32", // Islamic green
     secondaryText: "#1B5E20", // Dark green
     accent: "#A5D6A7", // Light green for dropdowns and other accents
+    highlight: "#C8E6C9", // Highlight color for tables and cards
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",
@@ -24,6 +25,7 @@ export const Colors: ColorsType = {
     primaryText: "#E8F5E9", // Light green text
     secondaryText: "#A5D6A7", // Light green accents
     accent: "#34A853", // Bright green for highlights
+    highlight: "#388E3C", // Highlight color for tables and cards
     tint: tintColorDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",

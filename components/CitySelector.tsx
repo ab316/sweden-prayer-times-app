@@ -1,8 +1,8 @@
+import { ThemedText, ThemedView } from "@/components/ui";
+import { useTheme } from "@/hooks/ui";
 import { IOptionData } from "@/types/IOptionData";
 import { Picker } from "@react-native-picker/picker";
 import { StyleSheet } from "react-native";
-import { ThemedText } from "./ui/ThemedText";
-import { ThemedView } from "./ui/ThemedView";
 
 interface ICitySelectorProps {
   cities: IOptionData[];
@@ -15,11 +15,14 @@ export const CitySelector = ({
   selectedCity,
   onCityChange,
 }: ICitySelectorProps) => {
+  const theme = useTheme();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="defaultBold" variant="primary">
         City:
       </ThemedText>
+
       <Picker
         selectedValue={selectedCity}
         onValueChange={(itemValue: string) => {
@@ -28,7 +31,10 @@ export const CitySelector = ({
             onCityChange(city);
           }
         }}
-        style={styles.picker}
+        style={[
+          styles.picker,
+          { backgroundColor: theme.accent, color: theme.primaryText },
+        ]}
       >
         {cities.map((city) => (
           <Picker.Item key={city.value} label={city.label} value={city.value} />
@@ -40,7 +46,6 @@ export const CitySelector = ({
 
 const styles = StyleSheet.create({
   container: {
-    // backgroundColor: "#E8F5E9", // Light green background
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
@@ -50,14 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   picker: {
-    backgroundColor: "#A5D6A7", // Light green for dropdown
     borderRadius: 5,
     padding: 5,
-  },
-  selectedText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#1B5E20", // Dark green
   },
 });

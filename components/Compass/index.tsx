@@ -8,7 +8,11 @@ import { getBearing, interpolateColor } from "./Utils";
 export interface ICompassProps {
   destination: ICoodinates;
   errorMargin?: number;
-  onBearingChange?: (bearing: number) => void;
+  onBearingChange?: (
+    bearing: number,
+    heading: number,
+    isFacingQibla: boolean
+  ) => void;
 }
 
 const Compass = ({
@@ -74,7 +78,16 @@ const Compass = ({
           destination
         );
 
-        if (onBearingChange) onBearingChange(bearing);
+        const headingDifference = Math.abs(userHeading - bearing);
+        const normalizedDifference =
+          headingDifference > 180 ? 360 - headingDifference : headingDifference;
+        const errorMargin = inErrorMargin ?? 5;
+        const maxDifference = errorMargin * 2;
+
+        if (onBearingChange) {
+          const isFacingQibla = normalizedDifference <= errorMargin;
+          onBearingChange(bearing, userHeading, isFacingQibla);
+        }
 
         let newAngle = bearing - userHeading;
         let delta = newAngle - angle;
@@ -91,11 +104,6 @@ const Compass = ({
           rotateImage(newAngle);
         }
 
-        const headingDifference = Math.abs(userHeading - bearing);
-        const normalizedDifference =
-          headingDifference > 180 ? 360 - headingDifference : headingDifference;
-        const maxDifference = 10;
-        const errorMargin = inErrorMargin ?? 5;
         const color = interpolateColor(
           normalizedDifference,
           maxDifference,
@@ -130,12 +138,20 @@ const Compass = ({
           ],
         }}
       >
-        <Image
-          source={require("../../assets/images/compass.png")}
-          style={styles.compassImage}
-        />
-        <View style={styles.arrowContainer}>
-          <View style={{ ...styles.arrow, borderBottomColor: needleColor }} />
+        <View style={styles.needleContainer}>
+          <Image
+            source={require("../../assets/images/compass.png")}
+            style={styles.compassImage}
+          />
+          <View style={styles.kaabahContainer}>
+            <Image
+              source={require("../../assets/images/kaabah.png")}
+              style={styles.kaabahImage}
+            />
+          </View>
+          <View style={styles.arrowContainer}>
+            <View style={{ ...styles.arrow, borderBottomColor: needleColor }} />
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -144,8 +160,8 @@ const Compass = ({
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // width: "100%",
+    flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     // backgroundColor: "#ff0",
@@ -178,6 +194,25 @@ const styles = StyleSheet.create({
     // width: "100%",
     width: 300,
     height: 300,
+  },
+  needleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  kaabahContainer: {
+    position: "absolute",
+    top: -30, // Adjust based on the needle tip
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  kaabahImage: {
+    // Image center on the compass
+    // position: "absolute",
+    // top: -35,
+    // left: 125,
+    width: 50,
+    height: 50,
+    // backgroundColor: "red",
   },
 });
 

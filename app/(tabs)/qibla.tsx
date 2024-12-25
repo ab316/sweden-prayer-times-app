@@ -5,11 +5,23 @@ import { StyleSheet, View, Text } from "react-native";
 
 export default function Tab() {
   const [bearing, setBearing] = useState(0);
+  const [heading, setHeading] = useState(0);
+  const [isFacingQibla, setIsFacingQibla] = useState(false);
 
   return (
     <View style={styles.container}>
       <Text>Qiba direction: {Math.round(bearing)}°</Text>
-      <Compass destination={MAKKAH_COORDINATES} onBearingChange={setBearing} />
+      <Text>Heading: {Math.round(heading)}°</Text>
+      <Text>Is facing Qibla: {isFacingQibla ? "Yes" : "No"}</Text>
+      <Compass
+        destination={MAKKAH_COORDINATES}
+        errorMargin={3}
+        onBearingChange={(bearing, heading, isFacingQibla) => {
+          setBearing(bearing);
+          setHeading(heading);
+          setIsFacingQibla(isFacingQibla);
+        }}
+      />
     </View>
   );
 }

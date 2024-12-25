@@ -1,15 +1,19 @@
-import { ICoodinates } from "@/types/ICoordinates";
 import * as Location from "expo-location";
-import * as geolib from "geolib";
+
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { getBearing, interpolateColor } from "./Utils";
+import { ICoodinates } from "@/types/ICoordinates";
 
-const MECCA_COORDINATES: ICoodinates = {
-  lat: 21.4241,
-  lon: 39.8173,
-};
+export interface ICompassProps {
+  destination: ICoodinates;
+  errorMargin?: number;
+}
 
-const Compass: React.FC = () => {
+const Compass = ({
+  destination,
+  errorMargin: inErrorMargin,
+}: ICompassProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const [userLocation, setUserLocation] =
@@ -17,6 +21,7 @@ const Compass: React.FC = () => {
   const [userHeading, setUserHeading] = useState(0);
   const [angle, setAngle] = useState<number>(0);
   const rotation = useRef(new Animated.Value(0)).current;
+  const [needleColor, setCompassColor] = useState("#f00");
 
   useEffect(() => {
     (async () => {
@@ -64,7 +69,7 @@ const Compass: React.FC = () => {
             lat: userLocation.coords.latitude,
             lon: userLocation.coords.longitude,
           },
-          MECCA_COORDINATES
+          destination
         );
 
         let newAngle = bearing - userHeading;
@@ -77,10 +82,22 @@ const Compass: React.FC = () => {
           }
           delta = newAngle - angle;
         }
-        if (delta > 5 || delta < -5) {
+        if (Math.abs(delta) > 5) {
           setAngle(newAngle);
           rotateImage(newAngle);
         }
+
+        const headingDifference = Math.abs(userHeading - bearing);
+        const normalizedDifference =
+          headingDifference > 180 ? 360 - headingDifference : headingDifference;
+        const maxDifference = 10;
+        const errorMargin = inErrorMargin ?? 5;
+        const color = interpolateColor(
+          normalizedDifference,
+          maxDifference,
+          errorMargin
+        );
+        setCompassColor(color);
       }
     }, 0);
 
@@ -109,7 +126,9 @@ const Compass: React.FC = () => {
           ],
         }}
       >
-        <View style={styles.arrow}></View>
+        <View
+          style={{ ...styles.arrow, borderBottomColor: needleColor }}
+        ></View>
       </Animated.View>
     </View>
   );
@@ -148,13 +167,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-const getBearing = (user: ICoodinates, destination: ICoodinates) => {
-  const bearing = geolib.getGreatCircleBearing(
-    { latitude: user.lat, longitude: user.lon },
-    { latitude: destination.lat, longitude: destination.lon }
-  );
-  return bearing;
-};
 
 export default Compass;

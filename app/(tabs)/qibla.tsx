@@ -1,11 +1,11 @@
 import Compass from "@/components/Compass";
-import { View, Text, StyleSheet } from "react-native";
+import { MAKKAH_COORDINATES } from "@/constants/Coordinates";
+import { StyleSheet, View } from "react-native";
 
 export default function Tab() {
   return (
     <View style={styles.container}>
-      <Text>Qibla</Text>
-      <Compass />
+      <Compass destination={MAKKAH_COORDINATES} />
     </View>
   );
 }

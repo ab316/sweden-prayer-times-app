@@ -1,9 +1,18 @@
 import * as Location from "expo-location";
 
 import { ICoodinates } from "@/types/ICoordinates";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text, View, Image } from "react-native";
-import { getBearing, interpolateColor } from "./Utils";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Button,
+  Easing,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { getBearing, interpolateColor, normalizeAngle } from "./Utils";
+import { useLowPassFilter } from "./useLowPassFilter";
 
 export interface ICompassProps {
   destination: ICoodinates;
@@ -15,47 +24,64 @@ export interface ICompassProps {
   ) => void;
 }
 
+const DEFAULT_ERROR_MARGIN = 3;
+
 const Compass = ({
   destination,
   errorMargin: inErrorMargin,
   onBearingChange,
 }: ICompassProps) => {
   const [error, setError] = useState<string | null>(null);
-
   const [userLocation, setUserLocation] =
     useState<Location.LocationObject | null>(null);
   const [userHeading, setUserHeading] = useState(0);
   const [angle, setAngle] = useState<number>(0);
   const rotation = useRef(new Animated.Value(0)).current;
+  const lowPassFilter = useLowPassFilter(0.1);
+
   const [needleColor, setCompassColor] = useState("#f00");
 
-  useEffect(() => {
-    (async () => {
+  const retryPermissions = async () => {
+    setError(null);
+    try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setError("Permission to access location was denied.");
         return;
       }
 
-      const location = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 0,
-        },
-        (location) => {
-          setUserLocation(location);
-        }
-      );
+      let locationSub: Location.LocationSubscription | undefined;
+      let headingSub: Location.LocationSubscription | undefined;
+      try {
+        locationSub = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.BestForNavigation,
+            distanceInterval: 0,
+          },
+          (location) => {
+            setUserLocation(location);
+          }
+        );
 
-      const heading = await Location.watchHeadingAsync((heading) => {
-        setUserHeading(heading.trueHeading);
-      });
+        headingSub = await Location.watchHeadingAsync((heading) => {
+          const smoothedHeading = lowPassFilter(heading.trueHeading);
+          setUserHeading(smoothedHeading);
+        });
+      } catch {
+        setError("Error initializing location or heading listeners.");
+      }
 
       return () => {
-        location.remove();
-        heading.remove();
+        locationSub?.remove();
+        headingSub?.remove();
       };
-    })();
+    } catch {
+      setError("Unexpected error occurred while requesting permissions.");
+    }
+  };
+
+  useEffect(() => {
+    retryPermissions();
   }, []);
 
   useEffect(() => {
@@ -68,58 +94,57 @@ const Compass = ({
       }).start();
     };
 
-    const checkHeading = setTimeout(() => {
-      if (userLocation) {
-        const bearing = getBearing(
+    if (userLocation) {
+      const bearing = normalizeAngle(
+        getBearing(
           {
             lat: userLocation.coords.latitude,
             lon: userLocation.coords.longitude,
           },
           destination
-        );
+        )
+      );
 
-        const headingDifference = Math.abs(userHeading - bearing);
-        const normalizedDifference =
-          headingDifference > 180 ? 360 - headingDifference : headingDifference;
-        const errorMargin = inErrorMargin ?? 5;
-        const maxDifference = errorMargin * 2;
+      const headingDifference = Math.abs(userHeading - bearing);
+      const normalizedDifference =
+        headingDifference > 180 ? 360 - headingDifference : headingDifference;
+      const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
+      const maxDifference = errorMargin * 2;
 
-        if (onBearingChange) {
-          const isFacingQibla = normalizedDifference <= errorMargin;
-          onBearingChange(bearing, userHeading, isFacingQibla);
-        }
-
-        let newAngle = bearing - userHeading;
-        let delta = newAngle - angle;
-        while (delta > 180 || delta < -180) {
-          if (delta > 180) {
-            newAngle -= 360;
-          } else if (delta < -180) {
-            newAngle += 360;
-          }
-          delta = newAngle - angle;
-        }
-        if (Math.abs(delta) > 5) {
-          setAngle(newAngle);
-          rotateImage(newAngle);
-        }
-
-        const color = interpolateColor(
-          normalizedDifference,
-          maxDifference,
-          errorMargin
-        );
-        setCompassColor(color);
+      if (onBearingChange) {
+        const isFacingQibla = normalizedDifference <= errorMargin;
+        onBearingChange(bearing, userHeading, isFacingQibla);
       }
-    }, 0);
 
-    return () => clearTimeout(checkHeading);
-  }, [userHeading]);
+      let newAngle = bearing - userHeading;
+      let delta = newAngle - angle;
+      while (delta > 180 || delta < -180) {
+        if (delta > 180) {
+          newAngle -= 360;
+        } else if (delta < -180) {
+          newAngle += 360;
+        }
+        delta = newAngle - angle;
+      }
+      if (Math.abs(delta) > 5) {
+        setAngle(newAngle);
+        rotateImage(newAngle);
+      }
+
+      const color = interpolateColor(
+        normalizedDifference,
+        maxDifference,
+        errorMargin
+      );
+      setCompassColor(color);
+    }
+  }, [userHeading, userLocation, destination, inErrorMargin, onBearingChange]);
 
   if (error) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
+        <Button title="Retry" onPress={retryPermissions} />
       </View>
     );
   }
@@ -164,7 +189,6 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#ff0",
   },
   errorText: {
     color: "red",
@@ -190,8 +214,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "red",
   },
   compassImage: {
-    // flex: 0.6,
-    // width: "100%",
     width: 300,
     height: 300,
   },
@@ -201,18 +223,13 @@ const styles = StyleSheet.create({
   },
   kaabahContainer: {
     position: "absolute",
-    top: -30, // Adjust based on the needle tip
+    top: -30,
     justifyContent: "center",
     alignItems: "center",
   },
   kaabahImage: {
-    // Image center on the compass
-    // position: "absolute",
-    // top: -35,
-    // left: 125,
     width: 50,
     height: 50,
-    // backgroundColor: "red",
   },
 });
 

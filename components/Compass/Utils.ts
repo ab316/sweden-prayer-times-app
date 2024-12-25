@@ -1,6 +1,8 @@
 import * as geolib from "geolib";
 import { ICoodinates } from "@/types/ICoordinates";
 
+export const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360;
+
 export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
   const bearing = geolib.getGreatCircleBearing(
     { latitude: user.lat, longitude: user.lon },

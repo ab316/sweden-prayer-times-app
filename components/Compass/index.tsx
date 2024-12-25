@@ -1,9 +1,9 @@
 import * as Location from "expo-location";
 
+import { ICoodinates } from "@/types/ICoordinates";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { getBearing, interpolateColor } from "./Utils";
-import { ICoodinates } from "@/types/ICoordinates";
 
 export interface ICompassProps {
   destination: ICoodinates;

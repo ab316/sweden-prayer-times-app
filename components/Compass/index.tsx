@@ -1,17 +1,10 @@
 import * as Location from "expo-location";
 
 import { ICoodinates } from "@/types/ICoordinates";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Button,
-  Easing,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Animated, Button, Image, StyleSheet, Text, View } from "react-native";
 import { getBearing, interpolateColor, normalizeAngle } from "./Utils";
+import { useAnimatedRotation } from "./useAnimatedRotation";
 import { useLowPassFilter } from "./useLowPassFilter";
 
 export interface ICompassProps {
@@ -25,6 +18,7 @@ export interface ICompassProps {
 }
 
 const DEFAULT_ERROR_MARGIN = 3;
+const FILTER_ALPHA = 0.1;
 
 const Compass = ({
   destination,
@@ -32,14 +26,19 @@ const Compass = ({
   onBearingChange,
 }: ICompassProps) => {
   const [error, setError] = useState<string | null>(null);
-  const [userLocation, setUserLocation] =
-    useState<Location.LocationObject | null>(null);
   const [userHeading, setUserHeading] = useState(0);
-  const [angle, setAngle] = useState<number>(0);
-  const rotation = useRef(new Animated.Value(0)).current;
-  const lowPassFilter = useLowPassFilter(0.1);
+
+  const lowPassFilterHeading = useLowPassFilter(FILTER_ALPHA);
+  const lowPassFilterLocationLat = useLowPassFilter(FILTER_ALPHA);
+  const lowPassFilterLocationLon = useLowPassFilter(FILTER_ALPHA);
 
   const [needleColor, setCompassColor] = useState("#f00");
+  const [smoothedLocation, setSmoothedLocation] = useState<ICoodinates | null>(
+    null
+  );
+
+  const needle = useAnimatedRotation();
+  const kaabah = useAnimatedRotation();
 
   const retryPermissions = async () => {
     setError(null);
@@ -59,12 +58,18 @@ const Compass = ({
             distanceInterval: 0,
           },
           (location) => {
-            setUserLocation(location);
+            const smoothedLat = lowPassFilterLocationLat(
+              location.coords.latitude
+            );
+            const smoothedLon = lowPassFilterLocationLon(
+              location.coords.longitude
+            );
+            setSmoothedLocation({ lat: smoothedLat, lon: smoothedLon });
           }
         );
 
         headingSub = await Location.watchHeadingAsync((heading) => {
-          const smoothedHeading = lowPassFilter(heading.trueHeading);
+          const smoothedHeading = lowPassFilterHeading(heading.trueHeading);
           setUserHeading(smoothedHeading);
         });
       } catch {
@@ -85,60 +90,39 @@ const Compass = ({
   }, []);
 
   useEffect(() => {
-    const rotateImage = (angle: number) => {
-      Animated.timing(rotation, {
-        toValue: angle,
-        duration: 300,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    if (userLocation) {
-      const bearing = normalizeAngle(
-        getBearing(
-          {
-            lat: userLocation.coords.latitude,
-            lon: userLocation.coords.longitude,
-          },
-          destination
-        )
-      );
+    if (smoothedLocation) {
+      const bearing = normalizeAngle(getBearing(smoothedLocation, destination));
 
       const headingDifference = Math.abs(userHeading - bearing);
       const normalizedDifference =
         headingDifference > 180 ? 360 - headingDifference : headingDifference;
       const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
-      const maxDifference = errorMargin * 2;
 
       if (onBearingChange) {
         const isFacingQibla = normalizedDifference <= errorMargin;
         onBearingChange(bearing, userHeading, isFacingQibla);
       }
 
-      let newAngle = bearing - userHeading;
-      let delta = newAngle - angle;
-      while (delta > 180 || delta < -180) {
-        if (delta > 180) {
-          newAngle -= 360;
-        } else if (delta < -180) {
-          newAngle += 360;
-        }
-        delta = newAngle - angle;
-      }
-      if (Math.abs(delta) > 5) {
-        setAngle(newAngle);
-        rotateImage(newAngle);
-      }
+      needle.updateRotation(bearing, userHeading);
+      kaabah.updateRotation(
+        getBearing(smoothedLocation ?? { lat: 0, lon: 0 }, destination),
+        userHeading
+      );
 
       const color = interpolateColor(
         normalizedDifference,
-        maxDifference,
+        errorMargin * 2,
         errorMargin
       );
       setCompassColor(color);
     }
-  }, [userHeading, userLocation, destination, inErrorMargin, onBearingChange]);
+  }, [
+    userHeading,
+    smoothedLocation,
+    destination,
+    inErrorMargin,
+    onBearingChange,
+  ]);
 
   if (error) {
     return (
@@ -152,28 +136,29 @@ const Compass = ({
   return (
     <View style={styles.container}>
       <Animated.View
-        style={{
-          transform: [
-            {
-              rotate: rotation.interpolate({
-                inputRange: [0, 360],
-                outputRange: ["0deg", "360deg"],
-              }),
-            },
-          ],
-        }}
+        style={{ transform: [{ rotate: needle.interpolatedRotation }] }}
       >
         <View style={styles.needleContainer}>
           <Image
             source={require("../../assets/images/compass.png")}
             style={styles.compassImage}
           />
-          <View style={styles.kaabahContainer}>
+          <Animated.View
+            style={{
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              transform: [{ rotate: kaabah.interpolatedRotation }],
+            }}
+          >
             <Image
               source={require("../../assets/images/kaabah.png")}
-              style={styles.kaabahImage}
+              style={[
+                styles.kaabahImage,
+                { top: -150 }, // Position it outside the compass
+              ]}
             />
-          </View>
+          </Animated.View>
           <View style={styles.arrowContainer}>
             <View style={{ ...styles.arrow, borderBottomColor: needleColor }} />
           </View>
@@ -223,7 +208,6 @@ const styles = StyleSheet.create({
   },
   kaabahContainer: {
     position: "absolute",
-    top: -30,
     justifyContent: "center",
     alignItems: "center",
   },

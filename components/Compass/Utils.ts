@@ -1,6 +1,9 @@
 import * as geolib from "geolib";
 import { ICoodinates } from "@/types/ICoordinates";
 
+/**
+ * Normalize an angle to be within 0-360 degrees.
+ */
 export const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360;
 
 export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
@@ -9,6 +12,24 @@ export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
     { latitude: destination.lat, longitude: destination.lon }
   );
   return bearing;
+};
+
+export const normalizeRotationAngle = (
+  destinationHeading: number,
+  currentHeading: number,
+  currentAngle: number
+) => {
+  let newAngle = destinationHeading - currentHeading;
+  let delta = newAngle - currentAngle;
+  while (delta > 180 || delta < -180) {
+    if (delta > 180) {
+      newAngle -= 360;
+    } else if (delta < -180) {
+      newAngle += 360;
+    }
+    delta = newAngle - currentAngle;
+  }
+  return { newAngle, delta };
 };
 
 // Function to interpolate between two colors with non-linear mapping

@@ -43,14 +43,14 @@ export default function Index() {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#34A853" />
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
 
   return (
-    <View style={{ padding: 10 }}>
+    <View style={styles.appBackground}>
       <View style={{ marginBottom: 20 }}>
         <CitySelector
           cities={cities}
@@ -62,24 +62,11 @@ export default function Index() {
       </View>
 
       <View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ fontSize: 20, marginBottom: 20 }}>
-            {date.toDateString()}
-          </Text>
+        <View style={styles.centeredContainer}>
+          <Text style={styles.dateText}>{date.toDateString()}</Text>
         </View>
 
-        <View
-          style={{
-            paddingHorizontal: 10,
-            minWidth: 200,
-            alignSelf: "center",
-          }}
-        >
+        <View style={styles.prayerTimesContainer}>
           {todayPrayers && <PrayerTimes times={todayPrayers} />}
         </View>
       </View>
@@ -96,5 +83,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10,
+  },
+  appBackground: {
+    flex: 1,
+    backgroundColor: "#E8F5E9", // Light green background for the app
+    padding: 10,
+  },
+  centeredContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dateText: {
+    fontSize: 20,
+    marginBottom: 20,
+    color: "#2E7D32", // Islamic green
+    fontWeight: "bold",
+  },
+  prayerTimesContainer: {
+    paddingHorizontal: 10,
+    minWidth: 200,
+    alignSelf: "center",
+    backgroundColor: "#E8F5E9", // Light green for background
+    borderRadius: 10,
+    padding: 15,
   },
 });

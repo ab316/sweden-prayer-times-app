@@ -34,7 +34,11 @@ const PrayerTime = ({ name, time }: { name: string; time: string }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: "#A5D6A7", // Light green
+    padding: 10,
+    borderRadius: 10,
+  },
   row: {
     flexDirection: "row",
     marginBottom: 5,
@@ -45,9 +49,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontWeight: "bold",
     textAlign: "center",
+    color: "#1B5E20", // Dark green
   },
   label: {
     flex: 1,
     textAlign: "center",
+    color: "#2E7D32", // Islamic green
   },
 });

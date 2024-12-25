@@ -36,19 +36,26 @@ export const CitySelector = ({
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // flexDirection: "column",
-    // justifyContent: "center",
-    // paddingHorizontal: 0,
+    backgroundColor: "#E8F5E9", // Light green background
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 10,
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#2E7D32", // Islamic green
+    marginBottom: 5,
   },
-  picker: {},
+  picker: {
+    backgroundColor: "#A5D6A7", // Light green for dropdown
+    borderRadius: 5,
+    padding: 5,
+  },
   selectedText: {
     marginTop: 20,
     fontSize: 16,
     fontWeight: "bold",
+    color: "#1B5E20", // Dark green
   },
 });

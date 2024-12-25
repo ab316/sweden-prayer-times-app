@@ -35,9 +35,12 @@ const Compass = ({
   targetImage,
   onBearingChange,
 }: ICompassProps) => {
+  const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
+
   const [error, setError] = useState<string | null>(null);
   const [userHeading, setUserHeading] = useState(0);
 
+  const lowPassFilterDifference = useLowPassFilter(FILTER_ALPHA);
   const lowPassFilterHeading = useLowPassFilter(FILTER_ALPHA);
   const lowPassFilterLocationLat = useLowPassFilter(FILTER_ALPHA);
   const lowPassFilterLocationLon = useLowPassFilter(FILTER_ALPHA);
@@ -103,15 +106,10 @@ const Compass = ({
     if (smoothedLocation) {
       const bearing = normalizeAngle(getBearing(smoothedLocation, destination));
 
-      const headingDifference = Math.abs(userHeading - bearing);
-      const normalizedDifference =
-        headingDifference > 180 ? 360 - headingDifference : headingDifference;
-      const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
-
-      if (onBearingChange) {
-        const isFacingTarget = normalizedDifference <= errorMargin;
-        onBearingChange(bearing, userHeading, isFacingTarget);
-      }
+      const headingDiff = Math.abs(userHeading - bearing);
+      const normalizedDiff =
+        headingDiff > 180 ? 360 - headingDiff : headingDiff;
+      const lpfDiff = lowPassFilterDifference(normalizedDiff);
 
       needle.updateRotation(bearing, userHeading);
       target.updateRotation(
@@ -119,12 +117,13 @@ const Compass = ({
         userHeading
       );
 
-      const color = interpolateColor(
-        normalizedDifference,
-        errorMargin * 2,
-        errorMargin
-      );
+      const color = interpolateColor(lpfDiff, errorMargin * 2, errorMargin);
       setCompassColor(color);
+
+      if (onBearingChange) {
+        const isFacingTarget = lpfDiff <= errorMargin;
+        onBearingChange(bearing, userHeading, isFacingTarget);
+      }
     }
   }, [
     userHeading,

@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'sweden-prayer-times'
+rootProject.name = 'Sweden Prayer Times'
 
 dependencyResolutionManagement {
   versionCatalogs {

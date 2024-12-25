@@ -1,10 +1,12 @@
 import { CitySelector } from "@/components/CitySelector";
 import { PrayerTimes } from "@/components/PrayerTimes";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ThemedView } from "@/components/ui/ThemedView";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -50,8 +52,8 @@ export default function Index() {
   }
 
   return (
-    <View style={styles.appBackground}>
-      <View style={{ marginBottom: 20 }}>
+    <ThemedView style={styles.appBackground}>
+      <ThemedView style={{ marginBottom: 20 }}>
         <CitySelector
           cities={cities}
           selectedCity={city.value}
@@ -59,18 +61,18 @@ export default function Index() {
             setCity(newCity);
           }}
         />
-      </View>
+      </ThemedView>
 
-      <View>
-        <View style={styles.centeredContainer}>
-          <Text style={styles.dateText}>{date.toDateString()}</Text>
-        </View>
+      <ThemedView>
+        <ThemedView style={styles.centeredContainer}>
+          <ThemedText style={styles.dateText}>{date.toDateString()}</ThemedText>
+        </ThemedView>
 
-        <View style={styles.prayerTimesContainer}>
+        <ThemedView style={styles.prayerTimesContainer}>
           {todayPrayers && <PrayerTimes times={todayPrayers} />}
-        </View>
-      </View>
-    </View>
+        </ThemedView>
+      </ThemedView>
+    </ThemedView>
   );
 }
 
@@ -86,7 +88,6 @@ const styles = StyleSheet.create({
   },
   appBackground: {
     flex: 1,
-    backgroundColor: "#E8F5E9", // Light green background for the app
     padding: 10,
   },
   centeredContainer: {
@@ -95,15 +96,11 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 20,
-    marginBottom: 20,
-    color: "#2E7D32", // Islamic green
-    fontWeight: "bold",
   },
   prayerTimesContainer: {
     paddingHorizontal: 10,
     minWidth: 200,
     alignSelf: "center",
-    backgroundColor: "#E8F5E9", // Light green for background
     borderRadius: 10,
     padding: 15,
   },

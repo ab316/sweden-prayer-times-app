@@ -1,6 +1,8 @@
 import { IOptionData } from "@/types/IOptionData";
 import { Picker } from "@react-native-picker/picker";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { ThemedText } from "./ui/ThemedText";
+import { ThemedView } from "./ui/ThemedView";
 
 interface ICitySelectorProps {
   cities: IOptionData[];
@@ -14,8 +16,10 @@ export const CitySelector = ({
   onCityChange,
 }: ICitySelectorProps) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>City:</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText type="defaultBold" variant="primary">
+        City:
+      </ThemedText>
       <Picker
         selectedValue={selectedCity}
         onValueChange={(itemValue: string) => {
@@ -30,21 +34,19 @@ export const CitySelector = ({
           <Picker.Item key={city.value} label={city.label} value={city.value} />
         ))}
       </Picker>
-    </View>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#E8F5E9", // Light green background
+    // backgroundColor: "#E8F5E9", // Light green background
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#2E7D32", // Islamic green
     marginBottom: 5,
   },
   picker: {

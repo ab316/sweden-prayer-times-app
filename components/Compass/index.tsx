@@ -2,18 +2,27 @@ import * as Location from "expo-location";
 
 import { ICoodinates } from "@/types/ICoordinates";
 import React, { useEffect, useState } from "react";
-import { Animated, Button, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  Button,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { getBearing, interpolateColor, normalizeAngle } from "./Utils";
 import { useAnimatedRotation } from "./useAnimatedRotation";
 import { useLowPassFilter } from "./useLowPassFilter";
 
 export interface ICompassProps {
   destination: ICoodinates;
+  targetImage: ImageSourcePropType;
   errorMargin?: number;
   onBearingChange?: (
     bearing: number,
     heading: number,
-    isFacingQibla: boolean
+    isFacingTarget: boolean
   ) => void;
 }
 
@@ -23,6 +32,7 @@ const FILTER_ALPHA = 0.1;
 const Compass = ({
   destination,
   errorMargin: inErrorMargin,
+  targetImage,
   onBearingChange,
 }: ICompassProps) => {
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +48,7 @@ const Compass = ({
   );
 
   const needle = useAnimatedRotation();
-  const kaabah = useAnimatedRotation();
+  const target = useAnimatedRotation();
 
   const retryPermissions = async () => {
     setError(null);
@@ -99,12 +109,12 @@ const Compass = ({
       const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
 
       if (onBearingChange) {
-        const isFacingQibla = normalizedDifference <= errorMargin;
-        onBearingChange(bearing, userHeading, isFacingQibla);
+        const isFacingTarget = normalizedDifference <= errorMargin;
+        onBearingChange(bearing, userHeading, isFacingTarget);
       }
 
       needle.updateRotation(bearing, userHeading);
-      kaabah.updateRotation(
+      target.updateRotation(
         getBearing(smoothedLocation ?? { lat: 0, lon: 0 }, destination),
         userHeading
       );
@@ -148,13 +158,13 @@ const Compass = ({
               position: "absolute",
               justifyContent: "center",
               alignItems: "center",
-              transform: [{ rotate: kaabah.interpolatedRotation }],
+              transform: [{ rotate: target.interpolatedRotation }],
             }}
           >
             <Image
-              source={require("../../assets/images/kaabah.png")}
+              source={targetImage}
               style={[
-                styles.kaabahImage,
+                styles.targetImage,
                 { top: -150 }, // Position it outside the compass
               ]}
             />
@@ -206,12 +216,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  kaabahContainer: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  kaabahImage: {
+  targetImage: {
     width: 50,
     height: 50,
   },

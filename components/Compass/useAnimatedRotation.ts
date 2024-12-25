@@ -2,7 +2,10 @@ import { useRef, useState } from "react";
 import { Animated, Easing } from "react-native";
 import { normalizeRotationAngle } from "./Utils";
 
-export function useAnimatedRotation(initialAngle: number = 0) {
+export function useAnimatedRotation(
+  initialAngle: number = 0,
+  errorMargin: number = 3
+) {
   const [angle, setAngle] = useState(initialAngle);
   const rotation = useRef(new Animated.Value(initialAngle)).current;
 
@@ -13,7 +16,7 @@ export function useAnimatedRotation(initialAngle: number = 0) {
       angle
     );
 
-    if (Math.abs(delta) > 5) {
+    if (Math.abs(delta) > errorMargin) {
       setAngle(normalizedAngle);
       Animated.timing(rotation, {
         toValue: normalizedAngle,

@@ -15,6 +15,7 @@ export default function Tab() {
       <Text>Is facing Qibla: {isFacingQibla ? "Yes" : "No"}</Text>
       <Compass
         destination={MAKKAH_COORDINATES}
+        targetImage={require("../../assets/images/kaabah.png")}
         errorMargin={3}
         onBearingChange={(bearing, heading, isFacingQibla) => {
           setBearing(bearing);

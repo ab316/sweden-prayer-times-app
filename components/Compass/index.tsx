@@ -53,6 +53,18 @@ const Compass = ({
   const needle = useAnimatedRotation();
   const target = useAnimatedRotation();
 
+  const onLocationChange = (location: Location.LocationObject) => {
+    const smoothedLat = lowPassFilterLocationLat(location.coords.latitude);
+    const smoothedLon = lowPassFilterLocationLon(location.coords.longitude);
+
+    setSmoothedLocation({ lat: smoothedLat, lon: smoothedLon });
+  };
+
+  const onHeadingChange = (heading: Location.LocationHeadingObject) => {
+    const smoothedHeading = lowPassFilterHeading(heading.trueHeading);
+    setUserHeading(smoothedHeading);
+  };
+
   const retryPermissions = async () => {
     setError(null);
     try {
@@ -65,25 +77,31 @@ const Compass = ({
       let locationSub: Location.LocationSubscription | undefined;
       let headingSub: Location.LocationSubscription | undefined;
       try {
+        const [currLocation, currHeading] = await Promise.all([
+          Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Lowest,
+            distanceInterval: 0,
+          }),
+          Location.getHeadingAsync(),
+        ]);
+
+        await Promise.all([
+          onLocationChange(currLocation),
+          onHeadingChange(currHeading),
+        ]);
+
         locationSub = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.BestForNavigation,
             distanceInterval: 0,
           },
           (location) => {
-            const smoothedLat = lowPassFilterLocationLat(
-              location.coords.latitude
-            );
-            const smoothedLon = lowPassFilterLocationLon(
-              location.coords.longitude
-            );
-            setSmoothedLocation({ lat: smoothedLat, lon: smoothedLon });
+            onLocationChange(location);
           }
         );
 
         headingSub = await Location.watchHeadingAsync((heading) => {
-          const smoothedHeading = lowPassFilterHeading(heading.trueHeading);
-          setUserHeading(smoothedHeading);
+          onHeadingChange(heading);
         });
       } catch {
         setError("Error initializing location or heading listeners.");

@@ -2,17 +2,19 @@ import * as Location from "expo-location";
 
 import { ICoodinates } from "@/types/ICoordinates";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, StyleSheet, Text, View, Image } from "react-native";
 import { getBearing, interpolateColor } from "./Utils";
 
 export interface ICompassProps {
   destination: ICoodinates;
   errorMargin?: number;
+  onBearingChange?: (bearing: number) => void;
 }
 
 const Compass = ({
   destination,
   errorMargin: inErrorMargin,
+  onBearingChange,
 }: ICompassProps) => {
   const [error, setError] = useState<string | null>(null);
 
@@ -72,6 +74,8 @@ const Compass = ({
           destination
         );
 
+        if (onBearingChange) onBearingChange(bearing);
+
         let newAngle = bearing - userHeading;
         let delta = newAngle - angle;
         while (delta > 180 || delta < -180) {
@@ -126,9 +130,13 @@ const Compass = ({
           ],
         }}
       >
-        <View
-          style={{ ...styles.arrow, borderBottomColor: needleColor }}
-        ></View>
+        <Image
+          source={require("../../assets/images/compass.png")}
+          style={styles.compassImage}
+        />
+        <View style={styles.arrowContainer}>
+          <View style={{ ...styles.arrow, borderBottomColor: needleColor }} />
+        </View>
       </Animated.View>
     </View>
   );
@@ -136,11 +144,24 @@ const Compass = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    width: "100%",
+    // flex: 1,
+    // width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    // backgroundColor: "#ff0",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+  },
+  arrowContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
   },
   arrow: {
     width: 0,
@@ -152,19 +173,11 @@ const styles = StyleSheet.create({
     borderRightColor: "transparent",
     borderBottomColor: "red",
   },
-  button: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "blue",
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 16,
+  compassImage: {
+    // flex: 0.6,
+    // width: "100%",
+    width: 300,
+    height: 300,
   },
 });
 

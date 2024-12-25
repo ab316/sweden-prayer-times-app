@@ -22,6 +22,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: "About",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="question" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

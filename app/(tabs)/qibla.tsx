@@ -1,11 +1,15 @@
 import Compass from "@/components/Compass";
 import { MAKKAH_COORDINATES } from "@/constants/Coordinates";
-import { StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { StyleSheet, View, Text } from "react-native";
 
 export default function Tab() {
+  const [bearing, setBearing] = useState(0);
+
   return (
     <View style={styles.container}>
-      <Compass destination={MAKKAH_COORDINATES} />
+      <Text>Qiba direction: {Math.round(bearing)}°</Text>
+      <Compass destination={MAKKAH_COORDINATES} onBearingChange={setBearing} />
     </View>
   );
 }
@@ -13,8 +17,8 @@ export default function Tab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "blue",
-    opacity: 1.0,
+    // backgroundColor: "blue",
+    // opacity: 1.0,
     justifyContent: "center",
     alignItems: "center",
   },

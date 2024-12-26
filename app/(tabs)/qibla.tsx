@@ -3,7 +3,7 @@ import { ThemedText, ThemedView } from "@/components/ui";
 import { MAKKAH_COORDINATES } from "@/constants/Coordinates";
 import { useTheme } from "@/hooks/ui";
 import { useState } from "react";
-import { StyleSheet, Image } from "react-native";
+import { Image, ImageBackground, StyleSheet, View } from "react-native";
 
 export default function Tab() {
   const theme = useTheme();
@@ -12,48 +12,72 @@ export default function Tab() {
   const [isFacingQibla, setIsFacingQibla] = useState(false);
 
   return (
-    <ThemedView
-      style={[styles.container, { backgroundColor: theme.background }]}
+    <ImageBackground
+      source={require("../../assets/images/background.webp")}
+      style={styles.background}
+      imageStyle={styles.backgroundImage}
     >
-      <ThemedView style={styles.imageContainer}>
-        <Image
-          source={require("../../assets/images/kaabah.png")}
-          style={styles.kaabahImage}
+      <View style={[styles.container]}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require("../../assets/images/kaabah.png")}
+            style={styles.kaabahImage}
+          />
+        </View>
+        <ThemedText style={[styles.title, { color: theme.primaryText }]}>
+          Qibla Finder
+        </ThemedText>
+        <ThemedText style={[styles.text, { color: theme.primaryText }]}>
+          Qibla Direction: {Math.round(bearing)}°
+        </ThemedText>
+        <ThemedText style={[styles.text, { color: theme.primaryText }]}>
+          Your Heading: {Math.round(heading)}°
+        </ThemedText>
+
+        <ThemedView
+          style={[
+            styles.statusContainer,
+            { backgroundColor: theme.background },
+          ]}
+        >
+          <ThemedText
+            style={[
+              styles.text,
+              styles.qiblaStatus,
+              {
+                color: isFacingQibla ? theme.accent : theme.secondaryText,
+                textAlign: "center",
+              },
+            ]}
+          >
+            {isFacingQibla
+              ? "You are facing the Qibla"
+              : "Keep rotating the phone"}
+          </ThemedText>
+        </ThemedView>
+        <Compass
+          destination={MAKKAH_COORDINATES}
+          targetImage={require("../../assets/images/kaabah.png")}
+          errorMargin={3}
+          onBearingChange={(bearing, heading, isFacingQibla) => {
+            setBearing(bearing);
+            setHeading(heading);
+            setIsFacingQibla(isFacingQibla);
+          }}
         />
-      </ThemedView>
-      <ThemedText style={[styles.title, { color: theme.primaryText }]}>
-        Qibla Finder
-      </ThemedText>
-      <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-        Qibla Direction: {Math.round(bearing)}°
-      </ThemedText>
-      <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-        Your Heading: {Math.round(heading)}°
-      </ThemedText>
-      <ThemedText
-        style={[
-          styles.text,
-          styles.qiblaStatus,
-          { color: isFacingQibla ? theme.accent : theme.secondaryText },
-        ]}
-      >
-        {isFacingQibla ? "You are facing the Qibla" : "Keep rotating the phone"}
-      </ThemedText>
-      <Compass
-        destination={MAKKAH_COORDINATES}
-        targetImage={require("../../assets/images/kaabah.png")}
-        errorMargin={3}
-        onBearingChange={(bearing, heading, isFacingQibla) => {
-          setBearing(bearing);
-          setHeading(heading);
-          setIsFacingQibla(isFacingQibla);
-        }}
-      />
-    </ThemedView>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+  backgroundImage: {
+    resizeMode: "cover",
+    left: -300,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -64,6 +88,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+    backgroundColor: "transparent",
   },
   imageContainer: {
     width: 120,
@@ -84,51 +109,34 @@ const styles = StyleSheet.create({
     height: 100,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
+    textTransform: "uppercase",
   },
   text: {
     fontSize: 16,
-    marginVertical: 5,
+    marginVertical: 0,
     textAlign: "center",
   },
   qiblaStatus: {
     fontWeight: "bold",
     fontSize: 18,
-    marginTop: 15,
+    marginVertical: 10,
+    textAlign: "center",
   },
-  compassContainer: {
-    marginTop: 40,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: "#F5F5F5", // Subtle background to make it stand out
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
+  statusContainer: {
+    borderRadius: 15,
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    marginTop: 15,
+    marginBottom: 20,
+    width: "90%",
+    elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    position: "relative",
-  },
-  decorativeRing: {
-    position: "absolute",
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    top: -5,
-    left: -8,
-    zIndex: -1,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  ringImage: {
-    width: 280,
-    height: 280,
-    resizeMode: "contain",
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

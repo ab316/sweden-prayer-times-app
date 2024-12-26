@@ -37,9 +37,13 @@ export const interpolateColor = (
   difference: number,
   maxDifference: number,
   margin: number
-): string => {
+): {
+  r: number;
+  g: number;
+  b: number;
+} => {
   if (difference <= margin) {
-    return "rgb(0,255,0)"; // Max green within the margin
+    return { r: 255, g: 0, b: 0 }; // Max red within the margin
   }
 
   // Normalize the difference between margin and maxDifference
@@ -57,7 +61,7 @@ export const interpolateColor = (
   const g = Math.round(255 * (1 - eased)); // Green decreases
   const b = Math.round(200 * eased); // Add blue for a gradient effect
 
-  return `rgb(${r},${g},${b})`;
+  return { r, g, b };
 };
 
 // Easing function to make changes rapid near 0

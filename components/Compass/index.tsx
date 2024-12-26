@@ -45,7 +45,7 @@ const Compass = ({
   const lowPassFilterLocationLat = useLowPassFilter(FILTER_ALPHA);
   const lowPassFilterLocationLon = useLowPassFilter(FILTER_ALPHA);
 
-  const [needleColor, setCompassColor] = useState("#f00");
+  const [needleColor, setCompassColor] = useState("rgba(255, 0, 0, 0.3)");
   const [smoothedLocation, setSmoothedLocation] = useState<ICoodinates | null>(
     null
   );
@@ -135,7 +135,8 @@ const Compass = ({
         userHeading
       );
 
-      const color = interpolateColor(lpfDiff, errorMargin * 2, errorMargin);
+      const colorRgb = interpolateColor(lpfDiff, errorMargin * 2, errorMargin);
+      const color = `rgba(${colorRgb.r}, ${colorRgb.g}, ${colorRgb.b}, 0.3)`;
       setCompassColor(color);
 
       if (onBearingChange) {
@@ -153,7 +154,7 @@ const Compass = ({
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={styles.outerContainer}>
         <Text style={styles.errorText}>{error}</Text>
         <Button title="Retry" onPress={retryPermissions} />
       </View>
@@ -161,15 +162,17 @@ const Compass = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.outerContainer}>
       <Animated.View
         style={{ transform: [{ rotate: needle.interpolatedRotation }] }}
       >
-        <View style={styles.needleContainer}>
+        <View style={styles.rotatingContainer}>
           <Image
-            source={require("../../assets/images/compass.png")}
+            source={require("../../assets/images/compass2.png")}
             style={styles.compassImage}
           />
+
+          {/* Target image */}
           <Animated.View
             style={{
               position: "absolute",
@@ -186,8 +189,23 @@ const Compass = ({
               ]}
             />
           </Animated.View>
-          <View style={styles.arrowContainer}>
-            <View style={{ ...styles.arrow, borderBottomColor: needleColor }} />
+
+          {/* Needle */}
+          <View style={styles.needleContainer}>
+            <Image
+              source={require("../../assets/images/needle.png")}
+              style={styles.needleImage}
+            />
+
+            <Image
+              source={require("../../assets/images/needle.png")}
+              style={[
+                styles.needleImage,
+                {
+                  tintColor: needleColor,
+                },
+              ]}
+            />
           </View>
         </View>
       </Animated.View>
@@ -196,46 +214,43 @@ const Compass = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
-  errorText: {
-    color: "red",
-    fontSize: 16,
+  rotatingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
-  arrowContainer: {
+  needleContainer: {
     position: "absolute",
-    top: 0,
-    left: 0,
+    top: -95,
+    left: 10,
     right: 0,
     bottom: 0,
     justifyContent: "center",
     alignItems: "center",
   },
-  arrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 20,
-    borderRightWidth: 20,
-    borderBottomWidth: 60,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderBottomColor: "red",
-  },
+
   compassImage: {
     width: 300,
     height: 300,
   },
-  needleContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
   targetImage: {
     width: 50,
     height: 50,
+  },
+  needleImage: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+  },
+
+  errorText: {
+    color: "red",
+    fontSize: 16,
   },
 });
 

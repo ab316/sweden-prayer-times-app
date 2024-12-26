@@ -2,14 +2,23 @@ import Compass from "@/components/Compass";
 import { ThemedText, ThemedView } from "@/components/ui";
 import { MAKKAH_COORDINATES } from "@/constants/Coordinates";
 import { useTheme } from "@/hooks/ui";
-import { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { useEffect, useReducer, useState } from "react";
+import { Image, StyleSheet, Vibration, View } from "react-native";
 
 export default function Tab() {
   const theme = useTheme();
   const [bearing, setBearing] = useState(0);
   const [heading, setHeading] = useState(0);
-  const [isFacingQibla, setIsFacingQibla] = useState(false);
+  const [facingQiblaState, dispatchFacingQibla] = useReducer(
+    qiblaReducer,
+    initialQiblaReducerState
+  );
+
+  useEffect(() => {
+    if (facingQiblaState.isFacingQibla) {
+      Vibration.vibrate(100);
+    }
+  }, [facingQiblaState]);
 
   return (
     <View style={[styles.container]}>
@@ -37,12 +46,14 @@ export default function Tab() {
             styles.text,
             styles.qiblaStatus,
             {
-              color: isFacingQibla ? theme.accent : theme.secondaryText,
+              color: facingQiblaState.isFacingQibla
+                ? theme.accent
+                : theme.secondaryText,
               textAlign: "center",
             },
           ]}
         >
-          {isFacingQibla
+          {facingQiblaState.isFacingQibla
             ? "You are facing the Qibla"
             : "Keep rotating the phone"}
         </ThemedText>
@@ -54,7 +65,7 @@ export default function Tab() {
         onBearingChange={(bearing, heading, isFacingQibla) => {
           setBearing(bearing);
           setHeading(heading);
-          setIsFacingQibla(isFacingQibla);
+          dispatchFacingQibla(isFacingQibla);
         }}
       />
     </View>
@@ -123,3 +134,24 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
 });
+
+type IQibaReducerState = {
+  isFacingQibla: boolean;
+  prevIsFacingQibla: boolean;
+};
+
+const initialQiblaReducerState: IQibaReducerState = {
+  isFacingQibla: false,
+  prevIsFacingQibla: false,
+};
+
+function qiblaReducer(state: IQibaReducerState, action: boolean) {
+  if (action === state.isFacingQibla) {
+    return state;
+  } else {
+    return {
+      isFacingQibla: action,
+      prevIsFacingQibla: state.isFacingQibla,
+    };
+  }
+}

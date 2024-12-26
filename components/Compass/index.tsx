@@ -170,7 +170,7 @@ const Compass = ({
         >
           <View style={styles.rotatingContainer}>
             <Image
-              source={require("../../assets/images/compass.png")}
+              source={require("../../assets/images/compass/compass.png")}
               style={styles.compassImage}
             />
 
@@ -195,12 +195,12 @@ const Compass = ({
             {/* Needle */}
             <View style={styles.needleContainer}>
               <Image
-                source={require("../../assets/images/needle.png")}
+                source={require("../../assets/images/compass/needle.png")}
                 style={styles.needleImage}
               />
 
               <Image
-                source={require("../../assets/images/needle.png")}
+                source={require("../../assets/images/compass/needle.png")}
                 style={[
                   styles.needleImage,
                   {
@@ -214,7 +214,7 @@ const Compass = ({
       </View>
       <ThemedView style={styles.decorativeRing}>
         <Image
-          source={require("../../assets/images/decorative_border.png")}
+          source={require("../../assets/images/compass/decorative_border.png")}
           style={styles.ringImage}
         />
       </ThemedView>

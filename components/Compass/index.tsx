@@ -170,7 +170,7 @@ const Compass = ({
         >
           <View style={styles.rotatingContainer}>
             <Image
-              source={require("../../assets/images/compass2.png")}
+              source={require("../../assets/images/compass.png")}
               style={styles.compassImage}
             />
 

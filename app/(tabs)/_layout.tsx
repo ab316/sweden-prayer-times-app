@@ -1,19 +1,24 @@
+import { BackgroundProvider } from "@/components/BackgroundProvider";
 import { ThemedText, ThemedView } from "@/components/ui";
 import { useTheme } from "@/hooks/ui";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
+import { StyleSheet } from "react-native";
 
 export default function TabLayout() {
   const theme = useTheme();
   return (
     <Tabs
+      layout={(props) => (
+        <BackgroundProvider>{props.children}</BackgroundProvider>
+      )}
       screenOptions={{
         tabBarActiveBackgroundColor: theme.background,
         tabBarInactiveBackgroundColor: theme.accent,
         tabBarActiveTintColor: theme.primaryText,
         tabBarInactiveTintColor: theme.primaryText,
         headerShown: false,
+        sceneStyle: { backgroundColor: "transparent" },
         header: ({ options }) => (
           <ThemedView
             style={[styles.tabContainer, { backgroundColor: theme.accent }]}

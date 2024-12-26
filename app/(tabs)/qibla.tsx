@@ -3,7 +3,7 @@ import { ThemedText, ThemedView } from "@/components/ui";
 import { MAKKAH_COORDINATES } from "@/constants/Coordinates";
 import { useTheme } from "@/hooks/ui";
 import { useState } from "react";
-import { Image, ImageBackground, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 export default function Tab() {
   const theme = useTheme();
@@ -12,72 +12,56 @@ export default function Tab() {
   const [isFacingQibla, setIsFacingQibla] = useState(false);
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/background.webp")}
-      style={styles.background}
-      imageStyle={styles.backgroundImage}
-    >
-      <View style={[styles.container]}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={require("../../assets/images/kaabah.png")}
-            style={styles.kaabahImage}
-          />
-        </View>
-        <ThemedText style={[styles.title, { color: theme.primaryText }]}>
-          Qibla Finder
-        </ThemedText>
-        <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-          Qibla Direction: {Math.round(bearing)}°
-        </ThemedText>
-        <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-          Your Heading: {Math.round(heading)}°
-        </ThemedText>
-
-        <ThemedView
-          style={[
-            styles.statusContainer,
-            { backgroundColor: theme.background },
-          ]}
-        >
-          <ThemedText
-            style={[
-              styles.text,
-              styles.qiblaStatus,
-              {
-                color: isFacingQibla ? theme.accent : theme.secondaryText,
-                textAlign: "center",
-              },
-            ]}
-          >
-            {isFacingQibla
-              ? "You are facing the Qibla"
-              : "Keep rotating the phone"}
-          </ThemedText>
-        </ThemedView>
-        <Compass
-          destination={MAKKAH_COORDINATES}
-          targetImage={require("../../assets/images/kaabah.png")}
-          errorMargin={3}
-          onBearingChange={(bearing, heading, isFacingQibla) => {
-            setBearing(bearing);
-            setHeading(heading);
-            setIsFacingQibla(isFacingQibla);
-          }}
+    <View style={[styles.container]}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../../assets/images/kaabah.png")}
+          style={styles.kaabahImage}
         />
       </View>
-    </ImageBackground>
+      <ThemedText style={[styles.title, { color: theme.primaryText }]}>
+        Qibla Finder
+      </ThemedText>
+      <ThemedText style={[styles.text, { color: theme.primaryText }]}>
+        Qibla Direction: {Math.round(bearing)}°
+      </ThemedText>
+      <ThemedText style={[styles.text, { color: theme.primaryText }]}>
+        Your Heading: {Math.round(heading)}°
+      </ThemedText>
+
+      <ThemedView
+        style={[styles.statusContainer, { backgroundColor: theme.background }]}
+      >
+        <ThemedText
+          style={[
+            styles.text,
+            styles.qiblaStatus,
+            {
+              color: isFacingQibla ? theme.accent : theme.secondaryText,
+              textAlign: "center",
+            },
+          ]}
+        >
+          {isFacingQibla
+            ? "You are facing the Qibla"
+            : "Keep rotating the phone"}
+        </ThemedText>
+      </ThemedView>
+      <Compass
+        destination={MAKKAH_COORDINATES}
+        targetImage={require("../../assets/images/kaabah.png")}
+        errorMargin={3}
+        onBearingChange={(bearing, heading, isFacingQibla) => {
+          setBearing(bearing);
+          setHeading(heading);
+          setIsFacingQibla(isFacingQibla);
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  backgroundImage: {
-    resizeMode: "cover",
-    left: -300,
-  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -88,7 +72,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    backgroundColor: "transparent",
   },
   imageContainer: {
     width: 120,

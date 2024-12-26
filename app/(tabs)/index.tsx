@@ -1,12 +1,11 @@
 import { CitySelector } from "@/components/CitySelector";
 import { PrayerTimes } from "@/components/PrayerTimes";
 import { ThemedText } from "@/components/ui/ThemedText";
-import { ThemedView } from "@/components/ui/ThemedView";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -52,8 +51,8 @@ export default function Index() {
   }
 
   return (
-    <ThemedView style={styles.appBackground}>
-      <ThemedView style={{ marginBottom: 20 }}>
+    <View style={styles.appBackground}>
+      <View style={{ marginBottom: 20 }}>
         <CitySelector
           cities={cities}
           selectedCity={city.value}
@@ -61,18 +60,18 @@ export default function Index() {
             setCity(newCity);
           }}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView>
-        <ThemedView style={styles.centeredContainer}>
+      <View>
+        <View style={styles.centeredContainer}>
           <ThemedText style={styles.dateText}>{date.toDateString()}</ThemedText>
-        </ThemedView>
+        </View>
 
-        <ThemedView style={styles.prayerTimesContainer}>
+        <View style={styles.prayerTimesContainer}>
           {todayPrayers && <PrayerTimes times={todayPrayers} />}
-        </ThemedView>
-      </ThemedView>
-    </ThemedView>
+        </View>
+      </View>
+    </View>
   );
 }
 

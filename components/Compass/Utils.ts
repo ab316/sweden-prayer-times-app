@@ -32,7 +32,7 @@ export const normalizeRotationAngle = (
   return { newAngle, delta };
 };
 
-// Function to interpolate between two colors with non-linear mapping
+// Function to interpolate between two colors based on a difference
 export const interpolateColor = (
   difference: number,
   maxDifference: number,
@@ -42,8 +42,8 @@ export const interpolateColor = (
   g: number;
   b: number;
 } => {
-  if (difference <= margin) {
-    return { r: 255, g: 0, b: 0 }; // Max red within the margin
+  if (difference > maxDifference) {
+    return { r: 255, g: 0, b: 0 };
   }
 
   // Normalize the difference between margin and maxDifference
@@ -61,8 +61,9 @@ export const interpolateColor = (
   const g = Math.round(255 * (1 - eased)); // Green decreases
   const b = Math.round(200 * eased); // Add blue for a gradient effect
 
-  return { r, g, b };
+  const result = { r, g, b };
+  return result;
 };
 
 // Easing function to make changes rapid near 0
-const easingFunction = (t: number) => t * t; // Quadratic easing
+const easingFunction = (t: number) => t;

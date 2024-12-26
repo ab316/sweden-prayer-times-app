@@ -40,12 +40,12 @@ const Compass = ({
   const [error, setError] = useState<string | null>(null);
   const [userHeading, setUserHeading] = useState(0);
 
-  const lowPassFilterDifference = useLowPassFilter(FILTER_ALPHA);
-  const lowPassFilterHeading = useLowPassFilter(FILTER_ALPHA);
-  const lowPassFilterLocationLat = useLowPassFilter(FILTER_ALPHA);
-  const lowPassFilterLocationLon = useLowPassFilter(FILTER_ALPHA);
+  const lpfLat = useLowPassFilter(FILTER_ALPHA);
+  const lpfLon = useLowPassFilter(FILTER_ALPHA);
+  const lpfHeading = useLowPassFilter(FILTER_ALPHA);
+  const lpfDifference = useLowPassFilter(FILTER_ALPHA);
 
-  const [needleColor, setCompassColor] = useState("rgba(255, 0, 0, 0.3)");
+  const [needleTint, setNeedleTint] = useState("rgba(255, 0, 0, 0.3)");
   const [smoothedLocation, setSmoothedLocation] = useState<ICoodinates | null>(
     null
   );
@@ -54,14 +54,14 @@ const Compass = ({
   const target = useAnimatedRotation();
 
   const onLocationChange = (location: Location.LocationObject) => {
-    const smoothedLat = lowPassFilterLocationLat(location.coords.latitude);
-    const smoothedLon = lowPassFilterLocationLon(location.coords.longitude);
+    const smoothedLat = lpfLat(location.coords.latitude);
+    const smoothedLon = lpfLon(location.coords.longitude);
 
     setSmoothedLocation({ lat: smoothedLat, lon: smoothedLon });
   };
 
   const onHeadingChange = (heading: Location.LocationHeadingObject) => {
-    const smoothedHeading = lowPassFilterHeading(heading.trueHeading);
+    const smoothedHeading = lpfHeading(heading.trueHeading);
     setUserHeading(smoothedHeading);
   };
 
@@ -127,7 +127,7 @@ const Compass = ({
       const headingDiff = Math.abs(userHeading - bearing);
       const normalizedDiff =
         headingDiff > 180 ? 360 - headingDiff : headingDiff;
-      const lpfDiff = lowPassFilterDifference(normalizedDiff);
+      const lpfDiff = lpfDifference(normalizedDiff);
 
       needle.updateRotation(bearing, userHeading);
       target.updateRotation(
@@ -135,9 +135,9 @@ const Compass = ({
         userHeading
       );
 
-      const colorRgb = interpolateColor(lpfDiff, errorMargin * 2, errorMargin);
+      const colorRgb = interpolateColor(lpfDiff, errorMargin * 3, errorMargin);
       const color = `rgba(${colorRgb.r}, ${colorRgb.g}, ${colorRgb.b}, 0.3)`;
-      setCompassColor(color);
+      setNeedleTint(color);
 
       if (onBearingChange) {
         const isFacingTarget = lpfDiff <= errorMargin;
@@ -202,7 +202,7 @@ const Compass = ({
               style={[
                 styles.needleImage,
                 {
-                  tintColor: needleColor,
+                  tintColor: needleTint,
                 },
               ]}
             />

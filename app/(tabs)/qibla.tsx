@@ -28,7 +28,7 @@ export default function Tab() {
         Qibla Direction: {Math.round(bearing)}°
       </ThemedText>
       <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-        Heading: {Math.round(heading)}°
+        Your Heading: {Math.round(heading)}°
       </ThemedText>
       <ThemedText
         style={[

@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 
+import { ThemedView } from "@/components/ui";
 import { ICoodinates } from "@/types/ICoordinates";
 import React, { useEffect, useState } from "react";
 import {
@@ -162,58 +163,82 @@ const Compass = ({
   }
 
   return (
-    <View style={styles.outerContainer}>
-      <Animated.View
-        style={{ transform: [{ rotate: needle.interpolatedRotation }] }}
-      >
-        <View style={styles.rotatingContainer}>
-          <Image
-            source={require("../../assets/images/compass2.png")}
-            style={styles.compassImage}
-          />
-
-          {/* Target image */}
-          <Animated.View
-            style={{
-              position: "absolute",
-              justifyContent: "center",
-              alignItems: "center",
-              transform: [{ rotate: target.interpolatedRotation }],
-            }}
-          >
+    <ThemedView style={styles.compassContainer}>
+      <View style={styles.outerContainer}>
+        <Animated.View
+          style={{ transform: [{ rotate: needle.interpolatedRotation }] }}
+        >
+          <View style={styles.rotatingContainer}>
             <Image
-              source={targetImage}
-              style={[
-                styles.targetImage,
-                { top: -150 }, // Position it outside the compass
-              ]}
-            />
-          </Animated.View>
-
-          {/* Needle */}
-          <View style={styles.needleContainer}>
-            <Image
-              source={require("../../assets/images/needle.png")}
-              style={styles.needleImage}
+              source={require("../../assets/images/compass2.png")}
+              style={styles.compassImage}
             />
 
-            <Image
-              source={require("../../assets/images/needle.png")}
-              style={[
-                styles.needleImage,
-                {
-                  tintColor: needleTint,
-                },
-              ]}
-            />
+            {/* Target image */}
+            <Animated.View
+              style={{
+                position: "absolute",
+                justifyContent: "center",
+                alignItems: "center",
+                transform: [{ rotate: target.interpolatedRotation }],
+              }}
+            >
+              <Image
+                source={targetImage}
+                style={[
+                  styles.targetImage,
+                  { top: -150 }, // Position it outside the compass
+                ]}
+              />
+            </Animated.View>
+
+            {/* Needle */}
+            <View style={styles.needleContainer}>
+              <Image
+                source={require("../../assets/images/needle.png")}
+                style={styles.needleImage}
+              />
+
+              <Image
+                source={require("../../assets/images/needle.png")}
+                style={[
+                  styles.needleImage,
+                  {
+                    tintColor: needleTint,
+                  },
+                ]}
+              />
+            </View>
           </View>
-        </View>
-      </Animated.View>
-    </View>
+        </Animated.View>
+      </View>
+      <ThemedView style={styles.decorativeRing}>
+        <Image
+          source={require("../../assets/images/decorative_border.png")}
+          style={styles.ringImage}
+        />
+      </ThemedView>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
+  compassContainer: {
+    marginTop: 40,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: "#F5F5F5", // Subtle background to make it stand out
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    position: "relative",
+  },
+
   outerContainer: {
     flex: 1,
     width: "100%",
@@ -246,6 +271,23 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 200,
     height: 200,
+  },
+  decorativeRing: {
+    position: "absolute",
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    top: -5,
+    left: -8,
+    zIndex: -1,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  ringImage: {
+    width: 280,
+    height: 280,
+    resizeMode: "contain",
   },
 
   errorText: {

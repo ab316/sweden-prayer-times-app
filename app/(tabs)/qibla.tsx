@@ -39,24 +39,16 @@ export default function Tab() {
       >
         {isFacingQibla ? "You are facing the Qibla" : "Keep rotating the phone"}
       </ThemedText>
-      <ThemedView style={styles.compassContainer}>
-        <Compass
-          destination={MAKKAH_COORDINATES}
-          targetImage={require("../../assets/images/kaabah.png")}
-          errorMargin={3}
-          onBearingChange={(bearing, heading, isFacingQibla) => {
-            setBearing(bearing);
-            setHeading(heading);
-            setIsFacingQibla(isFacingQibla);
-          }}
-        />
-        <ThemedView style={styles.decorativeRing}>
-          <Image
-            source={require("../../assets/images/decorative_border.png")}
-            style={styles.ringImage}
-          />
-        </ThemedView>
-      </ThemedView>
+      <Compass
+        destination={MAKKAH_COORDINATES}
+        targetImage={require("../../assets/images/kaabah.png")}
+        errorMargin={3}
+        onBearingChange={(bearing, heading, isFacingQibla) => {
+          setBearing(bearing);
+          setHeading(heading);
+          setIsFacingQibla(isFacingQibla);
+        }}
+      />
     </ThemedView>
   );
 }

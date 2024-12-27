@@ -206,13 +206,15 @@ const Compass = ({
             </View>
           </View>
         </Animated.View>
+
+        {/* Decorative ring */}
+        <ThemedView style={styles.decorativeRing}>
+          <Image
+            source={require("../../assets/images/compass/decorative_border.png")}
+            style={styles.ringImage}
+          />
+        </ThemedView>
       </View>
-      <ThemedView style={styles.decorativeRing}>
-        <Image
-          source={require("../../assets/images/compass/decorative_border.png")}
-          style={styles.ringImage}
-        />
-      </ThemedView>
     </ThemedView>
   );
 };
@@ -273,7 +275,7 @@ const styles = StyleSheet.create({
     height: 280,
     borderRadius: 140,
     top: -5,
-    left: -8,
+    left: -9,
     zIndex: -1,
     justifyContent: "center",
     alignItems: "center",
@@ -292,18 +294,3 @@ const styles = StyleSheet.create({
 });
 
 export default Compass;
-
-const calculateBearing = (from: ICoodinates, to: ICoodinates) => {
-  const lat1 = (from.lat * Math.PI) / 180;
-  const lon1 = (from.lon * Math.PI) / 180;
-  const lat2 = (to.lat * Math.PI) / 180;
-  const lon2 = (to.lon * Math.PI) / 180;
-
-  const dLon = lon2 - lon1;
-  const y = Math.sin(dLon) * Math.cos(lat2);
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-
-  return (Math.atan2(y, x) * 180) / Math.PI; // Convert radians to degrees
-};

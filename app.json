@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.swedenprayertimes"
+      "package": "com.anonymous.swedenprayertimes",
+      "permissions": ["android.permission.HIGH_SAMPLING_RATE_SENSORS"]
     },
     "web": {
       "bundler": "metro",

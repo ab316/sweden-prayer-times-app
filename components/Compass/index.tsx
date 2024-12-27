@@ -1,4 +1,5 @@
 import * as Location from "expo-location";
+import { DeviceMotion, DeviceMotionMeasurement } from "expo-sensors";
 
 import { ThemedView } from "@/components/ui";
 import { ICoodinates } from "@/types/ICoordinates";
@@ -12,7 +13,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { getBearing, interpolateColor, normalizeAngle } from "./Utils";
+import { getBearing, interpolateColor } from "./Utils";
 import { useAnimatedRotation } from "./useAnimatedRotation";
 import { useLowPassFilter } from "./useLowPassFilter";
 
@@ -39,31 +40,23 @@ const Compass = ({
   const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
 
   const [error, setError] = useState<string | null>(null);
-  const [userHeading, setUserHeading] = useState(0);
+  const [deviceMotion, setDeviceMotion] =
+    useState<DeviceMotionMeasurement | null>(null);
 
   const lpfLat = useLowPassFilter(FILTER_ALPHA);
   const lpfLon = useLowPassFilter(FILTER_ALPHA);
-  const lpfHeading = useLowPassFilter(FILTER_ALPHA);
-  const lpfDifference = useLowPassFilter(FILTER_ALPHA);
-
-  const [needleTint, setNeedleTint] = useState("rgba(255, 0, 0, 0.3)");
   const [smoothedLocation, setSmoothedLocation] = useState<ICoodinates | null>(
     null
   );
 
   const needle = useAnimatedRotation();
   const target = useAnimatedRotation();
+  const [needleTint, setNeedleTint] = useState("rgba(255, 0, 0, 0.3)");
 
   const onLocationChange = (location: Location.LocationObject) => {
     const smoothedLat = lpfLat(location.coords.latitude);
     const smoothedLon = lpfLon(location.coords.longitude);
-
     setSmoothedLocation({ lat: smoothedLat, lon: smoothedLon });
-  };
-
-  const onHeadingChange = (heading: Location.LocationHeadingObject) => {
-    const smoothedHeading = lpfHeading(heading.trueHeading);
-    setUserHeading(smoothedHeading);
   };
 
   const retryPermissions = async () => {
@@ -78,18 +71,12 @@ const Compass = ({
       let locationSub: Location.LocationSubscription | undefined;
       let headingSub: Location.LocationSubscription | undefined;
       try {
-        const [currLocation, currHeading] = await Promise.all([
-          Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Lowest,
-            distanceInterval: 0,
-          }),
-          Location.getHeadingAsync(),
-        ]);
+        const currLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Lowest,
+          distanceInterval: 0,
+        });
 
-        await Promise.all([
-          onLocationChange(currLocation),
-          onHeadingChange(currHeading),
-        ]);
+        onLocationChange(currLocation);
 
         locationSub = await Location.watchPositionAsync(
           {
@@ -100,10 +87,6 @@ const Compass = ({
             onLocationChange(location);
           }
         );
-
-        headingSub = await Location.watchHeadingAsync((heading) => {
-          onHeadingChange(heading);
-        });
       } catch {
         setError("Error initializing location or heading listeners.");
       }
@@ -119,34 +102,43 @@ const Compass = ({
 
   useEffect(() => {
     retryPermissions();
+
+    DeviceMotion.requestPermissionsAsync();
+    DeviceMotion.setUpdateInterval(10);
+    DeviceMotion.addListener((measurement) => {
+      setDeviceMotion(measurement);
+    });
   }, []);
 
   useEffect(() => {
     if (smoothedLocation) {
-      const bearing = normalizeAngle(getBearing(smoothedLocation, destination));
+      const bearing = getBearing(smoothedLocation, destination);
 
-      const headingDiff = Math.abs(userHeading - bearing);
-      const normalizedDiff =
-        headingDiff > 180 ? 360 - headingDiff : headingDiff;
-      const lpfDiff = lpfDifference(normalizedDiff);
+      const headingRadians = deviceMotion?.rotation?.alpha ?? 0;
+      const headingDegrees = headingRadians * (180 / Math.PI);
+      const correctedHeading = (360 - headingDegrees) % 360;
 
-      needle.updateRotation(bearing, userHeading);
-      target.updateRotation(
-        getBearing(smoothedLocation ?? { lat: 0, lon: 0 }, destination),
-        userHeading
+      const diff = Math.abs(correctedHeading - bearing);
+      const normalizedDiff = diff > 180 ? 360 - diff : diff;
+
+      needle.updateRotation(bearing, correctedHeading);
+      target.updateRotation(bearing, correctedHeading);
+
+      const colorRgb = interpolateColor(
+        normalizedDiff,
+        errorMargin * 3,
+        errorMargin
       );
-
-      const colorRgb = interpolateColor(lpfDiff, errorMargin * 3, errorMargin);
       const color = `rgba(${colorRgb.r}, ${colorRgb.g}, ${colorRgb.b}, 0.3)`;
       setNeedleTint(color);
 
       if (onBearingChange) {
-        const isFacingTarget = lpfDiff <= errorMargin;
-        onBearingChange(bearing, userHeading, isFacingTarget);
+        const isFacingTarget = normalizedDiff <= errorMargin;
+        onBearingChange(bearing, correctedHeading, isFacingTarget);
       }
     }
   }, [
-    userHeading,
+    deviceMotion,
     smoothedLocation,
     destination,
     inErrorMargin,
@@ -297,3 +289,18 @@ const styles = StyleSheet.create({
 });
 
 export default Compass;
+
+const calculateBearing = (from: ICoodinates, to: ICoodinates) => {
+  const lat1 = (from.lat * Math.PI) / 180;
+  const lon1 = (from.lon * Math.PI) / 180;
+  const lat2 = (to.lat * Math.PI) / 180;
+  const lon2 = (to.lon * Math.PI) / 180;
+
+  const dLon = lon2 - lon1;
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+  return (Math.atan2(y, x) * 180) / Math.PI; // Convert radians to degrees
+};

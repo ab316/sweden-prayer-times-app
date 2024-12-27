@@ -9,6 +9,7 @@ export default function Tab() {
   const theme = useTheme();
   const [bearing, setBearing] = useState(0);
   const [heading, setHeading] = useState(0);
+  const [calibrationNeeded, setCalibrationNeeded] = useState(false);
   const [facingQiblaState, dispatchFacingQibla] = useReducer(
     qiblaReducer,
     initialQiblaReducerState
@@ -34,39 +35,56 @@ export default function Tab() {
       <ThemedText style={[styles.text, { color: theme.primaryText }]}>
         Qibla Direction: {Math.round(bearing)}°
       </ThemedText>
-      <ThemedText style={[styles.text, { color: theme.primaryText }]}>
-        Your Heading: {Math.round(heading)}°
-      </ThemedText>
-
-      <ThemedView
-        style={[styles.statusContainer, { backgroundColor: theme.background }]}
-      >
+      {!calibrationNeeded && (
+        <ThemedText style={[styles.text, { color: theme.primaryText }]}>
+          Your Heading: {Math.round(heading)}°
+        </ThemedText>
+      )}
+      {calibrationNeeded && (
         <ThemedText
+          variant="secondary"
+          type="defaultBold"
+          style={[styles.text, { color: theme.warning }]}
+        >
+          Calibration needed. Rotate your phone in a figure 8 motion.
+        </ThemedText>
+      )}
+
+      {!calibrationNeeded && (
+        <ThemedView
           style={[
-            styles.text,
-            styles.qiblaStatus,
-            {
-              color: facingQiblaState.isFacingQibla
-                ? theme.accent
-                : theme.secondaryText,
-              textAlign: "center",
-            },
+            styles.statusContainer,
+            { backgroundColor: theme.background },
           ]}
         >
-          {facingQiblaState.isFacingQibla
-            ? "You are facing the Qibla"
-            : "Keep rotating the phone"}
-        </ThemedText>
-      </ThemedView>
+          <ThemedText
+            style={[
+              styles.text,
+              styles.qiblaStatus,
+              {
+                color: facingQiblaState.isFacingQibla
+                  ? theme.accent
+                  : theme.secondaryText,
+                textAlign: "center",
+              },
+            ]}
+          >
+            {facingQiblaState.isFacingQibla
+              ? "You are facing the Qibla"
+              : "Keep rotating the phone"}
+          </ThemedText>
+        </ThemedView>
+      )}
       <Compass
         destination={MAKKAH_COORDINATES}
         targetImage={require("../../assets/images/kaabah.png")}
         errorMargin={3}
-        onBearingChange={(bearing, heading, isFacingQibla) => {
-          setBearing(bearing);
-          setHeading(heading);
-          dispatchFacingQibla(isFacingQibla);
+        onBearingChange={(params) => {
+          setBearing(params.bearing);
+          setHeading(params.heading);
+          dispatchFacingQibla(params.isFacingTarget);
         }}
+        onCalibrationNeeded={setCalibrationNeeded}
       />
     </View>
   );
@@ -113,6 +131,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 0,
     textAlign: "center",
+  },
+  warning: {
+    color: "red",
   },
   qiblaStatus: {
     fontWeight: "bold",

@@ -1,20 +1,22 @@
-import * as Location from "expo-location";
 import { ICoodinates } from "@/types/ICoordinates";
-import { DeviceMotion, DeviceMotionMeasurement } from "expo-sensors";
-import { useCallback, useEffect, useState } from "react";
-import { useLowPassFilter } from "./useLowPassFilter";
-import { useAnimatedRotation } from "./useAnimatedRotation";
-import { getBearing, interpolateColor } from "./Utils";
+import * as Location from "expo-location";
 import { useFocusEffect } from "expo-router";
+import {
+  DeviceMotion,
+  DeviceMotionMeasurement,
+  Magnetometer,
+} from "expo-sensors";
+import { useCallback, useEffect, useState } from "react";
+import { IBearingChangeParams } from "./types";
+import { useAnimatedRotation } from "./useAnimatedRotation";
+import { useLowPassFilter } from "./useLowPassFilter";
+import { getBearing, interpolateColor, isCalibrationNeeded } from "./Utils";
 
 export interface ICompassProps {
   destination: ICoodinates;
   errorMargin?: number;
-  onBearingChange?: (
-    bearing: number,
-    heading: number,
-    isFacingTarget: boolean
-  ) => void;
+  onBearingChange?: (params: IBearingChangeParams) => void;
+  onCalibrationNeeded?: (calibrationNeeded: boolean) => void;
 }
 
 const DEFAULT_ERROR_MARGIN = 3;
@@ -24,6 +26,7 @@ export const useCompass = ({
   destination,
   errorMargin: inErrorMargin,
   onBearingChange,
+  onCalibrationNeeded,
 }: ICompassProps) => {
   const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
 
@@ -32,14 +35,16 @@ export const useCompass = ({
   let deviceMotionSub: ReturnType<typeof DeviceMotion.addListener> | undefined;
 
   const [error, setError] = useState<string | null>(null);
+
   const [deviceMotion, setDeviceMotion] =
     useState<DeviceMotionMeasurement | null>(null);
 
-  const lpfLat = useLowPassFilter(FILTER_ALPHA);
-  const lpfLon = useLowPassFilter(FILTER_ALPHA);
   const [smoothedLocation, setSmoothedLocation] = useState<ICoodinates | null>(
     null
   );
+
+  const lpfLat = useLowPassFilter(FILTER_ALPHA);
+  const lpfLon = useLowPassFilter(FILTER_ALPHA);
 
   const needle = useAnimatedRotation();
   const target = useAnimatedRotation();
@@ -116,6 +121,22 @@ export const useCompass = ({
     }, [])
   );
 
+  // Check if the magnetometer is calibrated
+  useEffect(() => {
+    const subscription = Magnetometer.addListener((data) => {
+      const calibrationNeeded = isCalibrationNeeded(data);
+      if (onCalibrationNeeded) {
+        onCalibrationNeeded(calibrationNeeded);
+      }
+    });
+
+    Magnetometer.setUpdateInterval(500);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   useEffect(() => {
     if (smoothedLocation) {
       const bearing = getBearing(smoothedLocation, destination);
@@ -140,7 +161,11 @@ export const useCompass = ({
 
       if (onBearingChange) {
         const isFacingTarget = normalizedDiff <= errorMargin;
-        onBearingChange(bearing, correctedHeading, isFacingTarget);
+        onBearingChange({
+          bearing,
+          heading: correctedHeading,
+          isFacingTarget,
+        });
       }
     }
   }, [

@@ -1,5 +1,6 @@
 import * as geolib from "geolib";
 import { ICoodinates } from "@/types/ICoordinates";
+import { MagnetometerMeasurement } from "expo-sensors";
 
 export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
   const bearing = geolib.getGreatCircleBearing(
@@ -25,6 +26,17 @@ export const normalizeRotationAngle = (
     delta = newAngle - currentAngle;
   }
   return { newAngle, delta };
+};
+
+export const isCalibrationNeeded = (data: MagnetometerMeasurement): boolean => {
+  const magnitude = Math.sqrt(data.x ** 2 + data.y ** 2 + data.z ** 2);
+
+  // Earth's magnetic field strength should be in 25-65 µT range
+  if (magnitude < 25 || magnitude > 65) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 // Function to interpolate between two colors based on a difference

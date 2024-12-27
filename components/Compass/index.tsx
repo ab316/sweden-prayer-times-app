@@ -11,16 +11,14 @@ import {
   View,
 } from "react-native";
 import { useCompass } from "./useCompass";
+import { IBearingChangeParams } from "./types";
 
 export interface ICompassProps {
   destination: ICoodinates;
   targetImage: ImageSourcePropType;
   errorMargin?: number;
-  onBearingChange?: (
-    bearing: number,
-    heading: number,
-    isFacingTarget: boolean
-  ) => void;
+  onBearingChange?: (params: IBearingChangeParams) => void;
+  onCalibrationNeeded?: (calibrationNeeded: boolean) => void;
 }
 
 const Compass = ({
@@ -28,11 +26,13 @@ const Compass = ({
   errorMargin: inErrorMargin,
   targetImage,
   onBearingChange,
+  onCalibrationNeeded,
 }: ICompassProps) => {
   const { error, retryPermissions, needleTint, needle, target } = useCompass({
     destination,
     errorMargin: inErrorMargin,
     onBearingChange,
+    onCalibrationNeeded,
   });
 
   if (error) {

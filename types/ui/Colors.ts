@@ -4,6 +4,7 @@ export type ColorTheme = {
   secondaryText: string;
   accent: string;
   highlight: string;
+  warning: string;
   tint: string;
   icon: string;
   tabIconDefault: string;

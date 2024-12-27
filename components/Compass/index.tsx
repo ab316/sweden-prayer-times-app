@@ -3,7 +3,8 @@ import { DeviceMotion, DeviceMotionMeasurement } from "expo-sensors";
 
 import { ThemedView } from "@/components/ui";
 import { ICoodinates } from "@/types/ICoordinates";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Animated,
   Button,
@@ -39,6 +40,10 @@ const Compass = ({
 }: ICompassProps) => {
   const errorMargin = inErrorMargin ?? DEFAULT_ERROR_MARGIN;
 
+  let locationSub: Location.LocationSubscription | undefined;
+  let headingSub: Location.LocationSubscription | undefined;
+  let deviceMotionSub: ReturnType<typeof DeviceMotion.addListener> | undefined;
+
   const [error, setError] = useState<string | null>(null);
   const [deviceMotion, setDeviceMotion] =
     useState<DeviceMotionMeasurement | null>(null);
@@ -68,9 +73,20 @@ const Compass = ({
         return;
       }
 
-      let locationSub: Location.LocationSubscription | undefined;
-      let headingSub: Location.LocationSubscription | undefined;
+      const { granted: deviceMotionGranted } =
+        await DeviceMotion.requestPermissionsAsync();
+      if (!deviceMotionGranted) {
+        setError("Permission to access device motion was denied.");
+        return;
+      }
+
       try {
+        DeviceMotion.setUpdateInterval(10);
+
+        deviceMotionSub = DeviceMotion.addListener((measurement) => {
+          setDeviceMotion(measurement);
+        });
+
         const currLocation = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Lowest,
           distanceInterval: 0,
@@ -90,25 +106,22 @@ const Compass = ({
       } catch {
         setError("Error initializing location or heading listeners.");
       }
-
-      return () => {
-        locationSub?.remove();
-        headingSub?.remove();
-      };
     } catch {
       setError("Unexpected error occurred while requesting permissions.");
     }
   };
 
-  useEffect(() => {
-    retryPermissions();
+  useFocusEffect(
+    useCallback(() => {
+      retryPermissions();
 
-    DeviceMotion.requestPermissionsAsync();
-    DeviceMotion.setUpdateInterval(10);
-    DeviceMotion.addListener((measurement) => {
-      setDeviceMotion(measurement);
-    });
-  }, []);
+      return () => {
+        locationSub?.remove();
+        headingSub?.remove();
+        deviceMotionSub?.remove();
+      };
+    }, [])
+  );
 
   useEffect(() => {
     if (smoothedLocation) {

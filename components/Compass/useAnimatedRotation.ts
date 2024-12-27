@@ -4,7 +4,7 @@ import { normalizeRotationAngle } from "./Utils";
 
 export function useAnimatedRotation(
   initialAngle: number = 0,
-  errorMargin: number = 3
+  errorMargin: number = 0.01
 ) {
   const [angle, setAngle] = useState(initialAngle);
   const rotation = useRef(new Animated.Value(initialAngle)).current;

@@ -143,6 +143,9 @@ const Compass = ({
     destination,
     inErrorMargin,
     onBearingChange,
+    needle,
+    target,
+    errorMargin,
   ]);
 
   if (error) {

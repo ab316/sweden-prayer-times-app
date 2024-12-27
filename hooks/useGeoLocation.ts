@@ -1,41 +1,59 @@
-import { useEffect, useState } from "react";
-import Geolocation from "@react-native-community/geolocation";
 import { fetchCityFromCoordinates } from "@/api/openStreetMap";
-import { ICoodinates } from "@/types/ICoordinates";
+import * as Location from "expo-location";
+import { useEffect, useState } from "react";
 
 export const useGeoLocation = () => {
-  const [coords, setCoords] = useState<ICoodinates>({
-    lat: 0,
-    lon: 0,
-  });
-  const [city, setCity] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
-  const update = () => {
-    Geolocation.getCurrentPosition((info) => {
-      const newCoords = {
-        lat: info.coords.latitude,
-        lon: info.coords.longitude,
-      };
-      setCoords(newCoords);
-      fetchCityFromCoordinates(newCoords.lat, newCoords.lon).then((city) => {
-        if (city) {
-          setCity(city);
-        } else {
-          console.log("No city found from coordinates");
-          setCity(null);
+  const retryPermissions = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setError(new Error("Permission to access location was denied."));
+    } else {
+      setError(null);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    let location: Location.LocationObject;
+    const lastLocation = await Location.getLastKnownPositionAsync();
+    if (lastLocation) {
+      location = lastLocation;
+    } else {
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      location = currentLocation;
+    }
+
+    if (!location) {
+      return null;
+    }
+
+    return location;
+  };
+
+  const getCurrentCity = async (): Promise<string | null> => {
+    let location = await getCurrentLocation();
+    if (!location) return null;
+
+    const { coords } = location;
+
+    return new Promise((resolve) => {
+      fetchCityFromCoordinates(coords.latitude, coords.longitude).then(
+        (city) => {
+          if (city) {
+            resolve(city);
+          } else {
+            console.log("No city found from coordinates");
+            resolve(null);
+          }
         }
-      });
+      );
     });
   };
 
   useEffect(() => {
-    Geolocation.setRNConfiguration({
-      authorizationLevel: "whenInUse",
-      skipPermissionRequests: false,
-    });
-
-    update();
+    retryPermissions();
   }, []);
 
-  return { coords, city, update };
+  return { error, getCurrentCity, getCurrentLocation };
 };

@@ -4,35 +4,70 @@ import { ThemedText } from "@/components/ui/ThemedText";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
+import { PrayerTimesByDay } from "@/types/PrayerTimes";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
+  const [error, setError] = useState<Error | null>(null);
   const [date, setDate] = useState(new Date());
-  const [city, setCity] = useState<IOptionData>({
-    value: "Stockholm, SE",
-    label: "Stockholm",
-  });
-  const { cities, prayerTimes, loading, error } = usePrayerTimes({
-    city: city.value,
-    date,
-  });
-  const { city: geoCity } = useGeoLocation();
+  const [cities, setCities] = useState<IOptionData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDay>({});
+  const [currentGeoCity, setCurrentGeoCity] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<IOptionData | null>();
+
+  const { fetchCities, fetchPrayerTimes } = usePrayerTimes();
+  const { getCurrentCity } = useGeoLocation();
 
   useEffect(() => {
-    if (!geoCity) return;
+    const init = async () => {
+      const [cities, geoCity] = await Promise.all([
+        fetchCities(),
+        getCurrentCity(),
+      ]);
+
+      setCities(cities);
+      setCurrentGeoCity(geoCity);
+
+      setIsLoading(false);
+    };
+
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (!currentGeoCity || !cities.length) return;
 
     const cityOption = cities.find(
       (c) =>
-        c.label.toLocaleLowerCase().includes(geoCity.toLocaleLowerCase()) ||
-        c.value.toLocaleLowerCase().includes(geoCity.toLocaleLowerCase())
+        c.label
+          .toLocaleLowerCase()
+          .includes(currentGeoCity.toLocaleLowerCase()) ||
+        c.value.toLocaleLowerCase().includes(currentGeoCity.toLocaleLowerCase())
     );
 
     if (cityOption) {
-      setCity(cityOption);
+      setSelectedCity(cityOption);
+    } else if (!selectedCity) {
+      setSelectedCity({
+        value: "Stockholm, SE",
+        label: "Stockholm",
+      });
     }
-  }, [cities, geoCity]);
+  }, [cities, currentGeoCity]);
+
+  useEffect(() => {
+    if (!selectedCity) return;
+
+    setIsLoading(true);
+    fetchPrayerTimes({ city: selectedCity.value, month: date.getMonth() + 1 })
+      .then(setPrayerTimes)
+      .catch((err) => setError(err))
+      .finally(() => setIsLoading(false));
+  }, [selectedCity, date]);
 
   const todayPrayers = prayerTimes[date.getDate()];
 
@@ -40,7 +75,7 @@ export default function Index() {
     return <Text>Error: {error.message}</Text>;
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={[styles.container, styles.horizontal]}>
@@ -55,9 +90,9 @@ export default function Index() {
       <View style={{ marginBottom: 20 }}>
         <CitySelector
           cities={cities}
-          selectedCity={city.value}
+          selectedCity={selectedCity?.value ?? ""}
           onCityChange={(newCity) => {
-            setCity(newCity);
+            setSelectedCity(newCity);
           }}
         />
       </View>

@@ -4,17 +4,23 @@ import { useEffect, useState } from "react";
 
 export const useGeoLocation = () => {
   const [error, setError] = useState<Error | null>(null);
+  const [isPermissionGranted, setIsPermissionGranted] = useState(false);
 
   const retryPermissions = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setError(new Error("Permission to access location was denied."));
     } else {
+      setIsPermissionGranted(true);
       setError(null);
     }
   };
 
   const getCurrentLocation = async () => {
+    if (!isPermissionGranted) {
+      await retryPermissions();
+    }
+
     let location: Location.LocationObject;
     const lastLocation = await Location.getLastKnownPositionAsync();
     if (lastLocation) {

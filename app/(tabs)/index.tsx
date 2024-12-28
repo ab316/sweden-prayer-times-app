@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { CitySelector } from "@/components/CitySelector";
 import { PrayerTimes } from "@/components/PrayerTimes";
@@ -8,6 +14,7 @@ import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { IOptionData } from "@/types/IOptionData";
 import { PrayerTimesByDay } from "@/types/PrayerTimes";
+import { useTheme } from "@/hooks/ui";
 
 const DEFAULT_CITY = { value: "Stockholm, SE", label: "Stockholm" };
 
@@ -18,6 +25,7 @@ type ILoadingState = {
 };
 
 export default function Index() {
+  const theme = useTheme();
   const [date, setDate] = useState(new Date());
   const [cities, setCities] = useState<IOptionData[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDay>({});
@@ -90,6 +98,14 @@ export default function Index() {
 
   const todayPrayers = prayerTimes[date.getDate()];
 
+  const updateDate = (days: number) => {
+    setDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() + days);
+      return newDate;
+    });
+  };
+
   // Loading/Error states
   if (loadingState.error) {
     return <Text>Error: {loadingState.error.message}</Text>;
@@ -114,12 +130,32 @@ export default function Index() {
         onCityChange={(newCity) => setSelectedCity(newCity)}
       />
       <View style={styles.centeredContainer}>
+        <TouchableOpacity
+          onPress={() => updateDate(-1)}
+          style={styles.arrowButton}
+        >
+          <Text style={styles.arrowText}>{"<"}</Text>
+        </TouchableOpacity>
         <ThemedText style={styles.dateText}>{date.toDateString()}</ThemedText>
+        <TouchableOpacity
+          onPress={() => updateDate(1)}
+          style={styles.arrowButton}
+        >
+          <Text style={styles.arrowText}>{">"}</Text>
+        </TouchableOpacity>
       </View>
       {todayPrayers ? (
         <PrayerTimes times={todayPrayers} />
       ) : (
-        <Text>No prayer times available</Text>
+        <View style={styles.noPrayerTimesContainer}>
+          <ThemedText
+            variant="primary"
+            type="defaultBold"
+            style={[styles.noPrayerTimesText]}
+          >
+            No prayer times available
+          </ThemedText>
+        </View>
       )}
     </View>
   );
@@ -140,10 +176,27 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   centeredContainer: {
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
   dateText: {
     fontSize: 20,
+    marginHorizontal: 10,
+  },
+  arrowButton: {
+    padding: 10,
+  },
+  arrowText: {
+    fontSize: 24,
+  },
+  noPrayerTimesContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  noPrayerTimesText: {
+    fontSize: 18,
+    textAlign: "center",
   },
 });

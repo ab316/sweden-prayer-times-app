@@ -1,18 +1,34 @@
 import * as api from "@/api/islamiskaForbundet";
-import { PrayerTimesByDay } from "@/types/PrayerTimes";
+import * as cache from "@/storage/prayerTimesStorage";
 
 export const usePrayerTimes = () => {
   const fetchPrayerTimes = async (params: { city: string; month: number }) => {
-    const prayerTimes: PrayerTimesByDay = await api.fetchPrayerTimes({
-      city: params.city,
-      month: params.month,
-    });
-    return prayerTimes;
+    const cachedPrayerTimes = await cache.getPrayerTimes(
+      params.city,
+      params.month
+    );
+    if (cachedPrayerTimes) {
+      return cachedPrayerTimes;
+    } else {
+      const apiPrayerTimes = await api.fetchPrayerTimes({
+        city: params.city,
+        month: params.month,
+      });
+
+      cache.savePrayerTimes(params.city, params.month, apiPrayerTimes);
+      return apiPrayerTimes;
+    }
   };
 
   const fetchCities = async () => {
-    const cities = await api.fetchCitiesPage();
-    return cities;
+    const cachedCities = await cache.getCities();
+    if (cachedCities) {
+      return cachedCities;
+    } else {
+      const apiCities = await api.fetchCitiesPage();
+      cache.saveCities(apiCities);
+      return apiCities;
+    }
   };
 
   return {

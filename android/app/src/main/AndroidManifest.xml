@@ -28,7 +28,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
-        <data android:scheme="com.anonymous.swedenprayertimes"/>
+        <data android:scheme="com.baigsoftwaredev.swedenprayertimes"/>
         <data android:scheme="exp+sweden-prayer-times"/>
       </intent-filter>
     </activity>

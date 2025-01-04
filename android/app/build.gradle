@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.swedenprayertimes'
+    namespace 'com.baigsoftwaredev.swedenprayertimes'
     defaultConfig {
-        applicationId 'com.anonymous.swedenprayertimes'
+        applicationId 'com.baigsoftwaredev.swedenprayertimes'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

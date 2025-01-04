@@ -1,167 +1,179 @@
-import * as Location from "expo-location";
-
+import { ThemedView } from "@/components/ui";
 import { ICoodinates } from "@/types/ICoordinates";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
-import { getBearing, interpolateColor } from "./Utils";
+import React from "react";
+import {
+  Animated,
+  Button,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useCompass } from "./useCompass";
+import { IBearingChangeParams } from "./types";
 
 export interface ICompassProps {
   destination: ICoodinates;
+  targetImage: ImageSourcePropType;
   errorMargin?: number;
+  onBearingChange?: (params: IBearingChangeParams) => void;
+  onCalibrationNeeded?: (calibrationNeeded: boolean) => void;
 }
 
 const Compass = ({
   destination,
   errorMargin: inErrorMargin,
+  targetImage,
+  onBearingChange,
+  onCalibrationNeeded,
 }: ICompassProps) => {
-  const [error, setError] = useState<string | null>(null);
-
-  const [userLocation, setUserLocation] =
-    useState<Location.LocationObject | null>(null);
-  const [userHeading, setUserHeading] = useState(0);
-  const [angle, setAngle] = useState<number>(0);
-  const rotation = useRef(new Animated.Value(0)).current;
-  const [needleColor, setCompassColor] = useState("#f00");
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setError("Permission to access location was denied.");
-        return;
-      }
-
-      const location = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 0,
-        },
-        (location) => {
-          setUserLocation(location);
-        }
-      );
-
-      const heading = await Location.watchHeadingAsync((heading) => {
-        setUserHeading(heading.trueHeading);
-      });
-
-      return () => {
-        location.remove();
-        heading.remove();
-      };
-    })();
-  }, []);
-
-  useEffect(() => {
-    const rotateImage = (angle: number) => {
-      Animated.timing(rotation, {
-        toValue: angle,
-        duration: 300,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    const checkHeading = setTimeout(() => {
-      if (userLocation) {
-        const bearing = getBearing(
-          {
-            lat: userLocation.coords.latitude,
-            lon: userLocation.coords.longitude,
-          },
-          destination
-        );
-
-        let newAngle = bearing - userHeading;
-        let delta = newAngle - angle;
-        while (delta > 180 || delta < -180) {
-          if (delta > 180) {
-            newAngle -= 360;
-          } else if (delta < -180) {
-            newAngle += 360;
-          }
-          delta = newAngle - angle;
-        }
-        if (Math.abs(delta) > 5) {
-          setAngle(newAngle);
-          rotateImage(newAngle);
-        }
-
-        const headingDifference = Math.abs(userHeading - bearing);
-        const normalizedDifference =
-          headingDifference > 180 ? 360 - headingDifference : headingDifference;
-        const maxDifference = 10;
-        const errorMargin = inErrorMargin ?? 5;
-        const color = interpolateColor(
-          normalizedDifference,
-          maxDifference,
-          errorMargin
-        );
-        setCompassColor(color);
-      }
-    }, 0);
-
-    return () => clearTimeout(checkHeading);
-  }, [userHeading]);
+  const { error, retryPermissions, needleTint, needle, target } = useCompass({
+    destination,
+    errorMargin: inErrorMargin,
+    onBearingChange,
+    onCalibrationNeeded,
+  });
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={styles.outerContainer}>
         <Text style={styles.errorText}>{error}</Text>
+        <Button title="Retry" onPress={retryPermissions} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={{
-          transform: [
-            {
-              rotate: rotation.interpolate({
-                inputRange: [0, 360],
-                outputRange: ["0deg", "360deg"],
-              }),
-            },
-          ],
-        }}
-      >
-        <View
-          style={{ ...styles.arrow, borderBottomColor: needleColor }}
-        ></View>
-      </Animated.View>
-    </View>
+    <ThemedView style={styles.compassContainer}>
+      <View style={styles.outerContainer}>
+        <Animated.View
+          style={{ transform: [{ rotate: needle.interpolatedRotation }] }}
+        >
+          <View style={styles.rotatingContainer}>
+            <Image
+              source={require("../../assets/images/compass/compass.png")}
+              style={styles.compassImage}
+            />
+
+            {/* Target image */}
+            <Animated.View
+              style={{
+                position: "absolute",
+                justifyContent: "center",
+                alignItems: "center",
+                transform: [{ rotate: target.interpolatedRotation }],
+              }}
+            >
+              <Image
+                source={targetImage}
+                style={[
+                  styles.targetImage,
+                  { top: -150 }, // Position it outside the compass
+                ]}
+              />
+            </Animated.View>
+
+            {/* Needle */}
+            <View style={styles.needleContainer}>
+              <Image
+                source={require("../../assets/images/compass/needle.png")}
+                style={styles.needleImage}
+              />
+
+              <Image
+                source={require("../../assets/images/compass/needle.png")}
+                style={[
+                  styles.needleImage,
+                  {
+                    tintColor: needleTint,
+                  },
+                ]}
+              />
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Decorative ring */}
+        <ThemedView style={styles.decorativeRing}>
+          <Image
+            source={require("../../assets/images/compass/decorative_border.png")}
+            style={styles.ringImage}
+          />
+        </ThemedView>
+      </View>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  compassContainer: {
+    marginTop: 40,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: "#F5F5F5", // Subtle background to make it stand out
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    position: "relative",
+  },
+
+  outerContainer: {
     flex: 1,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
-  arrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 20,
-    borderRightWidth: 20,
-    borderBottomWidth: 60,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderBottomColor: "red",
+  rotatingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
-  button: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "blue",
-    borderRadius: 5,
+  needleContainer: {
+    position: "absolute",
+    top: -95,
+    left: 10,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
+
+  compassImage: {
+    width: 300,
+    height: 300,
   },
+  targetImage: {
+    width: 50,
+    height: 50,
+  },
+  needleImage: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+  },
+  decorativeRing: {
+    position: "absolute",
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    top: -5,
+    left: -9,
+    zIndex: -1,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  ringImage: {
+    width: 280,
+    height: 280,
+    resizeMode: "contain",
+  },
+
   errorText: {
     color: "red",
     fontSize: 16,

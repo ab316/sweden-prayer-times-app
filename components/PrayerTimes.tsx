@@ -1,45 +1,62 @@
+import { ThemedText, ThemedView } from "@/components/ui";
+import { useTheme } from "@/hooks/ui";
 import { IPrayerTimes } from "@/types/PrayerTimes";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 export const PrayerTimes = ({ times }: { times: IPrayerTimes }) => {
+  const theme = useTheme();
   return (
-    <View style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: theme.highlight }]}
+    >
       <Header />
-      <PrayerTime name="Fajr" time={times.fajr} />
-      <PrayerTime name="Shuruk" time={times.shuruk} />
-      <PrayerTime name="Dhuhr" time={times.dhuhr} />
-      <PrayerTime name="Asr" time={times.asr} />
-      <PrayerTime name="Maghrib" time={times.maghrib} />
-      <PrayerTime name="Isha" time={times.isha} />
-    </View>
+      <ThemedView
+        style={[styles.tableContainer, { backgroundColor: theme.accent }]}
+      >
+        <PrayerTime name="Fajr" time={times.fajr} />
+        <PrayerTime name="Shuruk" time={times.shuruk} />
+        <PrayerTime name="Dhuhr" time={times.dhuhr} />
+        <PrayerTime name="Asr" time={times.asr} />
+        <PrayerTime name="Maghrib" time={times.maghrib} />
+        <PrayerTime name="Isha" time={times.isha} />
+      </ThemedView>
+    </ThemedView>
   );
 };
 
 const Header = () => {
   return (
-    <View style={styles.row}>
-      <Text style={styles.header}>Prayer</Text>
-      <Text style={styles.header}>Time</Text>
-    </View>
+    <ThemedView style={[styles.row]}>
+      <ThemedText style={styles.header}>Prayer</ThemedText>
+      <ThemedText style={styles.header}>Time</ThemedText>
+    </ThemedView>
   );
 };
 
 const PrayerTime = ({ name, time }: { name: string; time: string }) => {
+  const theme = useTheme();
   return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{name}</Text>
-      <Text style={styles.label}>{time}</Text>
-    </View>
+    <ThemedView style={[styles.row, { backgroundColor: theme.accent }]}>
+      <ThemedText style={styles.label}>{name}</ThemedText>
+      <ThemedText style={styles.label}>{time}</ThemedText>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    padding: 10,
+    borderRadius: 10,
+  },
+  tableContainer: {
+    borderRadius: 10,
+  },
   row: {
     flexDirection: "row",
     marginBottom: 5,
     justifyContent: "space-between",
     alignItems: "center",
+    borderRadius: 5,
   },
   header: {
     flex: 1,

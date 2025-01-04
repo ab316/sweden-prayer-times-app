@@ -1,4 +1,4 @@
-package com.anonymous.swedenprayertimes
+package com.baigsoftwaredev.swedenprayertimes
 
 import android.app.Application
 import android.content.res.Configuration

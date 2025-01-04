@@ -3,24 +3,34 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+import { ColorsType } from "@/types/ui/Colors";
 
-export const Colors = {
+const tintColorLight = "#0a7ea4";
+const tintColorDark = "#fff";
+
+export const Colors: ColorsType = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    background: "#E8F5E9", // Light green background
+    primaryText: "#2E7D32", // Islamic green
+    secondaryText: "#1B5E20", // Dark green
+    accent: "#A5D6A7", // Light green for dropdowns and other accents
+    highlight: "#C8E6C9", // Highlight color for tables and cards
+    warning: "orange",
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#687076",
+    tabIconDefault: "#687076",
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    background: "#1B5E20", // Dark green background
+    primaryText: "#E8F5E9", // Light green text
+    secondaryText: "#A5D6A7", // Light green accents
+    accent: "#34A853", // Bright green for highlights
+    highlight: "#388E3C", // Highlight color for tables and cards
+    warning: "red",
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
   },
 };

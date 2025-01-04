@@ -1,11 +1,13 @@
-import { IOptionData } from "@/types/IOptionData";
+import { ThemedText, ThemedView } from "@/components/ui";
+import { useTheme } from "@/hooks/ui";
+import { ICity } from "@/types/ICity";
 import { Picker } from "@react-native-picker/picker";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 interface ICitySelectorProps {
-  cities: IOptionData[];
+  cities: ICity[];
   selectedCity: string;
-  onCityChange: (city: IOptionData) => void;
+  onCityChange: (city: ICity) => void;
 }
 
 export const CitySelector = ({
@@ -13,42 +15,47 @@ export const CitySelector = ({
   selectedCity,
   onCityChange,
 }: ICitySelectorProps) => {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>City:</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText type="defaultBold" variant="primary">
+        City:
+      </ThemedText>
+
       <Picker
         selectedValue={selectedCity}
         onValueChange={(itemValue: string) => {
-          const city = cities.find((city) => city.value === itemValue);
+          const city = cities.find((city) => city.name === itemValue);
           if (city) {
             onCityChange(city);
           }
         }}
-        style={styles.picker}
+        style={[
+          styles.picker,
+          { backgroundColor: theme.accent, color: theme.primaryText },
+        ]}
       >
         {cities.map((city) => (
-          <Picker.Item key={city.value} label={city.label} value={city.value} />
+          <Picker.Item key={city.name} label={city.name} value={city.name} />
         ))}
       </Picker>
-    </View>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // flexDirection: "column",
-    // justifyContent: "center",
-    // paddingHorizontal: 0,
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 10,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
+    marginBottom: 5,
   },
-  picker: {},
-  selectedText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontWeight: "bold",
+  picker: {
+    borderRadius: 5,
+    padding: 5,
   },
 });

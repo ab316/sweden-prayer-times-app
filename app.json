@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "sweden-prayer-times",
+    "name": "Sweden Prayer Times",
     "slug": "sweden-prayer-times",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.swedenprayertimes"
+      "package": "com.baigsoftwaredev.swedenprayertimes",
+      "permissions": ["android.permission.HIGH_SAMPLING_RATE_SENSORS"]
     },
     "web": {
       "bundler": "metro",

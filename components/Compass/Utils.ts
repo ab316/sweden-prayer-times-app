@@ -1,5 +1,6 @@
 import * as geolib from "geolib";
 import { ICoodinates } from "@/types/ICoordinates";
+import { MagnetometerMeasurement } from "expo-sensors";
 
 export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
   const bearing = geolib.getGreatCircleBearing(
@@ -9,14 +10,47 @@ export const getBearing = (user: ICoodinates, destination: ICoodinates) => {
   return bearing;
 };
 
-// Function to interpolate between two colors with non-linear mapping
+export const normalizeRotationAngle = (
+  destinationHeading: number,
+  currentHeading: number,
+  currentAngle: number
+) => {
+  let newAngle = destinationHeading - currentHeading;
+  let delta = newAngle - currentAngle;
+  while (delta > 180 || delta < -180) {
+    if (delta > 180) {
+      newAngle -= 360;
+    } else if (delta < -180) {
+      newAngle += 360;
+    }
+    delta = newAngle - currentAngle;
+  }
+  return { newAngle, delta };
+};
+
+export const isCalibrationNeeded = (data: MagnetometerMeasurement): boolean => {
+  const magnitude = Math.sqrt(data.x ** 2 + data.y ** 2 + data.z ** 2);
+
+  // Earth's magnetic field strength should be in 25-65 µT range
+  if (magnitude < 25 || magnitude > 65) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// Function to interpolate between two colors based on a difference
 export const interpolateColor = (
   difference: number,
   maxDifference: number,
   margin: number
-): string => {
-  if (difference <= margin) {
-    return "rgb(0,255,0)"; // Max green within the margin
+): {
+  r: number;
+  g: number;
+  b: number;
+} => {
+  if (difference > maxDifference) {
+    return { r: 255, g: 0, b: 0 };
   }
 
   // Normalize the difference between margin and maxDifference
@@ -34,8 +68,9 @@ export const interpolateColor = (
   const g = Math.round(255 * (1 - eased)); // Green decreases
   const b = Math.round(200 * eased); // Add blue for a gradient effect
 
-  return `rgb(${r},${g},${b})`;
+  const result = { r, g, b };
+  return result;
 };
 
 // Easing function to make changes rapid near 0
-const easingFunction = (t: number) => t * t; // Quadratic easing
+const easingFunction = (t: number) => t;

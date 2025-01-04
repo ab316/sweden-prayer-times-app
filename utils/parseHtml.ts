@@ -29,7 +29,9 @@ export async function parseCities(html: string): Promise<IOptionData[]> {
   return result;
 }
 
-export async function parsePrayerTimes(html: string): Promise<PrayerTimesByDay> {
+export async function parseIslamiskaForbundentPrayerTimes(
+  html: string
+): Promise<PrayerTimesByDay> {
   const dom = parseDocument(html);
   const tbody = DomUtils.findOne(
     (elem) =>

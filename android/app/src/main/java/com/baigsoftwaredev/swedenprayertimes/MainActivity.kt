@@ -1,4 +1,4 @@
-package com.anonymous.swedenprayertimes
+package com.baigsoftwaredev.swedenprayertimes
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -1,4 +1,6 @@
 import { fetchCityFromCoordinates } from "@/api/openStreetMap";
+import { Option } from "@/types";
+import { ICity } from "@/types/ICity";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 
@@ -37,17 +39,20 @@ export const useGeoLocation = () => {
     return location;
   };
 
-  const getCurrentCity = async (): Promise<string | null> => {
+  const getCurrentCity = async (): Promise<Option<ICity>> => {
     let location = await getCurrentLocation();
     if (!location) return null;
 
     const { coords } = location;
 
-    return new Promise((resolve) => {
+    return await new Promise((resolve) => {
       fetchCityFromCoordinates(coords.latitude, coords.longitude).then(
         (city) => {
           if (city) {
-            resolve(city);
+            resolve({
+              name: city,
+              coords: { lat: coords.latitude, lon: coords.longitude },
+            });
           } else {
             console.log("No city found from coordinates");
             resolve(null);

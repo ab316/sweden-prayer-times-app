@@ -1,22 +1,28 @@
+import { CitySelector } from "@/components/CitySelector";
+import { PrayerTimes } from "@/components/PrayerTimes";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { useTheme } from "@/hooks/ui";
+import { useCities } from "@/hooks/useCities";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
+import { usePrayerTimes } from "@/hooks/usePrayerTimes";
+import { Option } from "@/types";
+import { ICity } from "@/types/ICity";
+import { PrayerTimesByDate } from "@/types/PrayerTimes";
+import { getIsoDate } from "@/utils/date";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { CitySelector } from "@/components/CitySelector";
-import { PrayerTimes } from "@/components/PrayerTimes";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { useGeoLocation } from "@/hooks/useGeoLocation";
-import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { IOptionData } from "@/types/IOptionData";
-import { PrayerTimesByDay } from "@/types/PrayerTimes";
-import { useTheme } from "@/hooks/ui";
 
-const DEFAULT_CITY = { value: "Stockholm, SE", label: "Stockholm" };
+const DEFAULT_CITY: ICity = {
+  name: "Stockholm",
+  coords: { lat: 59.3327, lon: 18.0656 },
+};
 
 type ILoadingState = {
   citiesLoading: boolean;
@@ -27,18 +33,19 @@ type ILoadingState = {
 export default function Index() {
   const theme = useTheme();
   const [date, setDate] = useState(new Date());
-  const [cities, setCities] = useState<IOptionData[]>([]);
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDay>({});
-  const [currentGeoCity, setCurrentGeoCity] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<IOptionData | null>();
+  const [cities, setCities] = useState<ICity[]>([]);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDate>({});
+  const [currentGeoCity, setCurrentGeoCity] = useState<Option<ICity>>(null);
+  const [selectedCity, setSelectedCity] = useState<ICity | null>();
   const [loadingState, setLoadingState] = useState<ILoadingState>({
     citiesLoading: true,
     prayerTimesLoading: true,
     error: null,
   });
 
-  const { fetchCities, fetchPrayerTimes } = usePrayerTimes();
+  const { getPrayerTimes } = usePrayerTimes();
   const { getCurrentCity } = useGeoLocation();
+  const { getCities } = useCities();
 
   // Fetch cities and current city
   useEffect(() => {
@@ -46,7 +53,7 @@ export default function Index() {
       try {
         setLoadingState((prev) => ({ ...prev, citiesLoading: true }));
         const [fetchedCities, geoCity] = await Promise.all([
-          fetchCities(),
+          getCities(),
           getCurrentCity(),
         ]);
         setCities(fetchedCities);
@@ -67,8 +74,8 @@ export default function Index() {
 
     const matchedCity = cities.find(
       (city) =>
-        city.label.toLowerCase().includes(currentGeoCity.toLowerCase()) ||
-        city.value.toLowerCase().includes(currentGeoCity.toLowerCase())
+        city.name.toLowerCase().includes(currentGeoCity.name.toLowerCase()) ||
+        city.name.toLowerCase().includes(currentGeoCity.name.toLowerCase())
     );
 
     setSelectedCity(matchedCity || DEFAULT_CITY);
@@ -81,9 +88,9 @@ export default function Index() {
     const fetchPrayerTimesData = async () => {
       try {
         setLoadingState((prev) => ({ ...prev, prayerTimesLoading: true }));
-        const times = await fetchPrayerTimes({
-          city: selectedCity.value,
-          month: date.getMonth() + 1,
+        const times = await getPrayerTimes({
+          city: selectedCity,
+          year: date.getFullYear(),
         });
         setPrayerTimes(times);
       } catch (err) {
@@ -96,8 +103,6 @@ export default function Index() {
     fetchPrayerTimesData();
   }, [selectedCity, date]);
 
-  const todayPrayers = prayerTimes[date.getDate()];
-
   const updateDate = (days: number) => {
     setDate((prevDate) => {
       const newDate = new Date(prevDate);
@@ -105,6 +110,8 @@ export default function Index() {
       return newDate;
     });
   };
+
+  const todayPrayers = prayerTimes[getIsoDate(date)];
 
   // Loading/Error states
   if (loadingState.error) {
@@ -126,7 +133,7 @@ export default function Index() {
     <View style={styles.appBackground}>
       <CitySelector
         cities={cities}
-        selectedCity={selectedCity?.value || ""}
+        selectedCity={selectedCity?.name || ""}
         onCityChange={(newCity) => setSelectedCity(newCity)}
       />
       <View style={styles.centeredContainer}>

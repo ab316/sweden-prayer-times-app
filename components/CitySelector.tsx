@@ -1,13 +1,13 @@
 import { ThemedText, ThemedView } from "@/components/ui";
 import { useTheme } from "@/hooks/ui";
-import { IOptionData } from "@/types/IOptionData";
+import { ICity } from "@/types/ICity";
 import { Picker } from "@react-native-picker/picker";
 import { StyleSheet } from "react-native";
 
 interface ICitySelectorProps {
-  cities: IOptionData[];
+  cities: ICity[];
   selectedCity: string;
-  onCityChange: (city: IOptionData) => void;
+  onCityChange: (city: ICity) => void;
 }
 
 export const CitySelector = ({
@@ -26,7 +26,7 @@ export const CitySelector = ({
       <Picker
         selectedValue={selectedCity}
         onValueChange={(itemValue: string) => {
-          const city = cities.find((city) => city.value === itemValue);
+          const city = cities.find((city) => city.name === itemValue);
           if (city) {
             onCityChange(city);
           }
@@ -37,7 +37,7 @@ export const CitySelector = ({
         ]}
       >
         {cities.map((city) => (
-          <Picker.Item key={city.value} label={city.label} value={city.value} />
+          <Picker.Item key={city.name} label={city.name} value={city.name} />
         ))}
       </Picker>
     </ThemedView>

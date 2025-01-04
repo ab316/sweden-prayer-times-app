@@ -1,7 +1,10 @@
 import { IOptionData } from "@/types/IOptionData";
 import { Month } from "@/types/Month";
 import { PrayerTimesByDay } from "@/types/PrayerTimes";
-import { parseCities, parsePrayerTimes } from "@/utils/parseHtml";
+import {
+  parseCities,
+  parseIslamiskaForbundentPrayerTimes,
+} from "@/utils/parseHtml";
 
 const BASE_URL = "https://www.islamiskaforbundet.se";
 const PRAYER_TIME_URL = `${BASE_URL}/wp-content/plugins/bonetider/Bonetider_Widget.php`;
@@ -47,6 +50,6 @@ export async function fetchPrayerTimes(input: {
 
   const html = await response.text();
 
-  const result = parsePrayerTimes(html);
+  const result = parseIslamiskaForbundentPrayerTimes(html);
   return result;
 }

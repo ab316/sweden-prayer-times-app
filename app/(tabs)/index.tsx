@@ -3,6 +3,7 @@ import { PrayerTimes } from "@/components/PrayerTimes";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { useTheme } from "@/hooks/ui";
 import { useCities } from "@/hooks/useCities";
+import { useErrorHandling } from "@/hooks/useErrorHandling";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { Option } from "@/types";
@@ -27,11 +28,11 @@ const DEFAULT_CITY: ICity = {
 type ILoadingState = {
   citiesLoading: boolean;
   prayerTimesLoading: boolean;
-  error: Error | null;
 };
 
 export default function Index() {
   const theme = useTheme();
+  const { error, handleError, resetError } = useErrorHandling();
   const [date, setDate] = useState(new Date());
   const [cities, setCities] = useState<ICity[]>([]);
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesByDate>({});
@@ -40,68 +41,67 @@ export default function Index() {
   const [loadingState, setLoadingState] = useState<ILoadingState>({
     citiesLoading: true,
     prayerTimesLoading: true,
-    error: null,
   });
 
   const { getPrayerTimes } = usePrayerTimes();
   const { getCurrentCity } = useGeoLocation();
   const { getCities } = useCities();
 
-  // Fetch cities and current city
-  useEffect(() => {
-    const init = async () => {
-      try {
-        setLoadingState((prev) => ({ ...prev, citiesLoading: true }));
+  const init = async ({ force }: { force?: boolean }) => {
+    setLoadingState((prev) => ({ ...prev, citiesLoading: true }));
+
+    try {
+      let cityToUse: ICity;
+
+      if (force || !cities.length || !currentGeoCity) {
+        console.log("Fetching cities and current city.");
         const [fetchedCities, geoCity] = await Promise.all([
           getCities(),
           getCurrentCity(),
         ]);
         setCities(fetchedCities);
         setCurrentGeoCity(geoCity);
-      } catch (err) {
-        setLoadingState((prev) => ({ ...prev, error: err as Error }));
-      } finally {
-        setLoadingState((prev) => ({ ...prev, citiesLoading: false }));
+
+        if (geoCity) {
+          const matchedCity = fetchedCities.find(
+            (city) =>
+              city.name.toLowerCase().includes(geoCity.name.toLowerCase()) ||
+              city.name.toLowerCase().includes(geoCity.name.toLowerCase())
+          );
+          cityToUse = matchedCity || DEFAULT_CITY;
+        } else {
+          cityToUse = DEFAULT_CITY;
+        }
+
+        setSelectedCity(cityToUse);
+      } else {
+        if (selectedCity) {
+          cityToUse = selectedCity;
+        } else {
+          cityToUse = DEFAULT_CITY;
+          setSelectedCity(cityToUse);
+        }
       }
-    };
 
-    init();
-  }, []);
+      const times = await getPrayerTimes({
+        city: cityToUse,
+        year: date.getFullYear(),
+      });
+      setPrayerTimes(times);
+    } catch (err) {
+      handleError(err as Error);
+    } finally {
+      setLoadingState((prev) => ({
+        ...prev,
+        citiesLoading: false,
+        prayerTimesLoading: false,
+      }));
+    }
+  };
 
-  // Determine selected city
   useEffect(() => {
-    if (!currentGeoCity || !cities.length) return;
-
-    const matchedCity = cities.find(
-      (city) =>
-        city.name.toLowerCase().includes(currentGeoCity.name.toLowerCase()) ||
-        city.name.toLowerCase().includes(currentGeoCity.name.toLowerCase())
-    );
-
-    setSelectedCity(matchedCity || DEFAULT_CITY);
-  }, [currentGeoCity, cities]);
-
-  // Fetch prayer times
-  useEffect(() => {
-    if (!selectedCity) return;
-
-    const fetchPrayerTimesData = async () => {
-      try {
-        setLoadingState((prev) => ({ ...prev, prayerTimesLoading: true }));
-        const times = await getPrayerTimes({
-          city: selectedCity,
-          year: date.getFullYear(),
-        });
-        setPrayerTimes(times);
-      } catch (err) {
-        setLoadingState((prev) => ({ ...prev, error: err as Error }));
-      } finally {
-        setLoadingState((prev) => ({ ...prev, prayerTimesLoading: false }));
-      }
-    };
-
-    fetchPrayerTimesData();
-  }, [selectedCity, date]);
+    init({});
+  }, [date]);
 
   const updateDate = (days: number) => {
     setDate((prevDate) => {
@@ -114,8 +114,25 @@ export default function Index() {
   const todayPrayers = prayerTimes[getIsoDate(date)];
 
   // Loading/Error states
-  if (loadingState.error) {
-    return <Text>Error: {loadingState.error.message}</Text>;
+  if (error) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={[styles.container]}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorMessage}>Error: {error.message}</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => {
+                resetError();
+                init({ force: true });
+              }}
+            >
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
   }
 
   if (loadingState.citiesLoading || loadingState.prayerTimesLoading) {
@@ -205,5 +222,28 @@ const styles = StyleSheet.create({
   noPrayerTimesText: {
     fontSize: 18,
     textAlign: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#FFEEEE",
+  },
+  errorMessage: {
+    color: "#FF0000",
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  retryButton: {
+    backgroundColor: "#34A853",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
   },
 });

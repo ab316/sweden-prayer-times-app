@@ -17,9 +17,17 @@ export async function fetchPrayerTimes(input: {
   const { coords, year } = input;
   console.log("Fetching prayer times for coords:", coords, "year:", year);
   const url = makeGetYearlyUrl(coords, year);
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "User-Agent": "curl/7.64.1",
+    },
+  });
 
   if (!response.ok) {
+    console.error(
+      `Failed to fetch prayer times: ${JSON.stringify(await response.json())}`
+    );
     throw new Error(
       `Failed to fetch prayer times. Response status: ${response.status}`
     );

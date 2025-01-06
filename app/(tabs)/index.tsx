@@ -82,12 +82,6 @@ export default function Index() {
           setSelectedCity(cityToUse);
         }
       }
-
-      const times = await getPrayerTimes({
-        city: cityToUse,
-        year: date.getFullYear(),
-      });
-      setPrayerTimes(times);
     } catch (err) {
       handleError(err as Error);
     } finally {
@@ -101,7 +95,23 @@ export default function Index() {
 
   useEffect(() => {
     init({});
-  }, [date]);
+  }, []);
+
+  useEffect(() => {
+    if (selectedCity) {
+      console.log("useEffect: selectedCity changed, fetching prayer times.");
+      setLoadingState((prev) => ({ ...prev, prayerTimesLoading: true }));
+      getPrayerTimes({
+        city: selectedCity,
+        year: date.getFullYear(),
+      })
+        .then((times) => setPrayerTimes(times))
+        .catch(handleError)
+        .finally(() =>
+          setLoadingState((prev) => ({ ...prev, prayerTimesLoading: false }))
+        );
+    }
+  }, [selectedCity, date]);
 
   const updateDate = (days: number) => {
     setDate((prevDate) => {

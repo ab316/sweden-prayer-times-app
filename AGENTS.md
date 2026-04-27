@@ -13,13 +13,28 @@ Instructions for AI coding agents (Claude Code, Codex, others) working in this r
 
 Entry point: `app/_layout.tsx` (imports `global.css` to load Tailwind).
 
+This is a **client-only app**. There is no backend we own. The app calls public APIs directly from the device. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full rationale.
+
+## Required reading (in order)
+
+Before implementing anything, an agent must skim these in order. They are sized to fit in one read each.
+
+1. [`design/PRD.md`](design/PRD.md) — **what** the app is and **why** it exists. Product intent, target audience, screen inventory, success criteria. Sourced from Stitch.
+2. [`design/Design.md`](design/Design.md) — design system: colors, typography, spacing, navigation, component patterns. Sourced from Stitch.
+3. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — **how** the codebase is shaped: strategic (domain, feature areas) and tactical (layering, folder structure, patterns).
+4. [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md) — **only when touching external API code**. Catalog of every API the app talks to, plus shared rules.
+5. [`docs/adr/`](docs/adr/) — open-and-skim if your change touches an area where decisions have been recorded.
+
+If two of these disagree, the order above is also the precedence order: PRD > Design.md > ARCHITECTURE.md > INTEGRATIONS.md. Surface conflicts; do not silently pick one.
+
 ## Stitch → React Native workflow
 
-UI is designed in **Google Stitch** and implemented here by an AI agent. Two design artifacts come from Stitch:
+UI is designed in **Google Stitch** and implemented here by an AI agent. Stitch produces three artifacts:
 
 | File | Scope | Source of truth for |
 | --- | --- | --- |
-| `design/Design.md` | App-wide | Design system (colors, typography, spacing), navigation, screen inventory |
+| `design/PRD.md` | App-wide | Product intent, target audience, screen inventory |
+| `design/Design.md` | App-wide | Design system (colors, typography, spacing), navigation |
 | `design/screens/<screen-name>/stitch.html` | Per screen | Layout, Tailwind class names, copy, structure |
 
 The 6-step loop:
@@ -80,14 +95,27 @@ After implementing a screen the agent **must**:
 
 Type-checking and linting alone are not sufficient — the screen must actually render.
 
+## When to write an ADR
+
+Write an ADR in [`docs/adr/`](docs/adr/) (using [`0001-template.md`](docs/adr/0001-template.md)) **before** committing any of the following:
+
+- A new dependency that affects more than one feature.
+- A new top-level folder not listed in [`ARCHITECTURE.md` § Folder structure](docs/ARCHITECTURE.md#folder-structure).
+- Any deviation from a rule in `ARCHITECTURE.md` or `INTEGRATIONS.md`.
+- Picking one of the items in [`ARCHITECTURE.md` § *Glossary of TBD pending need*](docs/ARCHITECTURE.md#glossary-of-tbd-pending-need) (date library, i18n, test framework, state mgmt, analytics, crash reporting, backend).
+- A new external integration, especially one needing auth/secrets.
+
+The ADR ships in the same PR as the code that requires it. Don't merge the change without the ADR. See [`docs/adr/README.md`](docs/adr/README.md) for the workflow.
+
 ## What NOT to do
 
 - Don't restyle screens beyond what Stitch produced unless explicitly asked.
-- Don't pre-emptively add state management, data fetching, or business logic that wasn't in `Design.md` or the HTML.
-- Don't skip `design/Design.md` even when only one screen is being implemented — it carries tokens and navigation context.
+- Don't pre-emptively add state management, data fetching, or business logic that wasn't in the PRD, `Design.md`, or the HTML.
+- Don't skip the required reading even when only one screen is being implemented.
 - Don't edit files inside `design/` — they are inputs from Stitch, not work product. If a token is missing or wrong, add it to `tailwind.config.js` and call out the discrepancy in your response.
 - Don't introduce a new styling system (Tamagui, Unistyles, etc.) — NativeWind is the choice.
-- Don't generate documentation files (`spec.md`, `props.md`, etc.) unless asked.
+- Don't introduce a backend, server, or BaaS — this is a client-only app by design. Adding one needs an ADR (and a strong reason).
+- Don't generate documentation files (`spec.md`, `props.md`, etc.) unless asked. ADRs are the exception — write those when the rules above require it.
 
 ## Useful commands
 

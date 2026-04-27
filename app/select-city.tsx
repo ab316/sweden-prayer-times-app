@@ -12,8 +12,8 @@ type City = {
 };
 
 const RECENT_CITIES: City[] = [
-  { name: 'Stockholm', subtitle: 'Current Location' },
-  { name: 'Gothenburg', subtitle: 'Sweden' },
+  { name: 'Gothenburg', subtitle: 'Current Location' },
+  { name: 'Stockholm', subtitle: 'Sweden' },
   { name: 'Malmö', subtitle: 'Sweden' },
 ];
 
@@ -26,7 +26,7 @@ const ICON_COLORS = {
 
 export default function SelectCityScreen() {
   const [query, setQuery] = useState('');
-  const [selectedCity, setSelectedCity] = useState('Stockholm');
+  const [selectedCity, setSelectedCity] = useState('Gothenburg');
 
   const recentCities = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -95,7 +95,7 @@ export default function SelectCityScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Detect my location"
-              onPress={() => setSelectedCity('Stockholm')}
+              onPress={() => setSelectedCity('Gothenburg')}
               className="w-full flex-row items-center justify-center gap-3 rounded-full border border-secondary py-4">
               <MaterialIcons name="my-location" size={18} color={ICON_COLORS.primary} />
               <Text className="font-label-sm text-label-sm text-primary">Detect My Location</Text>

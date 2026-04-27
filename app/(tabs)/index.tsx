@@ -48,11 +48,13 @@ export default function PrayerTimesScreen() {
           <View className="items-center gap-2">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Change city, currently Stockholm, Sweden"
+              accessibilityLabel="Change city, currently Gothenburg, Sweden"
               onPress={() => router.push('/select-city')}
               className="flex-row items-center gap-2 rounded-full px-3 py-1">
               <MaterialIcons name="location-on" size={18} color="#404944" />
-              <Text className="font-body-md text-body-md text-on-surface-variant">Stockholm, SE</Text>
+              <Text className="font-body-md text-body-md text-on-surface-variant">
+                Gothenburg, SE
+              </Text>
             </Pressable>
             <Text className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">
               12 Rabi&apos; al-Awwal / 27 September 2023

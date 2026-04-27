@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -45,10 +46,14 @@ export default function PrayerTimesScreen() {
         className="flex-1">
         <View className="gap-section-gap">
           <View className="items-center gap-2">
-            <View className="flex-row items-center gap-2">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Change city, currently Stockholm, Sweden"
+              onPress={() => router.push('/select-city')}
+              className="flex-row items-center gap-2 rounded-full px-3 py-1">
               <MaterialIcons name="location-on" size={18} color="#404944" />
               <Text className="font-body-md text-body-md text-on-surface-variant">Stockholm, SE</Text>
-            </View>
+            </Pressable>
             <Text className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">
               12 Rabi&apos; al-Awwal / 27 September 2023
             </Text>

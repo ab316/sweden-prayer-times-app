@@ -1,4 +1,18 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import {
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from '@expo-google-fonts/manrope';
+import {
+  NotoSerif_400Regular,
+  NotoSerif_500Medium,
+  NotoSerif_600SemiBold,
+  NotoSerif_600SemiBold_Italic,
+  NotoSerif_700Bold,
+} from '@expo-google-fonts/noto-serif';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -12,6 +26,17 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  useFonts({
+    NotoSerif_400Regular,
+    NotoSerif_500Medium,
+    NotoSerif_600SemiBold,
+    NotoSerif_600SemiBold_Italic,
+    NotoSerif_700Bold,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+  });
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

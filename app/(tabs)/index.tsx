@@ -1,98 +1,96 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { PrayerRow, type PrayerRowProps } from '@/features/schedule/components/prayer-row';
 
-export default function HomeScreen() {
+type PrayerEntry = Pick<PrayerRowProps, 'name' | 'time' | 'icon' | 'current'>;
+
+const PRAYERS: PrayerEntry[] = [
+  { name: 'Fajr', time: '04:32', icon: 'nightlight' },
+  { name: 'Shuruk', time: '06:45', icon: 'wb-twilight' },
+  { name: 'Dhuhr', time: '12:50', icon: 'light-mode' },
+  { name: 'Asr', time: '15:35', icon: 'wb-sunny', current: true },
+  { name: 'Maghrib', time: '18:42', icon: 'nights-stay' },
+  { name: 'Isha', time: '20:15', icon: 'dark-mode' },
+];
+
+export default function PrayerTimesScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
+      <View className="flex-row items-center justify-between border-b border-outline-variant/50 bg-surface px-6 py-4">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open menu"
+          onPress={() => {}}
+          className="rounded-full p-2">
+          <MaterialIcons name="menu" size={24} color="#003527" />
+        </Pressable>
+        <Text
+          style={{ fontFamily: 'NotoSerif_600SemiBold_Italic' }}
+          className="text-lg tracking-wide text-emerald-900">
+          Sakinah Bloom
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Notifications"
+          onPress={() => {}}
+          className="rounded-full p-2">
+          <MaterialIcons name="notifications" size={24} color="#003527" />
+        </Pressable>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <ScrollView
+        contentContainerClassName="px-container-padding pt-6 pb-section-gap"
+        className="flex-1">
+        <View className="gap-section-gap">
+          <View className="items-center gap-2">
+            <View className="flex-row items-center gap-2">
+              <MaterialIcons name="location-on" size={18} color="#404944" />
+              <Text className="font-body-md text-body-md text-on-surface-variant">Stockholm, SE</Text>
+            </View>
+            <Text className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">
+              12 Rabi&apos; al-Awwal / 27 September 2023
+            </Text>
+          </View>
+
+          <View
+            className="items-center justify-center overflow-hidden rounded-[32px] bg-surface-container-lowest p-8"
+            style={{
+              shadowColor: '#000',
+              shadowOpacity: 0.04,
+              shadowRadius: 24,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 2,
+            }}>
+            <Text className="font-label-sm text-label-sm uppercase tracking-widest text-outline">
+              Next
+            </Text>
+            <View className="mt-4 items-center">
+              <Text className="font-display-lg text-display-lg text-primary">Asr</Text>
+              <Text className="mt-2 font-headline-xl text-headline-xl text-on-surface">15:35</Text>
+            </View>
+            <View className="mt-6 flex-row items-center gap-2 rounded-full bg-tertiary-fixed px-4 py-2">
+              <MaterialIcons name="schedule" size={16} color="#494740" />
+              <Text className="font-label-sm text-label-sm text-on-tertiary-fixed-variant">
+                -00:45 remaining
+              </Text>
+            </View>
+          </View>
+
+          <View className="gap-4">
+            {PRAYERS.map((p) => (
+              <PrayerRow
+                key={p.name}
+                name={p.name}
+                time={p.time}
+                icon={p.icon}
+                current={p.current}
+              />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

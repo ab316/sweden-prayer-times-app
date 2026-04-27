@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Select City</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#f6b8b7",
+                    "on-primary-fixed": "#3e0022",
+                    "tertiary": "#805151",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#ffd9e7",
+                    "inverse-primary": "#ffb0d1",
+                    "inverse-surface": "#362f31",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#e8d6db",
+                    "error": "#ba1a1a",
+                    "outline": "#857379",
+                    "on-secondary-fixed-variant": "#5a3f49",
+                    "tertiary-fixed": "#ffd9d9",
+                    "on-surface": "#201a1c",
+                    "inverse-on-surface": "#fbxeef",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#f1e0e5",
+                    "primary": "#9d436a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#f4dde3",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#321011",
+                    "surface-tint": "#9d436a",
+                    "on-primary-container": "#3e0022",
+                    "primary-container": "#ffd9e7",
+                    "secondary-fixed": "#ffd9e7",
+                    "outline-variant": "#d7c1c7",
+                    "primary-fixed": "#ffd9e7",
+                    "on-secondary-fixed": "#2b151e",
+                    "surface-container-low": "#faf1f3",
+                    "on-error": "#ffffff",
+                    "background": "#fff8f8",
+                    "on-secondary": "#ffffff",
+                    "surface": "#fff8f8",
+                    "surface-bright": "#fff8f8",
+                    "tertiary-container": "#ffd9d9",
+                    "on-primary-fixed-variant": "#7e2a52",
+                    "on-background": "#201a1c",
+                    "on-secondary-container": "#2b151e",
+                    "on-tertiary-fixed-variant": "#663b3b",
+                    "secondary": "#745661",
+                    "primary-fixed-dim": "#ffb0d1",
+                    "surface-container-highest": "#ebdfe3",
+                    "secondary-fixed-dim": "#e4bdcb",
+                    "on-surface-variant": "#524348",
+                    "on-tertiary-fixed": "#321011",
+                    "surface-container": "#f6e8eb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "element-gap": "12px",
+                    "container-padding": "24px",
+                    "unit": "8px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Lora"
+                    ],
+                    "headline-md": [
+                            "Playfair Display"
+                    ],
+                    "label-sm": [
+                            "Lora"
+                    ],
+                    "display-lg": [
+                            "Playfair Display"
+                    ],
+                    "body-md": [
+                            "Lora"
+                    ],
+                    "headline-xl": [
+                            "Playfair Display"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-xl": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #f4dde3;
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen antialiased flex flex-col">
+<!-- Header / Task Navigation Shell -->
+<!-- Note: BottomNavBar is suppressed as this is a task-focused, transactional screen (changing city) -->
+<header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-surface-variant/50">
+<div class="max-w-2xl mx-auto w-full flex justify-between items-center px-container-padding py-4">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Location</h1>
+<div class="w-10"></div> <!-- Spacer to center the headline -->
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full max-w-2xl mx-auto px-container-padding py-section-gap flex flex-col gap-section-gap">
+<!-- Search & Action Section -->
+<section class="flex flex-col gap-element-gap">
+<!-- Search Bar -->
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-surface rounded-xl border border-surface-variant text-on-surface font-body-lg text-body-lg placeholder:text-outline focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)]" placeholder="Search Swedish cities..." type="text"/>
+</div>
+<!-- Detect Location Button (Secondary / Ghost style) -->
+<button class="w-full flex items-center justify-center gap-3 py-4 rounded-full border border-secondary text-primary font-label-sm text-label-sm hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">my_location</span>
+<span>Detect My Location</span>
+</button>
+</section>
+<!-- Recently Used Section -->
+<section class="flex flex-col gap-element-gap">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-widest px-2">Recently Used</h2>
+<!-- List Cards -->
+<div class="flex flex-col gap-2">
+<!-- Current/Active City Card (Level 2 Elevation metaphor) -->
+<button class="w-full text-left bg-surface rounded-xl p-4 flex items-center justify-between border border-surface-variant shadow-[0_4px_12px_rgba(0,0,0,0.03)] relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container"></div>
+<div class="flex items-center gap-4 pl-2">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined icon-fill">location_on</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface font-medium">Stockholm</span>
+<span class="font-label-sm text-label-sm text-outline">Current Location</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">check</span>
+</button>
+<!-- Previous City Card (Level 1 Elevation) -->
+<button class="w-full text-left bg-surface rounded-xl p-4 flex items-center justify-between border border-transparent hover:border-surface-variant hover:shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all">
+<div class="flex items-center gap-4 pl-2">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Gothenburg</span>
+<span class="font-label-sm text-label-sm text-outline">Sweden</span>
+</div>
+</div>
+</button>
+<button class="w-full text-left bg-surface rounded-xl p-4 flex items-center justify-between border border-transparent hover:border-surface-variant hover:shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all">
+<div class="flex items-center gap-4 pl-2">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Malmö</span>
+<span class="font-label-sm text-label-sm text-outline">Sweden</span>
+</div>
+</div>
+</button>
+</div>
+</section>
+<!-- Popular Destinations (Chips/Tags Style) -->
+<section class="flex flex-col gap-element-gap mt-4">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-widest px-2">Popular</h2>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-body-md text-body-md hover:bg-surface-container transition-colors">Uppsala</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-body-md text-body-md hover:bg-surface-container transition-colors">Västerås</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-body-md text-body-md hover:bg-surface-container transition-colors">Örebro</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-body-md text-body-md hover:bg-surface-container transition-colors">Linköping</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface font-body-md text-body-md hover:bg-surface-container transition-colors">Helsingborg</button>
+</div>
+</section>
+</main>
+</body></html>

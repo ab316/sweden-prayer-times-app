@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sakinah Bloom - Qibla Finder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Noto+Serif:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#8C4A60",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#FFD9E2",
+                        "on-primary-container": "#3B071D",
+                        "secondary": "#74565F",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#FFD9E2",
+                        "on-secondary-container": "#2B151C",
+                        "tertiary": "#7C5635",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#FFDCBE",
+                        "on-tertiary-container": "#2C1600",
+                        "error": "#BA1A1A",
+                        "on-error": "#ffffff",
+                        "error-container": "#FFDAD6",
+                        "on-error-container": "#410002",
+                        "background": "#FFF8F8",
+                        "on-background": "#201A1B",
+                        "surface": "#FFF8F8",
+                        "on-surface": "#201A1B",
+                        "surface-variant": "#F2DDE1",
+                        "on-surface-variant": "#514347",
+                        "outline": "#837377",
+                        "outline-variant": "#D5C1C5",
+                        "surface-container-low": "#FDF1F3",
+                        "surface-container": "#F7EBEF",
+                        "surface-container-high": "#F1E5E9",
+                        "surface-container-highest": "#EBE0E4",
+                        "surface-tint": "#8C4A60"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "element-gap": "12px",
+                        "container-padding": "24px",
+                        "unit": "8px",
+                        "section-gap": "40px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Noto Serif"],
+                        "label-sm": ["Manrope"],
+                        "display-lg": ["Noto Serif"],
+                        "body-md": ["Manrope"],
+                        "headline-xl": ["Noto Serif"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-xl": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md relative overflow-hidden">
+<!-- Subtle Geometric Background Pattern -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none opacity-5 flex items-center justify-center overflow-hidden z-0">
+<svg class="w-[150vw] h-[150vw] max-w-[800px] max-h-[800px] text-primary" height="800" viewbox="0 0 100 100" width="800">
+<defs>
+<pattern height="20" id="islamic-pattern" patternunits="userSpaceOnUse" width="20" x="0" y="0">
+<path d="M10,0 L20,10 L10,20 L0,10 Z M5,5 L15,15 M15,5 L5,15" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+<circle cx="10" cy="10" fill="none" r="3" stroke="currentColor" stroke-width="0.5"></circle>
+</pattern>
+</defs>
+<rect fill="url(#islamic-pattern)" height="100" width="100"></rect>
+</svg>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-xl border-b border-stone-200/50 dark:border-stone-800/50 shadow-sm dark:shadow-none flex justify-between items-center px-6 py-4">
+<button aria-label="Location" class="hover:opacity-80 transition-opacity active:scale-95 duration-200 text-stone-500 dark:text-stone-400 p-2 -ml-2">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</button>
+<h1 class="font-serif text-2xl font-semibold text-rose-900 dark:text-rose-400">Sakinah Bloom</h1>
+<button aria-label="Account" class="hover:opacity-80 transition-opacity active:scale-95 duration-200 text-stone-500 dark:text-stone-400 p-2 -mr-2">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center pt-24 pb-32 px-container-padding relative z-10 w-full max-w-md mx-auto">
+<!-- Location Info -->
+<div class="text-center mb-12">
+<h2 class="font-headline-xl text-headline-xl text-primary mb-2">Qibla</h2>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[18px]">near_me</span>
+                Stockholm, Sweden
+            </p>
+<p class="font-label-sm text-label-sm text-secondary mt-1">142° SE</p>
+</div>
+<!-- Compass Container -->
+<div class="relative w-72 h-72 mb-12 flex items-center justify-center">
+<!-- Outer Ring (Glassmorphic) -->
+<div class="absolute inset-0 rounded-full border-2 border-surface-variant bg-surface/50 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.05)]"></div>
+<!-- Cardinal Directions -->
+<div class="absolute inset-0 w-full h-full">
+<div class="absolute top-4 left-1/2 -translate-x-1/2 font-label-sm text-label-sm text-on-surface-variant">N</div>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 font-label-sm text-label-sm text-on-surface-variant">E</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 font-label-sm text-label-sm text-on-surface-variant">S</div>
+<div class="absolute left-4 top-1/2 -translate-y-1/2 font-label-sm text-label-sm text-on-surface-variant">W</div>
+</div>
+<!-- Compass Ticks -->
+<svg class="absolute inset-0 w-full h-full text-outline-variant" viewbox="0 0 100 100">
+<g stroke="currentColor" stroke-width="0.5">
+<line x1="50" x2="50" y1="5" y2="10"></line>
+<line x1="50" x2="50" y1="90" y2="95"></line>
+<line x1="5" x2="10" y1="50" y2="50"></line>
+<line x1="90" x2="95" y1="50" y2="50"></line>
+</g>
+</svg>
+<!-- Inner Dial (Rotates based on device orientation) -->
+<div class="relative w-56 h-56 rounded-full bg-surface-container-low border border-surface-container-highest shadow-inner flex items-center justify-center transform rotate-45 transition-transform duration-700 ease-out">
+<!-- Qibla Direction Indicator -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-secondary text-on-secondary rounded-full shadow-md z-10">
+<span class="material-symbols-outlined text-[16px] fill" data-weight="fill">location_on</span>
+</div>
+<!-- Kaaba Icon -->
+<div class="w-16 h-16 bg-primary rounded flex items-center justify-center shadow-lg relative overflow-hidden">
+<div class="absolute top-0 w-full h-3 bg-secondary/30"></div>
+</div>
+<!-- Compass Needle (subtle) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2px] h-3/4 bg-primary/20 pointer-events-none"></div>
+</div>
+</div>
+<!-- Accuracy/Calibration Status -->
+<div class="bg-surface-container-low px-6 py-4 rounded-2xl flex items-center gap-4 w-full max-w-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">explore</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-md text-body-md font-medium text-on-surface">Calibrated</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-normal normal-case">Move phone in a figure 8 to recalibrate</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-3xl border-t border-stone-200/30 dark:border-stone-800/30 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.03)] dark:shadow-none flex justify-around items-center h-20 px-4 pb-safe md:hidden">
+<!-- Prayer (Inactive) -->
+<button aria-label="Prayer" class="flex flex-col items-center justify-center text-rose-900/40 dark:text-stone-500 hover:text-rose-600 dark:hover:text-rose-300 active:scale-90 transition-transform duration-150 w-16 group">
+<span class="material-symbols-outlined mb-1 group-hover:-translate-y-1 transition-transform" data-icon="timer">timer</span>
+<span class="font-sans text-[10px] font-semibold uppercase tracking-widest">Prayer</span>
+</button>
+<!-- Qibla (Active) -->
+<button aria-label="Qibla" class="flex flex-col items-center justify-center text-rose-600 dark:text-rose-400 transition-colors duration-300 active:scale-90 w-16 relative">
+<div class="absolute inset-0 bg-rose-500/10 dark:bg-rose-400/10 rounded-xl -z-10 scale-125"></div>
+<span class="material-symbols-outlined mb-1 fill" data-icon="explore" data-weight="fill">explore</span>
+<span class="font-sans text-[10px] font-semibold uppercase tracking-widest">Qibla</span>
+</button>
+<!-- Settings (Inactive) -->
+<button aria-label="Settings" class="flex flex-col items-center justify-center text-rose-900/40 dark:text-stone-500 hover:text-rose-600 dark:hover:text-rose-300 active:scale-90 transition-transform duration-150 w-16 group">
+<span class="material-symbols-outlined mb-1 group-hover:-translate-y-1 transition-transform" data-icon="notifications">notifications</span>
+<span class="font-sans text-[10px] font-semibold uppercase tracking-widest">Settings</span>
+</button>
+<!-- About (Inactive) -->
+<button aria-label="About" class="flex flex-col items-center justify-center text-rose-900/40 dark:text-stone-500 hover:text-rose-600 dark:hover:text-rose-300 active:scale-90 transition-transform duration-150 w-16 group">
+<span class="material-symbols-outlined mb-1 group-hover:-translate-y-1 transition-transform" data-icon="info">info</span>
+<span class="font-sans text-[10px] font-semibold uppercase tracking-widest">About</span>
+</button>
+</nav>
+<!-- Support for safe area bottom spacing on iOS -->
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    </style>
+</body></html>

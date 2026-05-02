@@ -25,7 +25,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  useFonts({
+  const [fontsLoaded] = useFonts({
     Lora_400Regular,
     Lora_500Medium,
     Lora_600SemiBold,
@@ -35,6 +35,10 @@ export default function RootLayout() {
     DMSans_600SemiBold,
     DMSans_700Bold,
   });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>

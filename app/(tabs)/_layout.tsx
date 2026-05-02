@@ -7,7 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticTab } from '@/components/haptic-tab';
 import { theme } from '@/constants/theme';
 
-const TAB_BAR_BASE_HEIGHT = 60;
+const TAB_BAR_CONTENT_HEIGHT = 68;
+const TAB_ICON_SLOT_HEIGHT = 36;
+const TAB_ICON_TOP_PADDING = 9;
 const TAB_BAR_MIN_BOTTOM_PADDING = 12;
 
 function ActiveIndicator() {
@@ -37,7 +39,13 @@ function TabIcon({
   focused: boolean;
 }) {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      style={{
+        alignItems: 'center',
+        height: TAB_ICON_SLOT_HEIGHT,
+        justifyContent: 'flex-end',
+        paddingTop: TAB_ICON_TOP_PADDING,
+      }}>
       {focused ? <ActiveIndicator /> : null}
       <MaterialIcons name={name} size={24} color={color} />
     </View>
@@ -58,14 +66,16 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontFamily: 'DMSans_600SemiBold',
           fontSize: 11,
+          lineHeight: 16,
           letterSpacing: 0.3,
+          marginTop: 2,
         },
         tabBarStyle: {
           backgroundColor: theme.card,
           borderTopColor: 'rgba(0,0,0,0.06)',
           borderTopWidth: 1,
-          height: TAB_BAR_BASE_HEIGHT + bottomPadding,
-          paddingTop: 8,
+          height: TAB_BAR_CONTENT_HEIGHT + bottomPadding,
+          paddingTop: 6,
           paddingBottom: bottomPadding,
         },
       }}>

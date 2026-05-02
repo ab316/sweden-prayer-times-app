@@ -163,6 +163,69 @@ Local notifications don't need network. Scheduling is purely on-device. The only
 
 ---
 
+## 4. Awqat Salah + Nominatim Prayer Data Generator
+
+**Purpose:** generate storage-neutral Swedish city and yearly prayer-time JSON for the app/API layer.
+
+**Nominatim docs:** https://nominatim.org/release-docs/latest/api/Search/
+
+**Nominatim usage policy:** https://operations.osmfoundation.org/policies/nominatim/
+
+**Decision record:** [`0003-generate-prayer-data-from-awqat-salah-and-nominatim.md`](./adr/0003-generate-prayer-data-from-awqat-salah-and-nominatim.md)
+
+**Runtime behavior:** generated data is intended to be served by the app's eventual data API or static asset host. The React Native app should not call Awqat Salah or Nominatim directly once this generated data is wired in.
+
+### Sources
+
+| Source | Purpose | Auth |
+| --- | --- | --- |
+| Awqat Salah / Diyanet | Source of supported Sweden city ids and yearly prayer times | Login via `POST /Auth/Login`; token returned at `data.accessToken` |
+| Nominatim / OpenStreetMap | Resolve each Awqat city into display name, type, and coordinates | none; requires identifying User-Agent and max 1 request/second |
+
+### Endpoints used
+
+| Endpoint | When | Notes |
+| --- | --- | --- |
+| `POST /Auth/Login` | Before Awqat calls | Credentials come from `AWQAT_USERNAME` and `AWQAT_PASSWORD`. Field names default to `username` / `password` and can be overridden with `AWQAT_USERNAME_FIELD` / `AWQAT_PASSWORD_FIELD`. |
+| `GET /api/Place/Countries` | Resolve Sweden | The generator requires a country with `code === "SWEDEN"`. |
+| `GET /api/Place/States/{countryId}` | Resolve Sweden state id | The generator currently requires exactly one Sweden state. |
+| `GET /api/Place/Cities/{stateId}` | Fetch Awqat-supported Sweden cities | This is the app-facing city coverage set. |
+| `POST /api/PrayerTime/DateRange` | Fetch one city/year | Body is `{ cityId, startDate, endDate }` with ISO date strings. |
+| `GET https://nominatim.openstreetmap.org/search` | Resolve one Awqat city name | Uses `q=<awqat city>, Sweden`, `countrycodes=se`, `format=jsonv2`, `addressdetails=1`, `namedetails=1`, and `limit=5`. |
+
+### Generated data strategy
+
+- Script: `scripts/generate-prayer-data.mjs`.
+- Command: `npm run generate:prayer-data -- --year 2026`.
+- Default output: `features/schedule/data/prayer-data/`.
+- Source API cache: `.cache/prayer-data/source-api/` by default. Use `--refresh-cache` to overwrite it, `--no-cache` to bypass it, or `--cache-dir <dir>` to place it elsewhere.
+- Generated files:
+  - `cities.json` as `Location[]`:
+    `{ awqatCityId, awqatName, displayName, type, lat, lng, source }`.
+  - `years/{year}/cities/{awqatCityId}.json` for each city's yearly prayer schedule.
+  - `manifest.json` for schema version, source ids, counts, and checksums.
+
+### Location resolution strategy
+
+The generator searches Nominatim once per Awqat city using the normalized base city name plus `Sweden`, then selects the best result by OSM category/type and importance. It maps Nominatim categories to the app's location type union: `city`, `municipality`, `locality`, or `area`. Unresolved locations are logged and omitted from `cities.json` and schedule generation.
+
+### Offline fallback
+
+No runtime fallback is needed at the source-integration layer. Generated JSON is the runtime data source; the app/API layer should cache and serve it offline according to its own storage choice.
+
+### Manual verification for live refreshes
+
+Before accepting regenerated data, confirm the command output and manifest show:
+
+- Sweden country resolved from Awqat by `code === "SWEDEN"`.
+- Exactly one Sweden state resolved.
+- The expected Awqat Sweden city count was fetched.
+- Any unresolved city logs are reviewed and accepted.
+- `cities.json` is an array of objects matching the `Location` shape.
+- Every generated city-year schedule has 365 or 366 daily rows.
+
+---
+
 ## Adding a new integration
 
 1. Open an ADR in [`adr/`](./adr/) explaining what we're integrating, why, and which alternatives were considered.

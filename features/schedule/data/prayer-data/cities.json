@@ -1,0 +1,1460 @@
+[
+  {
+    "awqatCityId": 14272,
+    "awqatName": "LANDSKRONA",
+    "displayName": "Landskrona",
+    "type": "city",
+    "lat": 55.869801,
+    "lng": 12.829673,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14273,
+    "awqatName": "LUND",
+    "displayName": "Lund",
+    "type": "locality",
+    "lat": 64.749454,
+    "lng": 20.896808,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14274,
+    "awqatName": "SKOVDE",
+    "displayName": "Skövde",
+    "type": "city",
+    "lat": 58.389633,
+    "lng": 13.845634,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14275,
+    "awqatName": "HELSINGBORG",
+    "displayName": "Helsingborg",
+    "type": "city",
+    "lat": 56.04421,
+    "lng": 12.703706,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14276,
+    "awqatName": "SALA",
+    "displayName": "Sala",
+    "type": "city",
+    "lat": 59.920227,
+    "lng": 16.605644,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14277,
+    "awqatName": "NORRKOPING",
+    "displayName": "Norrköping",
+    "type": "city",
+    "lat": 58.590912,
+    "lng": 16.190351,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14278,
+    "awqatName": "RONNEBY",
+    "displayName": "Ronneby",
+    "type": "city",
+    "lat": 56.210042,
+    "lng": 15.276036,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14279,
+    "awqatName": "ESKILSTUNA",
+    "displayName": "Eskilstuna",
+    "type": "city",
+    "lat": 59.371738,
+    "lng": 16.505147,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14280,
+    "awqatName": "ASA (Halland)",
+    "displayName": "Åsa",
+    "type": "locality",
+    "lat": 57.350931,
+    "lng": 12.12339,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14281,
+    "awqatName": "BILLDAL",
+    "displayName": "Billdal",
+    "type": "locality",
+    "lat": 57.956252,
+    "lng": 11.825022,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14282,
+    "awqatName": "BOLLEBYGD",
+    "displayName": "Bollebygd",
+    "type": "city",
+    "lat": 57.668862,
+    "lng": 12.570722,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14283,
+    "awqatName": "HONO",
+    "displayName": "Hönö",
+    "type": "locality",
+    "lat": 57.691448,
+    "lng": 11.646491,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14284,
+    "awqatName": "KINNA (VG)",
+    "displayName": "Kinna",
+    "type": "city",
+    "lat": 57.508008,
+    "lng": 12.697057,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14285,
+    "awqatName": "LANDVETTER",
+    "displayName": "Landvetter",
+    "type": "city",
+    "lat": 57.688694,
+    "lng": 12.219017,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14286,
+    "awqatName": "LERUM",
+    "displayName": "Lerum",
+    "type": "city",
+    "lat": 57.770166,
+    "lng": 12.269505,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14287,
+    "awqatName": "LINDOME",
+    "displayName": "Lindome",
+    "type": "city",
+    "lat": 57.579126,
+    "lng": 12.08766,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14288,
+    "awqatName": "PARTILLE",
+    "displayName": "Partille",
+    "type": "city",
+    "lat": 57.740628,
+    "lng": 12.110079,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14289,
+    "awqatName": "MOLNDAL",
+    "displayName": "Mölndal",
+    "type": "city",
+    "lat": 57.656492,
+    "lng": 12.015308,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14290,
+    "awqatName": "STENUNGSUND",
+    "displayName": "Stenungsund",
+    "type": "city",
+    "lat": 58.072507,
+    "lng": 11.822938,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14291,
+    "awqatName": "STENKULLEN",
+    "displayName": "Stenkullen",
+    "type": "locality",
+    "lat": 57.793483,
+    "lng": 12.312915,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14292,
+    "awqatName": "BARA",
+    "displayName": "Bara",
+    "type": "locality",
+    "lat": 55.582167,
+    "lng": 13.180604,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14293,
+    "awqatName": "BJARRED (Malmo)",
+    "displayName": "Bjärred",
+    "type": "city",
+    "lat": 55.722186,
+    "lng": 13.021644,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14294,
+    "awqatName": "DALBY (Malmo)",
+    "displayName": "Dalby",
+    "type": "locality",
+    "lat": 55.664664,
+    "lng": 13.346159,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14295,
+    "awqatName": "FURULUND (Malmo)",
+    "displayName": "Furulund",
+    "type": "locality",
+    "lat": 57.622204,
+    "lng": 18.30569,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14296,
+    "awqatName": "HOOR",
+    "displayName": "Höör",
+    "type": "city",
+    "lat": 55.933292,
+    "lng": 13.545383,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14298,
+    "awqatName": "HORBY (S)",
+    "displayName": "Hörby",
+    "type": "city",
+    "lat": 55.851111,
+    "lng": 13.660487,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14299,
+    "awqatName": "LOMMA",
+    "displayName": "Lomma",
+    "type": "city",
+    "lat": 55.674535,
+    "lng": 13.070893,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14300,
+    "awqatName": "SIMRISHAMN",
+    "displayName": "Simrishamn",
+    "type": "city",
+    "lat": 55.556554,
+    "lng": 14.34999,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14301,
+    "awqatName": "SJOBO",
+    "displayName": "Sjöbo",
+    "type": "city",
+    "lat": 55.635087,
+    "lng": 13.703117,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14302,
+    "awqatName": "SKANOR",
+    "displayName": "Skanör med Falsterbo",
+    "type": "city",
+    "lat": 55.406008,
+    "lng": 12.844342,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14303,
+    "awqatName": "SKURUP",
+    "displayName": "Skurup",
+    "type": "city",
+    "lat": 55.484033,
+    "lng": 13.501591,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14304,
+    "awqatName": "STAFFANSTROP",
+    "displayName": "Staffanstorp",
+    "type": "city",
+    "lat": 55.642739,
+    "lng": 13.211399,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14305,
+    "awqatName": "SVEDALA",
+    "displayName": "Svedala",
+    "type": "city",
+    "lat": 55.515242,
+    "lng": 13.238436,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14306,
+    "awqatName": "TOMELILLA",
+    "displayName": "Tomelilla",
+    "type": "city",
+    "lat": 55.543798,
+    "lng": 13.954122,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14307,
+    "awqatName": "VELLINGE",
+    "displayName": "Vellinge",
+    "type": "city",
+    "lat": 55.470895,
+    "lng": 13.019945,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14309,
+    "awqatName": "SKELLEFTEA",
+    "displayName": "Skellefteå",
+    "type": "municipality",
+    "lat": 64.752019,
+    "lng": 20.959339,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14310,
+    "awqatName": "ALTA",
+    "displayName": "Älta",
+    "type": "city",
+    "lat": 59.257397,
+    "lng": 18.181242,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14311,
+    "awqatName": "BALSTA (U)",
+    "displayName": "Bålsta",
+    "type": "city",
+    "lat": 59.56821,
+    "lng": 17.529365,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14312,
+    "awqatName": "BJORKNAS",
+    "displayName": "Björknäs",
+    "type": "locality",
+    "lat": 59.755268,
+    "lng": 18.863273,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14313,
+    "awqatName": "JAKOBSERG (S)",
+    "displayName": "Jakobsberg",
+    "type": "locality",
+    "lat": 59.608262,
+    "lng": 16.522472,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14314,
+    "awqatName": "JARNA (S)",
+    "displayName": "Järna",
+    "type": "locality",
+    "lat": 59.09134,
+    "lng": 17.565107,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14315,
+    "awqatName": "MORTNAS",
+    "displayName": "Mörtnäs",
+    "type": "locality",
+    "lat": 59.317629,
+    "lng": 18.445368,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14316,
+    "awqatName": "RIMBO",
+    "displayName": "Rimbo",
+    "type": "locality",
+    "lat": 59.745319,
+    "lng": 18.360177,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14317,
+    "awqatName": "SUNDBYBERG",
+    "displayName": "Sundbyberg",
+    "type": "locality",
+    "lat": 59.99104,
+    "lng": 15.836932,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14318,
+    "awqatName": "VALLENTUNA",
+    "displayName": "Vallentuna",
+    "type": "city",
+    "lat": 59.533225,
+    "lng": 18.07645,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14319,
+    "awqatName": "VENDELSO",
+    "displayName": "Vendelsö",
+    "type": "locality",
+    "lat": 59.193059,
+    "lng": 18.189047,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14320,
+    "awqatName": "GOTEBORG",
+    "displayName": "Göteborg",
+    "type": "city",
+    "lat": 57.707233,
+    "lng": 11.967017,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14322,
+    "awqatName": "LIDKOPING",
+    "displayName": "Lidköping",
+    "type": "city",
+    "lat": 58.50372,
+    "lng": 13.157643,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14323,
+    "awqatName": "SIMRIS",
+    "displayName": "Simris",
+    "type": "locality",
+    "lat": 55.536225,
+    "lng": 14.323039,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14324,
+    "awqatName": "ALINGSAS",
+    "displayName": "Alingsås",
+    "type": "city",
+    "lat": 57.929966,
+    "lng": 12.532968,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14325,
+    "awqatName": "MJOLBY",
+    "displayName": "Mjölby",
+    "type": "city",
+    "lat": 58.325436,
+    "lng": 15.131448,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14326,
+    "awqatName": "ANGELHOLM",
+    "displayName": "Ängelholm",
+    "type": "city",
+    "lat": 56.242922,
+    "lng": 12.861937,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14327,
+    "awqatName": "ARVIKA",
+    "displayName": "Arvika",
+    "type": "city",
+    "lat": 59.654356,
+    "lng": 12.591622,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14328,
+    "awqatName": "AVESTA",
+    "displayName": "Avesta",
+    "type": "city",
+    "lat": 60.146955,
+    "lng": 16.1827,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14329,
+    "awqatName": "BODEN",
+    "displayName": "Boden",
+    "type": "city",
+    "lat": 65.8275,
+    "lng": 21.69641,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14330,
+    "awqatName": "BORAS",
+    "displayName": "Borås",
+    "type": "city",
+    "lat": 57.721084,
+    "lng": 12.940741,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14331,
+    "awqatName": "BORLANGE",
+    "displayName": "Borlänge",
+    "type": "city",
+    "lat": 60.485643,
+    "lng": 15.423456,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14332,
+    "awqatName": "BOTKYRKA",
+    "displayName": "Botkyrka kommun",
+    "type": "municipality",
+    "lat": 59.203449,
+    "lng": 17.854598,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14333,
+    "awqatName": "ENKOPING",
+    "displayName": "Enköping",
+    "type": "city",
+    "lat": 59.635612,
+    "lng": 17.077856,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14334,
+    "awqatName": "ESLOV",
+    "displayName": "Eslöv",
+    "type": "city",
+    "lat": 55.837496,
+    "lng": 13.303627,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14335,
+    "awqatName": "FALKENBERG",
+    "displayName": "Falkenberg",
+    "type": "city",
+    "lat": 56.904894,
+    "lng": 12.491293,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14336,
+    "awqatName": "FALUN",
+    "displayName": "Falun",
+    "type": "city",
+    "lat": 60.607007,
+    "lng": 15.632306,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14337,
+    "awqatName": "FINSPANG",
+    "displayName": "Finspång",
+    "type": "city",
+    "lat": 58.707774,
+    "lng": 15.775867,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14338,
+    "awqatName": "GALLIVARE",
+    "displayName": "Gällivare",
+    "type": "city",
+    "lat": 67.135243,
+    "lng": 20.660484,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14339,
+    "awqatName": "GAVLE",
+    "displayName": "Gävle",
+    "type": "municipality",
+    "lat": 60.675013,
+    "lng": 17.146702,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14340,
+    "awqatName": "GISLAVED",
+    "displayName": "Gislaved",
+    "type": "city",
+    "lat": 57.301977,
+    "lng": 13.539224,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14341,
+    "awqatName": "HALMSTAD",
+    "displayName": "Halmstad",
+    "type": "city",
+    "lat": 56.673983,
+    "lng": 12.857483,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14342,
+    "awqatName": "HARNOSAND",
+    "displayName": "Härnösand",
+    "type": "city",
+    "lat": 62.632308,
+    "lng": 17.937991,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14343,
+    "awqatName": "HUDIKSVALL",
+    "displayName": "Hudiksvall",
+    "type": "city",
+    "lat": 61.728161,
+    "lng": 17.105575,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14344,
+    "awqatName": "HASSLEHOLM",
+    "displayName": "Hässleholm",
+    "type": "city",
+    "lat": 56.157986,
+    "lng": 13.765333,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14345,
+    "awqatName": "HOGANAS",
+    "displayName": "Höganäs",
+    "type": "city",
+    "lat": 56.200857,
+    "lng": 12.551585,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14346,
+    "awqatName": "JONKOPING",
+    "displayName": "Jönköping",
+    "type": "city",
+    "lat": 57.782563,
+    "lng": 14.165719,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14347,
+    "awqatName": "KALMAR",
+    "displayName": "Kalmar",
+    "type": "city",
+    "lat": 56.662883,
+    "lng": 16.366238,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14348,
+    "awqatName": "KARLSHAMM",
+    "displayName": "Karlshamn",
+    "type": "city",
+    "lat": 56.170172,
+    "lng": 14.863128,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14349,
+    "awqatName": "KARLSKOGA",
+    "displayName": "Karlskoga",
+    "type": "city",
+    "lat": 59.329167,
+    "lng": 14.517691,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14350,
+    "awqatName": "MALMO",
+    "displayName": "Malmö",
+    "type": "municipality",
+    "lat": 55.605293,
+    "lng": 13.000157,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14351,
+    "awqatName": "STOCKHOLM",
+    "displayName": "Stockholm",
+    "type": "city",
+    "lat": 59.325117,
+    "lng": 18.071093,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14352,
+    "awqatName": "KARLSKRONA",
+    "displayName": "Karlskrona",
+    "type": "city",
+    "lat": 56.162107,
+    "lng": 15.586642,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14353,
+    "awqatName": "KARLSTAD",
+    "displayName": "Karlstad",
+    "type": "city",
+    "lat": 59.380915,
+    "lng": 13.502763,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14354,
+    "awqatName": "KATRINEHOLM",
+    "displayName": "Katrineholm",
+    "type": "city",
+    "lat": 58.995912,
+    "lng": 16.206222,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14355,
+    "awqatName": "KRAMFORS",
+    "displayName": "Kramfors",
+    "type": "city",
+    "lat": 62.930612,
+    "lng": 17.78399,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14356,
+    "awqatName": "KRISTIANSTAD",
+    "displayName": "Kristianstad",
+    "type": "city",
+    "lat": 56.029378,
+    "lng": 14.156686,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14357,
+    "awqatName": "KRISTINEHAMN",
+    "displayName": "Kristinehamn",
+    "type": "city",
+    "lat": 59.311362,
+    "lng": 14.11176,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14358,
+    "awqatName": "KUNGSBACKA",
+    "displayName": "Kungsbacka",
+    "type": "city",
+    "lat": 57.488856,
+    "lng": 12.078753,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14359,
+    "awqatName": "KUNGALV",
+    "displayName": "Kungälv",
+    "type": "city",
+    "lat": 57.870795,
+    "lng": 11.979962,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14360,
+    "awqatName": "LINDESBERG",
+    "displayName": "Lindesberg",
+    "type": "city",
+    "lat": 59.593057,
+    "lng": 15.226497,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14361,
+    "awqatName": "LINKOPING",
+    "displayName": "Linköping",
+    "type": "city",
+    "lat": 58.409813,
+    "lng": 15.624525,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14362,
+    "awqatName": "LJUNGBY",
+    "displayName": "Ljungby",
+    "type": "city",
+    "lat": 56.832589,
+    "lng": 13.935992,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14363,
+    "awqatName": "LJUSDAL",
+    "displayName": "Ljusdal",
+    "type": "city",
+    "lat": 61.829375,
+    "lng": 16.09536,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14364,
+    "awqatName": "LUDVIKA",
+    "displayName": "Ludvika",
+    "type": "city",
+    "lat": 60.150377,
+    "lng": 15.181399,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14365,
+    "awqatName": "LULEA",
+    "displayName": "Luleå",
+    "type": "city",
+    "lat": 65.583119,
+    "lng": 22.145954,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14366,
+    "awqatName": "LYSEKIL",
+    "displayName": "Lysekil",
+    "type": "city",
+    "lat": 58.277174,
+    "lng": 11.443099,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14367,
+    "awqatName": "MARIESTAD",
+    "displayName": "Mariestad",
+    "type": "city",
+    "lat": 58.709322,
+    "lng": 13.822875,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14368,
+    "awqatName": "MORA",
+    "displayName": "Mora",
+    "type": "city",
+    "lat": 61.008679,
+    "lng": 14.544252,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14369,
+    "awqatName": "MOTALA",
+    "displayName": "Motala",
+    "type": "city",
+    "lat": 58.54204,
+    "lng": 15.041261,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14370,
+    "awqatName": "MARSTA",
+    "displayName": "Märsta",
+    "type": "city",
+    "lat": 59.625238,
+    "lng": 17.851567,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14371,
+    "awqatName": "NORRTALJE",
+    "displayName": "Norrtälje",
+    "type": "city",
+    "lat": 59.759174,
+    "lng": 18.703748,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14372,
+    "awqatName": "NYKOPING",
+    "displayName": "Nyköping",
+    "type": "city",
+    "lat": 58.754541,
+    "lng": 17.012066,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14373,
+    "awqatName": "NYNASHAMN",
+    "displayName": "Nynäshamn",
+    "type": "city",
+    "lat": 58.905646,
+    "lng": 17.947099,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14374,
+    "awqatName": "NASSJO",
+    "displayName": "Nässjö",
+    "type": "city",
+    "lat": 57.653038,
+    "lng": 14.698155,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14375,
+    "awqatName": "OSKARSHAMN",
+    "displayName": "Oskarshamn",
+    "type": "city",
+    "lat": 57.263281,
+    "lng": 16.444348,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14376,
+    "awqatName": "OSTERSUND",
+    "displayName": "Östersund",
+    "type": "city",
+    "lat": 63.179366,
+    "lng": 14.635706,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14377,
+    "awqatName": "PITEA",
+    "displayName": "Piteå",
+    "type": "city",
+    "lat": 65.313465,
+    "lng": 21.490025,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14378,
+    "awqatName": "SANDVIKEN",
+    "displayName": "Sandviken",
+    "type": "city",
+    "lat": 60.621865,
+    "lng": 16.775999,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14379,
+    "awqatName": "SIGTUNA",
+    "displayName": "Sigtuna",
+    "type": "city",
+    "lat": 59.61652,
+    "lng": 17.72363,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14380,
+    "awqatName": "SKARA",
+    "displayName": "Skara",
+    "type": "city",
+    "lat": 58.384608,
+    "lng": 13.439768,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14381,
+    "awqatName": "SOLLEFTEA",
+    "displayName": "Sollefteå",
+    "type": "city",
+    "lat": 63.168024,
+    "lng": 17.265447,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14382,
+    "awqatName": "STRANGNAS",
+    "displayName": "Strängnäs",
+    "type": "city",
+    "lat": 59.376315,
+    "lng": 17.026819,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14383,
+    "awqatName": "SUNDSVALL",
+    "displayName": "Sundsvall",
+    "type": "municipality",
+    "lat": 62.390755,
+    "lng": 17.307102,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14384,
+    "awqatName": "SODERHAMN",
+    "displayName": "Söderhamn",
+    "type": "city",
+    "lat": 61.29985,
+    "lng": 17.06076,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14385,
+    "awqatName": "SODERTALJE",
+    "displayName": "Södertälje",
+    "type": "city",
+    "lat": 59.196429,
+    "lng": 17.627166,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14386,
+    "awqatName": "SOLVESBORG",
+    "displayName": "Sölvesborg",
+    "type": "city",
+    "lat": 56.050654,
+    "lng": 14.587191,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14387,
+    "awqatName": "TIERP",
+    "displayName": "Tierp",
+    "type": "city",
+    "lat": 60.342961,
+    "lng": 17.516839,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14388,
+    "awqatName": "TRELLEBORG",
+    "displayName": "Trelleborg",
+    "type": "city",
+    "lat": 55.37592,
+    "lng": 13.146152,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14389,
+    "awqatName": "TROLLHATTAN",
+    "displayName": "Trollhättan",
+    "type": "city",
+    "lat": 58.282793,
+    "lng": 12.290861,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14390,
+    "awqatName": "UDDEVALLA",
+    "displayName": "Uddevalla",
+    "type": "city",
+    "lat": 58.349055,
+    "lng": 11.938285,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14391,
+    "awqatName": "ULRICEHAMN",
+    "displayName": "Ulricehamn",
+    "type": "city",
+    "lat": 57.791385,
+    "lng": 13.413043,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14392,
+    "awqatName": "VANERSBORG",
+    "displayName": "Vänersborg",
+    "type": "city",
+    "lat": 58.381199,
+    "lng": 12.322688,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14393,
+    "awqatName": "VARBERG",
+    "displayName": "Varberg",
+    "type": "city",
+    "lat": 57.105741,
+    "lng": 12.250295,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14394,
+    "awqatName": "VARNAMO",
+    "displayName": "Värnamo",
+    "type": "city",
+    "lat": 57.184902,
+    "lng": 14.041098,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14395,
+    "awqatName": "VASTERAS",
+    "displayName": "Västerås",
+    "type": "city",
+    "lat": 59.611099,
+    "lng": 16.546368,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14396,
+    "awqatName": "VASTERVIK",
+    "displayName": "Västervik",
+    "type": "city",
+    "lat": 57.759419,
+    "lng": 16.638503,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14397,
+    "awqatName": "VETLANDA",
+    "displayName": "Vetlanda",
+    "type": "city",
+    "lat": 57.426018,
+    "lng": 15.087023,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14398,
+    "awqatName": "VISBY",
+    "displayName": "Visby",
+    "type": "city",
+    "lat": 57.637936,
+    "lng": 18.297982,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14399,
+    "awqatName": "YSTAD",
+    "displayName": "Ystad",
+    "type": "city",
+    "lat": 55.42952,
+    "lng": 13.820117,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14400,
+    "awqatName": "KIRUNA",
+    "displayName": "Kiruna",
+    "type": "city",
+    "lat": 67.849611,
+    "lng": 20.30625,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14401,
+    "awqatName": "UMEA",
+    "displayName": "Umeå",
+    "type": "municipality",
+    "lat": 63.825657,
+    "lng": 20.263074,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14402,
+    "awqatName": "UPPSALA",
+    "displayName": "Uppsala",
+    "type": "city",
+    "lat": 59.858613,
+    "lng": 17.638744,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14403,
+    "awqatName": "VAXJO",
+    "displayName": "Växjö",
+    "type": "city",
+    "lat": 56.878718,
+    "lng": 14.809439,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14404,
+    "awqatName": "OREBRO",
+    "displayName": "Örebro",
+    "type": "city",
+    "lat": 59.274729,
+    "lng": 15.215118,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 14405,
+    "awqatName": "LAHOLM",
+    "displayName": "Laholm",
+    "type": "city",
+    "lat": 56.513274,
+    "lng": 13.043458,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 16731,
+    "awqatName": "SVEG",
+    "displayName": "Sveg",
+    "type": "city",
+    "lat": 62.036071,
+    "lng": 14.359839,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 16742,
+    "awqatName": "FALKOPING",
+    "displayName": "Falköping",
+    "type": "city",
+    "lat": 58.169508,
+    "lng": 13.554241,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 20084,
+    "awqatName": "OXELOSUND",
+    "displayName": "Oxelösund",
+    "type": "city",
+    "lat": 58.670026,
+    "lng": 17.104144,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 20087,
+    "awqatName": "SAFFLE",
+    "displayName": "Säffle",
+    "type": "city",
+    "lat": 59.132931,
+    "lng": 12.924868,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21131,
+    "awqatName": "SAVSJO",
+    "displayName": "Sävsjö",
+    "type": "city",
+    "lat": 57.402139,
+    "lng": 14.66671,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21133,
+    "awqatName": "PAJALA",
+    "displayName": "Pajala",
+    "type": "city",
+    "lat": 67.209036,
+    "lng": 23.36473,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21134,
+    "awqatName": "TRANEMO",
+    "displayName": "Tranemo",
+    "type": "city",
+    "lat": 57.48489,
+    "lng": 13.351857,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21136,
+    "awqatName": "BENGTSFORS",
+    "displayName": "Bengtsfors",
+    "type": "city",
+    "lat": 59.030929,
+    "lng": 12.222887,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21137,
+    "awqatName": "BOLLNAS",
+    "displayName": "Bollnäs",
+    "type": "city",
+    "lat": 61.351301,
+    "lng": 16.397201,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21138,
+    "awqatName": "FLEN",
+    "displayName": "Flen",
+    "type": "city",
+    "lat": 59.056782,
+    "lng": 16.5893,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21139,
+    "awqatName": "FLIPSTAD",
+    "displayName": "Filipstad",
+    "type": "city",
+    "lat": 59.713548,
+    "lng": 14.168031,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21140,
+    "awqatName": "GNOSJO",
+    "displayName": "Gnosjö",
+    "type": "city",
+    "lat": 57.356973,
+    "lng": 13.735086,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21141,
+    "awqatName": "HAPARANDA",
+    "displayName": "Haparanda",
+    "type": "city",
+    "lat": 65.835667,
+    "lng": 24.135721,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21142,
+    "awqatName": "HULTSFRED",
+    "displayName": "Hultsfred",
+    "type": "city",
+    "lat": 57.489835,
+    "lng": 15.842814,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21143,
+    "awqatName": "JOKKMOKK",
+    "displayName": "Jokkmokk",
+    "type": "city",
+    "lat": 66.605854,
+    "lng": 19.837932,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21144,
+    "awqatName": "KOPING",
+    "displayName": "Köping",
+    "type": "city",
+    "lat": 59.513743,
+    "lng": 15.997048,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21145,
+    "awqatName": "LESSEBO",
+    "displayName": "Lessebo",
+    "type": "city",
+    "lat": 56.750463,
+    "lng": 15.271421,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21146,
+    "awqatName": "MELLERUD",
+    "displayName": "Mellerud",
+    "type": "city",
+    "lat": 58.699036,
+    "lng": 12.454346,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 21147,
+    "awqatName": "STROMSTAD",
+    "displayName": "Strömstad",
+    "type": "city",
+    "lat": 58.937757,
+    "lng": 11.17361,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 23211,
+    "awqatName": "TRANAS",
+    "displayName": "Tranås",
+    "type": "city",
+    "lat": 58.034107,
+    "lng": 14.975641,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33266,
+    "awqatName": "NYBRO",
+    "displayName": "Nybro",
+    "type": "city",
+    "lat": 56.745226,
+    "lng": 15.906154,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33267,
+    "awqatName": "EKSJO",
+    "displayName": "Eksjö",
+    "type": "city",
+    "lat": 57.667444,
+    "lng": 14.97356,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33268,
+    "awqatName": "HOGSBY",
+    "displayName": "Högsby",
+    "type": "city",
+    "lat": 57.165292,
+    "lng": 16.026186,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33269,
+    "awqatName": "AMAL",
+    "displayName": "Åmål",
+    "type": "city",
+    "lat": 59.054803,
+    "lng": 12.705706,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33270,
+    "awqatName": "ORNSKOLDSVIK",
+    "displayName": "Örnsköldsvik",
+    "type": "municipality",
+    "lat": 63.288861,
+    "lng": 18.716021,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33271,
+    "awqatName": "MONSTERAS",
+    "displayName": "Mönsterås",
+    "type": "city",
+    "lat": 57.042956,
+    "lng": 16.444801,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33272,
+    "awqatName": "VIMMERBY",
+    "displayName": "Vimmerby",
+    "type": "city",
+    "lat": 57.665349,
+    "lng": 15.856327,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33280,
+    "awqatName": "FAGERSTA",
+    "displayName": "Fagersta",
+    "type": "city",
+    "lat": 60.003863,
+    "lng": 15.790605,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33358,
+    "awqatName": "MUNKEDAL",
+    "displayName": "Munkedal",
+    "type": "city",
+    "lat": 58.466606,
+    "lng": 11.673355,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33359,
+    "awqatName": "AKERSBERGA",
+    "displayName": "Åkersberga",
+    "type": "city",
+    "lat": 59.482352,
+    "lng": 18.294398,
+    "source": "osm"
+  },
+  {
+    "awqatCityId": 33376,
+    "awqatName": "TORSBY",
+    "displayName": "Torsby",
+    "type": "city",
+    "lat": 60.135521,
+    "lng": 13.006788,
+    "source": "osm"
+  }
+]

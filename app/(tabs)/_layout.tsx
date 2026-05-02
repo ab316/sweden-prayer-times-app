@@ -1,16 +1,48 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { theme } from '@/constants/theme';
 
-const ACTIVE_TINT = '#775a19';
-const INACTIVE_TINT = '#707974';
-const TAB_BAR_BG = '#ffffff';
-const TAB_BAR_BORDER = '#bfc9c3';
 const TAB_BAR_BASE_HEIGHT = 60;
 const TAB_BAR_MIN_BOTTOM_PADDING = 12;
+
+function ActiveIndicator() {
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        top: 0,
+        alignSelf: 'center',
+        width: 32,
+        height: 3,
+        borderRadius: 2,
+        backgroundColor: theme.primary,
+      }}
+    />
+  );
+}
+
+function TabIcon({
+  name,
+  color,
+  focused,
+}: {
+  name: keyof typeof MaterialIcons.glyphMap;
+  color: string;
+  focused: boolean;
+}) {
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      {focused ? <ActiveIndicator /> : null}
+      <MaterialIcons name={name} size={24} color={color} />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -21,17 +53,17 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: ACTIVE_TINT,
-        tabBarInactiveTintColor: INACTIVE_TINT,
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSub,
         tabBarLabelStyle: {
-          fontFamily: 'Manrope_500Medium',
+          fontFamily: 'DMSans_600SemiBold',
           fontSize: 11,
-          letterSpacing: -0.1,
+          letterSpacing: 0.3,
         },
         tabBarStyle: {
-          backgroundColor: TAB_BAR_BG,
-          borderTopColor: TAB_BAR_BORDER,
-          borderTopWidth: 0.5,
+          backgroundColor: theme.card,
+          borderTopColor: 'rgba(0,0,0,0.06)',
+          borderTopWidth: 1,
           height: TAB_BAR_BASE_HEIGHT + bottomPadding,
           paddingTop: 8,
           paddingBottom: bottomPadding,
@@ -42,7 +74,7 @@ export default function TabLayout() {
         options={{
           title: 'Prayer',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons name="schedule" size={24} color={color} style={{ opacity: focused ? 1 : 0.85 }} />
+            <TabIcon name="schedule" color={color} focused={focused} />
           ),
         }}
       />
@@ -50,21 +82,27 @@ export default function TabLayout() {
         name="qibla"
         options={{
           title: 'Qibla',
-          tabBarIcon: ({ color }) => <MaterialIcons name="explore" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="explore" color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="settings" color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="about"
         options={{
           title: 'About',
-          tabBarIcon: ({ color }) => <MaterialIcons name="info" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="info" color={color} focused={focused} />
+          ),
         }}
       />
     </Tabs>

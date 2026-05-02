@@ -1,160 +1,166 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { SectionHeader } from '@/components/ui/section-header';
+import { theme } from '@/constants/theme';
+
 import { CityOption } from '../components/city-option';
-
-type City = {
-  name: string;
-  subtitle: string;
-};
-
-const RECENT_CITIES: City[] = [
-  { name: 'Gothenburg', subtitle: 'Current Location' },
-  { name: 'Stockholm', subtitle: 'Sweden' },
-  { name: 'Malmö', subtitle: 'Sweden' },
-];
-
-const POPULAR_CITIES = ['Uppsala', 'Västerås', 'Örebro', 'Linköping', 'Helsingborg'];
-
-const ICON_COLORS = {
-  primary: '#003527',
-  outline: '#707974',
-};
+import { useLocation } from '../hooks/use-location';
+import { POPULAR_CITIES, SWEDISH_CITIES, type City } from '../types';
 
 export default function SelectCityScreen() {
+  const { city: selectedCity, recentCities, detecting, selectCity, detectLocation } = useLocation();
   const [query, setQuery] = useState('');
-  const [selectedCity, setSelectedCity] = useState('Gothenburg');
 
-  const recentCities = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const trimmed = query.trim().toLowerCase();
 
-    if (!normalizedQuery) {
-      return RECENT_CITIES;
-    }
+  const searchResults = useMemo<City[]>(() => {
+    if (!trimmed) return [];
+    return SWEDISH_CITIES.filter((c) => c.name.toLowerCase().includes(trimmed)).slice(0, 20);
+  }, [trimmed]);
 
-    return RECENT_CITIES.filter((city) => city.name.toLowerCase().includes(normalizedQuery));
-  }, [query]);
-
-  const popularCities = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return POPULAR_CITIES;
-    }
-
-    return POPULAR_CITIES.filter((city) => city.toLowerCase().includes(normalizedQuery));
-  }, [query]);
+  const handleSelect = async (c: City) => {
+    await selectCity(c);
+    router.back();
+  };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="border-b border-surface-variant/50 bg-background/80 px-container-padding py-4">
-        <View className="w-full max-w-2xl flex-row items-center justify-between self-center">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            onPress={() => router.back()}
-            className="-ml-2 rounded-full p-2">
-            <MaterialIcons name="arrow-back" size={24} color={ICON_COLORS.primary} />
-          </Pressable>
-          <Text className="font-headline-md text-headline-md text-on-surface">Location</Text>
-          <View className="w-10" />
-        </View>
+    <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-screen-pad py-3">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          onPress={() => router.back()}
+          className="-ml-2 rounded-full p-2">
+          <MaterialIcons name="arrow-back" size={22} color={theme.text} />
+        </Pressable>
+        <Text className="font-headline-md text-headline-md text-text">Location</Text>
+        <View className="w-9" />
       </View>
 
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="grow px-container-padding py-section-gap"
+        contentContainerClassName="px-screen-pad pb-12"
         className="flex-1">
-        <View className="w-full max-w-2xl flex-1 gap-section-gap self-center">
-          <View className="gap-element-gap">
-            <View className="relative w-full">
-              <View className="absolute bottom-0 left-0 top-0 z-10 justify-center pl-4">
-                <MaterialIcons name="search" size={22} color={ICON_COLORS.outline} />
-              </View>
+        <View className="gap-section-gap">
+          {/* Search */}
+          <View className="gap-3">
+            <View
+              className="relative flex-row items-center rounded-prayer-row bg-card px-3 py-2"
+              style={{
+                shadowColor: '#000',
+                shadowOpacity: 0.04,
+                shadowRadius: 4,
+                shadowOffset: { width: 0, height: 1 },
+                elevation: 1,
+              }}>
+              <MaterialIcons name="search" size={20} color={theme.textSub} />
               <TextInput
                 accessibilityLabel="Search Swedish cities"
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search Swedish cities..."
-                placeholderTextColor={ICON_COLORS.outline}
+                placeholderTextColor={theme.textSub}
                 autoCapitalize="words"
-                className="w-full rounded-xl border border-surface-variant bg-surface-container-lowest py-4 pl-12 pr-4 font-body-lg text-body-lg text-on-surface"
-                style={{
-                  shadowColor: '#000',
-                  shadowOpacity: 0.02,
-                  shadowRadius: 8,
-                  shadowOffset: { width: 0, height: 2 },
-                  elevation: 1,
-                }}
+                className="ml-2 flex-1 font-body-md text-body-md text-text"
               />
+              {query.length > 0 ? (
+                <Pressable onPress={() => setQuery('')} hitSlop={6}>
+                  <MaterialIcons name="cancel" size={18} color={theme.textSub} />
+                </Pressable>
+              ) : null}
             </View>
 
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Detect my location"
-              onPress={() => setSelectedCity('Gothenburg')}
-              className="w-full flex-row items-center justify-center gap-3 rounded-full border border-secondary py-4">
-              <MaterialIcons name="my-location" size={18} color={ICON_COLORS.primary} />
-              <Text className="font-label-sm text-label-sm text-primary">Detect My Location</Text>
+              onPress={detectLocation}
+              className="flex-row items-center justify-center gap-2 rounded-prayer-row border border-primary px-4 py-3">
+              {detecting ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <MaterialIcons name="my-location" size={18} color={theme.primary} />
+              )}
+              <Text className="font-label text-label uppercase text-primary">
+                {detecting ? 'Detecting…' : 'Detect My Location'}
+              </Text>
             </Pressable>
           </View>
 
-          <View className="gap-element-gap">
-            <Text className="px-2 font-label-sm text-label-sm uppercase tracking-widest text-outline">
-              Recently Used
-            </Text>
+          {/* Search results */}
+          {trimmed ? (
             <View className="gap-2">
-              {recentCities.length > 0 ? (
-                recentCities.map((city) => (
+              <SectionHeader>Results</SectionHeader>
+              {searchResults.length > 0 ? (
+                searchResults.map((c) => (
                   <CityOption
-                    key={city.name}
-                    name={city.name}
-                    subtitle={city.name === selectedCity ? 'Current Location' : city.subtitle}
-                    active={city.name === selectedCity}
-                    onPress={() => setSelectedCity(city.name)}
+                    key={c.id}
+                    name={c.name}
+                    subtitle="Sweden"
+                    active={c.id === selectedCity.id}
+                    icon="location-city"
+                    onPress={() => handleSelect(c)}
                   />
                 ))
               ) : (
-                <Text className="px-2 font-body-md text-body-md text-on-surface-variant">
-                  No recent cities match your search.
+                <Text className="px-2 font-body-sm text-body-sm text-text-sub">
+                  No cities match your search.
                 </Text>
               )}
             </View>
-          </View>
+          ) : (
+            <>
+              {/* Recently used */}
+              {recentCities.length > 0 ? (
+                <View className="gap-2">
+                  <SectionHeader>Recently Used</SectionHeader>
+                  {recentCities.map((c) => (
+                    <CityOption
+                      key={c.id}
+                      name={c.name}
+                      subtitle={c.id === selectedCity.id ? 'Current Location' : 'Sweden'}
+                      active={c.id === selectedCity.id}
+                      onPress={() => handleSelect(c)}
+                    />
+                  ))}
+                </View>
+              ) : null}
 
-          <View className="gap-element-gap">
-            <Text className="px-2 font-label-sm text-label-sm uppercase tracking-widest text-outline">
-              Popular
-            </Text>
-            <View className="flex-row flex-wrap gap-3">
-              {popularCities.length > 0 ? (
-                popularCities.map((city) => (
-                  <Pressable
-                    key={city}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Select ${city}`}
-                    onPress={() => setSelectedCity(city)}
-                    className={`rounded-full px-5 py-2.5 ${
-                      city === selectedCity ? 'bg-primary' : 'bg-surface-container-low'
-                    }`}>
-                    <Text
-                      className={`font-body-md text-body-md ${
-                        city === selectedCity ? 'text-on-primary' : 'text-on-surface'
-                      }`}>
-                      {city}
-                    </Text>
-                  </Pressable>
-                ))
-              ) : (
-                <Text className="px-2 font-body-md text-body-md text-on-surface-variant">
-                  No popular cities match your search.
-                </Text>
-              )}
-            </View>
-          </View>
+              {/* Popular */}
+              <View className="gap-2">
+                <SectionHeader>Popular</SectionHeader>
+                <View className="flex-row flex-wrap gap-2">
+                  {POPULAR_CITIES.map((c) => {
+                    const isActive = c.id === selectedCity.id;
+                    return (
+                      <Pressable
+                        key={c.id}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Select ${c.name}`}
+                        onPress={() => handleSelect(c)}
+                        className={`rounded-city-chips px-4 py-2 ${isActive ? 'bg-primary' : 'bg-card'}`}
+                        style={{
+                          shadowColor: '#000',
+                          shadowOpacity: 0.04,
+                          shadowRadius: 4,
+                          shadowOffset: { width: 0, height: 1 },
+                          elevation: 1,
+                        }}>
+                        <Text
+                          className={`font-body-sm text-body-sm ${isActive ? 'text-card' : 'text-text'}`}>
+                          {c.name}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

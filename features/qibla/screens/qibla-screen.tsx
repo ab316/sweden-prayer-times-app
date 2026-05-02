@@ -1,150 +1,152 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const COLORS = {
-  primary: '#003527',
-  secondary: '#775a19',
-  outline: '#707974',
-  surfaceTint: '#2b6954',
-};
+import { HexPatternBg } from '@/components/ui/hex-pattern-bg';
+import { theme } from '@/constants/theme';
+import { useLocation } from '@/features/location';
+import { compassLabel } from '@/lib/time/qibla';
 
-function CompassTick({
-  className,
-  rotate,
-}: {
-  className: string;
-  rotate?: `${number}deg`;
+import { useQibla } from '../hooks/use-qibla';
+
+const COMPASS_SIZE = 260;
+
+function CardinalLabel({ label, top, bottom, left, right }: {
+  label: string;
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
 }) {
   return (
-    <View
-      className={`absolute h-5 w-px rounded-full bg-outline-variant ${className}`}
-      style={rotate ? { transform: [{ rotate }] } : undefined}
-    />
-  );
-}
-
-function CardinalLabel({ label, className }: { label: string; className: string }) {
-  return (
-    <Text className={`absolute font-label-sm text-label-sm text-on-surface-variant ${className}`}>
+    <Text
+      className="absolute font-label text-label uppercase text-text-sub"
+      style={{ top, bottom, left, right }}>
       {label}
     </Text>
   );
 }
 
 export default function QiblaScreen() {
+  const { city } = useLocation();
+  const { bearing, heading } = useQibla({ lat: city.lat, lng: city.lng });
+
+  // The needle is fixed in body-frame; the ring rotates by -heading so North
+  // ends up where the device thinks North is. The needle then points at
+  // bearing - heading (relative to the ring rotation, which is what the user
+  // perceives).
+  const needleRotation = bearing - heading;
+
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="flex-row items-center justify-between border-b border-outline-variant/50 bg-surface px-6 py-4">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Change location"
-          onPress={() => router.push('/select-city')}
-          className="-ml-2 rounded-full p-2">
-          <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
-        </Pressable>
-        <Text className="font-headline-md text-headline-md text-primary">Sakinah Bloom</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open about"
-          onPress={() => router.push('/about')}
-          className="-mr-2 rounded-full p-2">
-          <MaterialIcons name="account-circle" size={24} color={COLORS.primary} />
-        </Pressable>
-      </View>
+    <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+      <HexPatternBg
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        opacity={0.12}
+      />
 
-      <ScrollView
-        contentContainerClassName="grow px-container-padding pb-28 pt-section-gap"
-        className="flex-1">
-        <View className="w-full max-w-md flex-1 items-center justify-center self-center">
-          <View className="mb-12 items-center">
-            <Text className="mb-2 font-headline-xl text-headline-xl text-primary">Qibla</Text>
-            <View className="flex-row items-center justify-center gap-1">
-              <MaterialIcons name="near-me" size={18} color={COLORS.outline} />
-              <Text className="font-body-md text-body-md text-on-surface-variant">
-                Gothenburg, Sweden
-              </Text>
-            </View>
-            <Text className="mt-1 font-label-sm text-label-sm text-secondary">142 deg SE</Text>
-          </View>
+      <View className="flex-1 items-center px-screen-pad pt-8">
+        <Text className="font-headline-xl text-headline-xl text-text">Qibla</Text>
+        <Text className="mt-1 font-body-sm text-body-sm text-text-sub">{city.name}, Sweden</Text>
+        <Text className="mt-0.5 font-label text-label uppercase text-accent">
+          {Math.round(bearing)}° {compassLabel(bearing)}
+        </Text>
 
+        {/* Compass */}
+        <View
+          accessible
+          accessibilityLabel={`Qibla compass pointing ${Math.round(bearing)} degrees`}
+          className="my-12 items-center justify-center rounded-full bg-card"
+          style={{
+            width: COMPASS_SIZE,
+            height: COMPASS_SIZE,
+            shadowColor: theme.primary,
+            shadowOpacity: 0.08,
+            shadowRadius: 24,
+            shadowOffset: { width: 0, height: 6 },
+            elevation: 3,
+          }}>
+          {/* Rotating ring */}
           <View
-            accessible
-            accessibilityRole="image"
-            accessibilityLabel="Qibla compass pointing southeast toward Mecca"
-            className="relative mb-12 h-72 w-72 items-center justify-center rounded-full border-2 border-surface-variant bg-surface/50"
+            className="absolute rounded-full border border-primary-light"
             style={{
-              shadowColor: '#000',
-              shadowOpacity: 0.05,
-              shadowRadius: 32,
-              shadowOffset: { width: 0, height: 8 },
-              elevation: 2,
+              width: COMPASS_SIZE - 16,
+              height: COMPASS_SIZE - 16,
+              transform: [{ rotate: `${-heading}deg` }],
             }}>
-            <CardinalLabel label="N" className="left-1/2 top-4 -translate-x-1/2" />
-            <CardinalLabel label="E" className="right-4 top-1/2 -translate-y-1/2" />
-            <CardinalLabel label="S" className="bottom-4 left-1/2 -translate-x-1/2" />
-            <CardinalLabel label="W" className="left-4 top-1/2 -translate-y-1/2" />
-
-            <CompassTick className="left-1/2 top-5 -translate-x-1/2" />
-            <CompassTick className="bottom-5 left-1/2 -translate-x-1/2" />
-            <CompassTick className="right-7 top-1/2 -translate-y-1/2" rotate="90deg" />
-            <CompassTick className="left-7 top-1/2 -translate-y-1/2" rotate="90deg" />
-
-            <View className="h-56 w-56 rotate-45 items-center justify-center rounded-full border border-surface-container-highest bg-surface-container-low">
-              <View
-                className="absolute -top-4 left-1/2 z-10 h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full bg-secondary"
-                style={{
-                  shadowColor: '#000',
-                  shadowOpacity: 0.12,
-                  shadowRadius: 8,
-                  shadowOffset: { width: 0, height: 3 },
-                  elevation: 2,
-                }}>
-                <MaterialIcons name="location-on" size={16} color="#ffffff" />
-              </View>
-
-              <View className="absolute left-1/2 top-7 h-36 w-0.5 -translate-x-1/2 bg-primary/20" />
-
-              <View
-                className="h-16 w-16 items-center justify-center overflow-hidden rounded bg-primary"
-                style={{
-                  shadowColor: '#000',
-                  shadowOpacity: 0.15,
-                  shadowRadius: 10,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: 3,
-                }}>
-                <View className="absolute top-0 h-3 w-full bg-secondary/40" />
-                <MaterialIcons name="mosque" size={30} color="#ffffff" />
-              </View>
-            </View>
+            {/* Tick marks every 30 degrees */}
+            {Array.from({ length: 12 }).map((_, i) => {
+              const angle = i * 30;
+              return (
+                <View
+                  key={i}
+                  className="absolute bg-text-sub"
+                  style={{
+                    width: 1,
+                    height: i % 3 === 0 ? 12 : 6,
+                    left: '50%',
+                    top: 0,
+                    transformOrigin: 'top center' as never,
+                    transform: [
+                      { translateX: -0.5 },
+                      { rotate: `${angle}deg` },
+                      { translateY: (COMPASS_SIZE - 16) / 2 - (i % 3 === 0 ? 12 : 6) / 2 - 6 },
+                    ],
+                    opacity: 0.5,
+                  }}
+                />
+              );
+            })}
+            <CardinalLabel label="N" top={6} left={(COMPASS_SIZE - 16) / 2 - 6} />
+            <CardinalLabel label="E" top={(COMPASS_SIZE - 16) / 2 - 8} right={6} />
+            <CardinalLabel label="S" bottom={6} left={(COMPASS_SIZE - 16) / 2 - 6} />
+            <CardinalLabel label="W" top={(COMPASS_SIZE - 16) / 2 - 8} left={6} />
           </View>
 
+          {/* Needle */}
           <View
-            className="w-full max-w-sm flex-row items-center gap-4 rounded-2xl bg-surface-container-low px-6 py-4"
+            className="absolute items-center justify-start"
             style={{
-              shadowColor: '#000',
-              shadowOpacity: 0.02,
-              shadowRadius: 10,
-              shadowOffset: { width: 0, height: 2 },
-              elevation: 1,
+              width: 4,
+              height: COMPASS_SIZE * 0.6,
+              transform: [{ rotate: `${needleRotation}deg` }],
             }}>
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-fixed">
-              <MaterialIcons name="explore" size={22} color={COLORS.surfaceTint} />
+            <View
+              className="rounded-full bg-accent"
+              style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialIcons name="place" size={20} color={theme.card} />
             </View>
-            <View className="min-w-0 flex-1">
-              <Text className="font-body-md text-body-md font-medium text-on-surface">
-                Preview compass
-              </Text>
-              <Text className="font-label-sm text-label-sm normal-case text-on-surface-variant">
-                Live calibration will be added when sensors are wired.
-              </Text>
-            </View>
-            <View className="h-2 w-2 rounded-full bg-secondary" />
+            <View
+              className="bg-accent"
+              style={{ width: 3, flex: 1, marginTop: -4, opacity: 0.8 }}
+            />
           </View>
+
+          {/* Center dot */}
+          <View className="h-3 w-3 rounded-full bg-primary" />
         </View>
-      </ScrollView>
+
+        {/* Calibration card */}
+        <View
+          className="w-full max-w-md flex-row items-center gap-4 rounded-settings-card bg-card px-card-pad py-4"
+          style={{
+            shadowColor: '#000',
+            shadowOpacity: 0.05,
+            shadowRadius: 6,
+            shadowOffset: { width: 0, height: 1 },
+            elevation: 1,
+          }}>
+          <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+            <MaterialIcons name="explore" size={22} color={theme.primary} />
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text className="font-body-md text-body-md text-text">Preview compass</Text>
+            <Text className="font-caption text-caption text-text-sub">
+              Live calibration ships when sensors are wired.
+            </Text>
+          </View>
+          <View className="h-2 w-2 rounded-full bg-accent" />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

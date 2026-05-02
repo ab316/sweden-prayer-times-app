@@ -1,259 +1,148 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type PrayerAlert = {
-  key: string;
-  name: string;
-  description: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
-  enabled: boolean;
-};
+import { PrayerIcon } from '@/components/ui/prayer-icon';
+import { SectionHeader } from '@/components/ui/section-header';
+import { SettingsCard } from '@/components/ui/settings-card';
+import { Toggle } from '@/components/ui/toggle';
+import { theme } from '@/constants/theme';
+import { useLocation } from '@/features/location';
+import { useReminders, REMINDER_TYPE_LABELS } from '@/features/reminders';
+import { PRAYER_LABELS, PRAYER_ORDER } from '@/features/schedule';
+import { clearAll } from '@/lib/storage';
 
-type AlertRowProps = {
-  item: PrayerAlert;
-  last?: boolean;
-  onToggle: (key: string) => void;
-};
-
-type SystemToggleRowProps = {
-  title: string;
-  description: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
-  value: boolean;
-  onValueChange: () => void;
-};
-
-const INITIAL_ALERTS: PrayerAlert[] = [
-  {
-    key: 'fajr',
-    name: 'Fajr',
-    description: 'Adhan & 15m pre-alert',
-    icon: 'wb-twilight',
-    enabled: true,
-  },
-  {
-    key: 'dhuhr',
-    name: 'Dhuhr',
-    description: 'Adhan only',
-    icon: 'light-mode',
-    enabled: true,
-  },
-  {
-    key: 'asr',
-    name: 'Asr',
-    description: 'Adhan only',
-    icon: 'sunny-snowing',
-    enabled: true,
-  },
-  {
-    key: 'maghrib',
-    name: 'Maghrib',
-    description: 'Adhan & 10m pre-alert',
-    icon: 'wb-twilight',
-    enabled: true,
-  },
-  {
-    key: 'isha',
-    name: 'Isha',
-    description: 'Silent',
-    icon: 'nightlight',
-    enabled: false,
-  },
-];
-
-const COLORS = {
-  primary: '#003527',
-  secondary: '#775a19',
-  outline: '#707974',
-  surfaceVariant: '#e2e3e0',
-  onPrimary: '#ffffff',
-};
-
-function SettingsSwitch({
-  value,
-  onValueChange,
-  accessibilityLabel,
-}: {
-  value: boolean;
-  onValueChange: () => void;
-  accessibilityLabel: string;
-}) {
-  return (
-    <Switch
-      accessibilityLabel={accessibilityLabel}
-      value={value}
-      onValueChange={onValueChange}
-      trackColor={{ false: COLORS.surfaceVariant, true: COLORS.primary }}
-      thumbColor={COLORS.onPrimary}
-      ios_backgroundColor={COLORS.surfaceVariant}
-    />
-  );
-}
-
-function AlertRow({ item, last, onToggle }: AlertRowProps) {
-  return (
-    <View
-      className={`flex-row items-center justify-between gap-4 bg-surface-container-lowest/50 p-gutter ${
-        last ? '' : 'border-b border-outline-variant/20'
-      }`}>
-      <View className="min-w-0 flex-1 flex-row items-center gap-element-gap">
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-container">
-          <MaterialIcons name={item.icon} size={22} color={COLORS.primary} />
-        </View>
-        <View className="min-w-0 flex-1">
-          <Text className="font-body-lg text-body-lg font-semibold text-on-surface">{item.name}</Text>
-          <Text className="font-body-md text-sm text-on-surface-variant">{item.description}</Text>
-        </View>
-      </View>
-      <SettingsSwitch
-        accessibilityLabel={`${item.name} prayer alert`}
-        value={item.enabled}
-        onValueChange={() => onToggle(item.key)}
-      />
-    </View>
-  );
-}
-
-function SystemToggleRow({
-  title,
-  description,
-  icon,
-  value,
-  onValueChange,
-}: SystemToggleRowProps) {
-  return (
-    <View className="flex-row items-center justify-between gap-4 border-b border-outline-variant/20 p-gutter">
-      <View className="min-w-0 flex-1 flex-row items-center gap-element-gap">
-        <MaterialIcons name={icon} size={24} color={COLORS.outline} />
-        <View className="min-w-0 flex-1">
-          <Text className="font-body-lg text-body-lg font-medium text-on-surface">{title}</Text>
-          <Text className="font-body-md text-sm text-on-surface-variant">{description}</Text>
-        </View>
-      </View>
-      <SettingsSwitch
-        accessibilityLabel={title}
-        value={value}
-        onValueChange={onValueChange}
-      />
-    </View>
-  );
-}
+const SETTINGS_PRAYERS = PRAYER_ORDER.filter((k) => k !== 'sunrise');
 
 export default function SettingsScreen() {
-  const [alerts, setAlerts] = useState(INITIAL_ALERTS);
-  const [globalNotifications, setGlobalNotifications] = useState(true);
+  const { city } = useLocation();
+  const { settings, setPrayerEnabled, setGlobal } = useReminders();
+  const [cleared, setCleared] = useState(false);
 
-  const toggleAlert = (key: string) => {
-    setAlerts((current) =>
-      current.map((item) => (item.key === key ? { ...item, enabled: !item.enabled } : item)),
-    );
+  const handleClear = async () => {
+    await clearAll();
+    setCleared(true);
+    setTimeout(() => setCleared(false), 1500);
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="flex-row items-center justify-between border-b border-outline-variant/50 bg-surface px-6 py-4">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Change location"
-          onPress={() => router.push('/select-city')}
-          className="rounded-full p-2">
-          <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
-        </Pressable>
-        <Text className="font-headline-md text-headline-md text-primary">Sakinah Bloom</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open about"
-          onPress={() => router.push('/about')}
-          className="rounded-full p-2">
-          <MaterialIcons name="account-circle" size={24} color={COLORS.primary} />
-        </Pressable>
-      </View>
-
+    <SafeAreaView edges={['top']} className="flex-1 bg-bg">
       <ScrollView
-        contentContainerClassName="px-container-padding pt-section-gap pb-28"
+        contentContainerClassName="px-screen-pad pt-6 pb-12"
         className="flex-1">
-        <View className="w-full max-w-3xl self-center">
-          <View className="mb-section-gap pt-unit">
-            <Text className="mb-element-gap font-headline-xl text-headline-xl text-primary">
-              Settings
-            </Text>
-            <Text className="font-body-lg text-body-lg text-on-surface-variant">
-              Manage your notifications, location, and application preferences.
+        <View className="gap-section-gap">
+          <View>
+            <Text className="font-headline-xl text-headline-xl text-text">Settings</Text>
+            <Text className="mt-1 font-body-sm text-body-sm text-text-sub">
+              Manage notifications, location, and your preferences.
             </Text>
           </View>
 
-          <View className="mb-section-gap">
-            <Text className="mb-container-padding font-headline-md text-headline-md text-primary">
-              Prayer Alerts
-            </Text>
-            <View
-              className="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest"
-              style={{
-                shadowColor: '#000',
-                shadowOpacity: 0.04,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 1,
-              }}>
-              {alerts.map((item, index) => (
-                <AlertRow
-                  key={item.key}
-                  item={item}
-                  last={index === alerts.length - 1}
-                  onToggle={toggleAlert}
-                />
-              ))}
-            </View>
+          {/* Location */}
+          <View className="gap-2">
+            <SectionHeader>Location</SectionHeader>
+            <SettingsCard>
+              <View className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                    <MaterialIcons name="location-on" size={20} color={theme.primary} />
+                  </View>
+                  <View>
+                    <Text className="font-body-md text-body-md text-text">{city.name}</Text>
+                    <Text className="font-caption text-caption text-text-sub">Sweden</Text>
+                  </View>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Change location"
+                  onPress={() => router.push('/select-city')}
+                  className="rounded-full border border-primary px-3 py-1.5">
+                  <Text className="font-label text-label uppercase text-primary">Change</Text>
+                </Pressable>
+              </View>
+            </SettingsCard>
           </View>
 
-          <View className="mb-section-gap">
-            <Text className="mb-container-padding font-headline-md text-headline-md text-primary">
-              System
-            </Text>
-            <View
-              className="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest"
-              style={{
-                shadowColor: '#000',
-                shadowOpacity: 0.04,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 1,
-              }}>
-              <SystemToggleRow
-                title="Global Notifications"
-                description="Enable or disable all app alerts"
-                icon="notifications-active"
-                value={globalNotifications}
-                onValueChange={() => setGlobalNotifications((value) => !value)}
-              />
-              <View className="flex-row items-center justify-between gap-4 p-gutter">
-                <View className="min-w-0 flex-1 flex-row items-center gap-element-gap">
-                  <MaterialIcons name="cached" size={24} color={COLORS.outline} />
-                  <View className="min-w-0 flex-1">
-                    <Text className="font-body-lg text-body-lg font-medium text-on-surface">
-                      Clear Cached Times
+          {/* Prayer Alerts */}
+          <View className="gap-2">
+            <SectionHeader>Prayer Alerts</SectionHeader>
+            <SettingsCard>
+              {SETTINGS_PRAYERS.map((key) => {
+                const reminder = settings.prayers[key];
+                return (
+                  <View
+                    key={key}
+                    className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
+                    <View className="flex-row items-center gap-3">
+                      <PrayerIcon prayer={key} size={36} />
+                      <View>
+                        <Text className="font-body-md text-body-md text-text">
+                          {PRAYER_LABELS[key]}
+                        </Text>
+                        <Text className="font-caption text-caption text-text-sub">
+                          {REMINDER_TYPE_LABELS[reminder.type]}
+                        </Text>
+                      </View>
+                    </View>
+                    <Toggle
+                      value={reminder.enabled}
+                      onValueChange={(v) => setPrayerEnabled(key, v)}
+                      accessibilityLabel={`${PRAYER_LABELS[key]} alert`}
+                    />
+                  </View>
+                );
+              })}
+            </SettingsCard>
+          </View>
+
+          {/* System */}
+          <View className="gap-2">
+            <SectionHeader>System</SectionHeader>
+            <SettingsCard>
+              <View className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                    <MaterialIcons name="notifications-active" size={20} color={theme.primary} />
+                  </View>
+                  <View>
+                    <Text className="font-body-md text-body-md text-text">Notifications</Text>
+                    <Text className="font-caption text-caption text-text-sub">
+                      Master toggle for all alerts
                     </Text>
-                    <Text className="font-body-md text-sm text-on-surface-variant">
-                      Force refresh calculation data
+                  </View>
+                </View>
+                <Toggle
+                  value={settings.global}
+                  onValueChange={setGlobal}
+                  accessibilityLabel="Global notifications"
+                />
+              </View>
+              <View className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                    <MaterialIcons name="cached" size={20} color={theme.primary} />
+                  </View>
+                  <View>
+                    <Text className="font-body-md text-body-md text-text">Clear Cache</Text>
+                    <Text className="font-caption text-caption text-text-sub">
+                      Reset stored preferences
                     </Text>
                   </View>
                 </View>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Clear cached times"
-                  onPress={() =>
-                    Alert.alert('Cache unchanged', 'Cached prayer times are not connected yet.')
-                  }
-                  className="rounded-full border border-outline-variant/50 px-4 py-2">
-                  <Text className="font-label-sm text-label-sm uppercase tracking-widest text-primary">
-                    Clear
+                  accessibilityLabel="Clear cache"
+                  onPress={handleClear}
+                  className={`rounded-full px-3 py-1.5 ${cleared ? 'bg-accent' : 'border border-text-sub'}`}>
+                  <Text
+                    className={`font-label text-label uppercase ${cleared ? 'text-card' : 'text-text-sub'}`}>
+                    {cleared ? 'Cleared!' : 'Clear'}
                   </Text>
                 </Pressable>
               </View>
-            </View>
+            </SettingsCard>
           </View>
         </View>
       </ScrollView>

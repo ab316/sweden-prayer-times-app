@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useSyncExternalStore, useState } from 'react';
 
 import {
   loadRecentCities,
@@ -18,31 +18,75 @@ export type UseLocationResult = {
   detectLocation: () => Promise<void>;
 };
 
+type LocationSnapshot = {
+  city: City;
+  recentCities: City[];
+  hydrated: boolean;
+};
+
+let snapshot: LocationSnapshot = {
+  city: DEFAULT_CITY,
+  recentCities: [],
+  hydrated: false,
+};
+
+let hydratePromise: Promise<void> | null = null;
+let revision = 0;
+const listeners = new Set<() => void>();
+
+function emit(next: Partial<LocationSnapshot>) {
+  snapshot = { ...snapshot, ...next };
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function getSnapshot() {
+  return snapshot;
+}
+
+function hydrateLocation() {
+  if (!hydratePromise) {
+    const startRevision = revision;
+    hydratePromise = (async () => {
+      const [stored, recents] = await Promise.all([loadSelectedCity(), loadRecentCities()]);
+      if (startRevision === revision) {
+        emit({
+          city: stored ?? DEFAULT_CITY,
+          recentCities: recents,
+          hydrated: true,
+        });
+      } else {
+        emit({ hydrated: true });
+      }
+    })();
+  }
+  return hydratePromise;
+}
+
 export function useLocation(): UseLocationResult {
-  const [city, setCity] = useState<City>(DEFAULT_CITY);
-  const [recentCities, setRecentCities] = useState<City[]>([]);
+  const { city, recentCities, hydrated } = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getSnapshot,
+  );
   const [detecting, setDetecting] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const [stored, recents] = await Promise.all([loadSelectedCity(), loadRecentCities()]);
-      if (cancelled) return;
-      if (stored) setCity(stored);
-      setRecentCities(recents);
-      setHydrated(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
+    hydrateLocation();
   }, []);
 
   const selectCity = useCallback(async (next: City) => {
-    setCity(next);
+    revision += 1;
+    emit({ city: next });
     await saveSelectedCity(next);
     const updated = await pushRecentCity(next);
-    setRecentCities(updated);
+    emit({ recentCities: updated });
   }, []);
 
   // Geolocation is not wired this round (no expo-location dep). We surface a

@@ -7,8 +7,8 @@
     "reset-project": "node ./scripts/reset-project.js",
     "generate:prayer-data": "node ./scripts/generate-prayer-data.mjs",
     "test:prayer-data": "node --test ./scripts/prayer-data",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
   },

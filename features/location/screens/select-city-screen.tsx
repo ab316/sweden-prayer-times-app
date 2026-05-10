@@ -12,7 +12,14 @@ import { useLocation } from '../hooks/use-location';
 import { POPULAR_CITIES, SWEDISH_CITIES, type City } from '../types';
 
 export default function SelectCityScreen() {
-  const { city: selectedCity, recentCities, detecting, selectCity, detectLocation } = useLocation();
+  const {
+    city: selectedCity,
+    recentCities,
+    detecting,
+    detectionError,
+    selectCity,
+    detectLocation,
+  } = useLocation();
   const [query, setQuery] = useState('');
 
   const trimmed = query.trim().toLowerCase();
@@ -79,6 +86,7 @@ export default function SelectCityScreen() {
               accessibilityRole="button"
               accessibilityLabel="Detect my location"
               onPress={detectLocation}
+              disabled={detecting}
               className="flex-row items-center justify-center gap-2 rounded-prayer-row border border-primary px-4 py-3">
               {detecting ? (
                 <ActivityIndicator size="small" color={theme.primary} />
@@ -89,6 +97,9 @@ export default function SelectCityScreen() {
                 {detecting ? 'Detecting…' : 'Detect My Location'}
               </Text>
             </Pressable>
+            {detectionError ? (
+              <Text className="px-2 font-caption text-caption text-text-sub">{detectionError}</Text>
+            ) : null}
           </View>
 
           {/* Search results */}

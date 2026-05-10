@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useSyncExternalStore, useState } from 'react';
+import * as Location from 'expo-location';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 
 import {
   loadRecentCities,
@@ -7,12 +8,13 @@ import {
   saveSelectedCity,
 } from '@/lib/storage';
 
-import { DEFAULT_CITY, type City } from '../types';
+import { DEFAULT_CITY, findNearestCity, type City } from '../types';
 
 export type UseLocationResult = {
   city: City;
   recentCities: City[];
   detecting: boolean;
+  detectionError: string | null;
   hydrated: boolean;
   selectCity: (city: City) => Promise<void>;
   detectLocation: () => Promise<void>;
@@ -33,6 +35,8 @@ let snapshot: LocationSnapshot = {
 let hydratePromise: Promise<void> | null = null;
 let revision = 0;
 const listeners = new Set<() => void>();
+const RECENT_POSITION_MAX_AGE_MS = 60 * 1000;
+const RECENT_POSITION_REQUIRED_ACCURACY_METERS = 5000;
 
 function emit(next: Partial<LocationSnapshot>) {
   snapshot = { ...snapshot, ...next };
@@ -76,6 +80,7 @@ export function useLocation(): UseLocationResult {
     getSnapshot,
   );
   const [detecting, setDetecting] = useState(false);
+  const [detectionError, setDetectionError] = useState<string | null>(null);
 
   useEffect(() => {
     hydrateLocation();
@@ -89,14 +94,38 @@ export function useLocation(): UseLocationResult {
     emit({ recentCities: updated });
   }, []);
 
-  // Geolocation is not wired this round (no expo-location dep). We surface a
-  // detecting state for UI parity with the design; it resolves to the current
-  // city after a short delay so the spinner is observable.
   const detectLocation = useCallback(async () => {
     setDetecting(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setDetecting(false);
-  }, []);
+    setDetectionError(null);
 
-  return { city, recentCities, detecting, hydrated, selectCity, detectLocation };
+    try {
+      let permission = await Location.getForegroundPermissionsAsync();
+      if (!permission.granted && permission.canAskAgain) {
+        permission = await Location.requestForegroundPermissionsAsync();
+      }
+
+      if (!permission.granted) {
+        setDetectionError('Location permission was not granted.');
+        return;
+      }
+
+      const position =
+        (await Location.getLastKnownPositionAsync({
+          maxAge: RECENT_POSITION_MAX_AGE_MS,
+          requiredAccuracy: RECENT_POSITION_REQUIRED_ACCURACY_METERS,
+        })) ??
+        (await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        }));
+
+      const nearest = findNearestCity(position.coords.latitude, position.coords.longitude);
+      await selectCity(nearest);
+    } catch {
+      setDetectionError('Could not detect your location. Please try again or choose a city.');
+    } finally {
+      setDetecting(false);
+    }
+  }, [selectCity]);
+
+  return { city, recentCities, detecting, detectionError, hydrated, selectCity, detectLocation };
 }

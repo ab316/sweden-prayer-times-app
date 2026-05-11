@@ -1,257 +1,1136 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prayer Screen — single-file reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1a1a; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; }
+  .phone-shell { width: 390px; height: 844px; background: #f5ede4; border-radius: 50px; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), inset 0 0 0 1px rgba(0,0,0,0.3); }
+  .status-bar { height: 50px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 28px 8px; font-size: 15px; font-weight: 600; flex-shrink: 0; position: relative; }
+  .status-bar .notch { width: 120px; height: 30px; background: #1a1a1a; border-radius: 0 0 20px 20px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+  .screen-content { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .screen-content::-webkit-scrollbar { display: none; }
+  .tab-bar { height: 82px; display: flex; align-items: flex-start; justify-content: space-around; padding-top: 10px; flex-shrink: 0; border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.95); }
+  button:active { opacity: 0.75; transform: scale(0.97); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">// constants/theme.jsx
+// Design tokens for Sweden Prayer. Three switchable themes.
+// Mirrors the token structure in design/Design.md.
+// Never inline hex values in components — reference THEMES[themeName] only.
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Sakinah Bloom - Prayer Times</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "tertiary-fixed": "#e7e2d9",
-                        "primary-fixed": "#b0f0d6",
-                        "on-error-container": "#93000a",
-                        "on-error": "#ffffff",
-                        "inverse-primary": "#95d3ba",
-                        "on-tertiary-fixed-variant": "#494740",
-                        "surface-container": "#eeeeec",
-                        "tertiary-container": "#46443e",
-                        "surface-dim": "#dadad8",
-                        "secondary-fixed": "#ffdea5",
-                        "surface-container-highest": "#e2e3e0",
-                        "surface-container-high": "#e8e8e6",
-                        "primary-container": "#064e3b",
-                        "primary": "#003527",
-                        "outline-variant": "#bfc9c3",
-                        "secondary-fixed-dim": "#e9c176",
-                        "on-secondary-fixed-variant": "#5d4201",
-                        "on-primary": "#ffffff",
-                        "surface-container-low": "#f4f4f1",
-                        "primary-fixed-dim": "#95d3ba",
-                        "on-primary-container": "#80bea6",
-                        "on-tertiary-fixed": "#1d1c16",
-                        "background": "#f9f9f7",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-fixed-dim": "#cac6be",
-                        "surface-bright": "#f9f9f7",
-                        "surface": "#f9f9f7",
-                        "on-surface": "#1a1c1b",
-                        "on-background": "#1a1c1b",
-                        "on-secondary-fixed": "#261900",
-                        "tertiary": "#2f2e28",
-                        "on-secondary": "#ffffff",
-                        "on-surface-variant": "#404944",
-                        "secondary-container": "#fed488",
-                        "inverse-surface": "#2f3130",
-                        "inverse-on-surface": "#f1f1ef",
-                        "surface-tint": "#2b6954",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-variant": "#e2e3e0",
-                        "on-tertiary-container": "#b5b1a9",
-                        "error-container": "#ffdad6",
-                        "secondary": "#775a19",
-                        "outline": "#707974",
-                        "on-primary-fixed": "#002117",
-                        "error": "#ba1a1a",
-                        "on-primary-fixed-variant": "#0b513d",
-                        "on-secondary-container": "#785a1a"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "section-gap": "40px",
-                        "gutter": "16px",
-                        "element-gap": "12px",
-                        "unit": "8px",
-                        "container-padding": "24px"
-                    },
-                    "fontFamily": {
-                        "label-sm": ["Manrope"],
-                        "headline-md": ["Noto Serif"],
-                        "headline-xl": ["Noto Serif"],
-                        "display-lg": ["Noto Serif"],
-                        "body-md": ["Manrope"],
-                        "body-lg": ["Manrope"]
-                    },
-                    "fontSize": {
-                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
-                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
-                        "headline-xl": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined.filled {
-            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-        }
-        body {
-            background-color: theme('colors.background');
-            color: theme('colors.on-background');
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
+// ACTIVE_THEME is hardcoded to 'sage' in Sweden Prayer.html.
+// The 'rose' and 'slate' entries are preserved here for a future theme-switching feature.
+// Do not remove them — they will be wired up via Settings > Appearance when that feature lands.
+const THEMES = {
+  sage: {
+    bg: '#f5ede4',
+    card: '#ffffff',
+    primary: '#2d5a42',
+    primaryLight: '#e8f0eb',
+    accent: '#c8892a',
+    accentLight: '#fdf3e3',
+    accentBorder: '#c8892a',
+    text: '#1e2c24',
+    textSub: '#6b7c72',
+    tabBg: 'rgba(255,255,255,0.95)',
+    currentRow: '#fdf3e3',
+    currentBorder: '#c8892a',
+    headerBg: '#f5ede4',
+    qiblaBg: '#f5ede4',
+  },
+  rose: {
+    bg: '#fdf0f3',
+    card: '#ffffff',
+    primary: '#8b1a3a',
+    primaryLight: '#fde8ef',
+    accent: '#c0395a',
+    accentLight: '#fde8ef',
+    accentBorder: '#c0395a',
+    text: '#2a0e1a',
+    textSub: '#8a6070',
+    tabBg: 'rgba(255,255,255,0.95)',
+    currentRow: '#fde8ef',
+    currentBorder: '#c0395a',
+    headerBg: '#fdf0f3',
+    qiblaBg: '#fdf0f3',
+  },
+  slate: {
+    bg: '#f0f2f5',
+    card: '#ffffff',
+    primary: '#2c3e6b',
+    primaryLight: '#e8ecf5',
+    accent: '#d4862a',
+    accentLight: '#fdf3e3',
+    accentBorder: '#d4862a',
+    text: '#1a2035',
+    textSub: '#6b7590',
+    tabBg: 'rgba(255,255,255,0.95)',
+    currentRow: '#fdf3e3',
+    currentBorder: '#d4862a',
+    headerBg: '#f0f2f5',
+    qiblaBg: '#f0f2f5',
+  },
+};
+
+// Expose globally so all feature modules can access
+Object.assign(window, { THEMES });
+</script>
+<script type="text/babel">// lib/time.jsx
+// Shared date/time utilities for Sweden Prayer.
+// Pure functions — no React, no fetch, no side effects.
+// Covers: Julian Date, solar position, prayer time calculation, Hijri conversion.
+
+// ── Julian Date ──────────────────────────────────────────────────────────────
+function julianDate(date) {
+  const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+  const a = Math.floor((14 - m) / 12);
+  const yy = y + 4800 - a;
+  const mm = m + 12 * a - 3;
+  return d + Math.floor((153 * mm + 2) / 5) + 365 * yy +
+    Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+}
+
+// ── Prayer time calculation (astronomical solar position) ────────────────────
+// Returns { fajr, shurkuk, dhuhr, asr, maghrib, isha } as "HH:MM" strings.
+// CalculationMethod angles: MWL (18/17), ISNA (15/15), Egypt (19.5/17.5), Makkah (18.5/90min)
+const CALC_METHOD_ANGLES = {
+  MWL:    { fajrAngle: 18,   ishaAngle: 17   },
+  ISNA:   { fajrAngle: 15,   ishaAngle: 15   },
+  Egypt:  { fajrAngle: 19.5, ishaAngle: 17.5 },
+  Makkah: { fajrAngle: 18.5, ishaAngle: 17   },
+};
+
+function calcPrayerTimes(date, lat, lon, method = 'MWL', madhab = 'Shafi') {
+  const { fajrAngle, ishaAngle } = CALC_METHOD_ANGLES[method] || CALC_METHOD_ANGLES.MWL;
+  const JD = julianDate(date);
+  const D = JD - 2451545.0;
+  const g = (357.529 + 0.98560028 * D) % 360;
+  const q = (280.459 + 0.98564736 * D) % 360;
+  const L = (q + 1.915 * Math.sin(g * Math.PI / 180) + 0.020 * Math.sin(2 * g * Math.PI / 180)) % 360;
+  const e = 23.439 - 0.00000036 * D;
+  const RA = Math.atan2(
+    Math.cos(e * Math.PI / 180) * Math.sin(L * Math.PI / 180),
+    Math.cos(L * Math.PI / 180)
+  ) * 180 / Math.PI / 15;
+  const decl = Math.asin(Math.sin(e * Math.PI / 180) * Math.sin(L * Math.PI / 180)) * 180 / Math.PI;
+  const EqT = q / 15 - ((RA + 360) % 24);
+  const transit = 12 - EqT - lon / 15;
+
+  const toRad = x => x * Math.PI / 180;
+  const hourAngle = (angle) => {
+    const cosH = (Math.sin(toRad(angle)) - Math.sin(toRad(lat)) * Math.sin(toRad(decl)))
+      / (Math.cos(toRad(lat)) * Math.cos(toRad(decl)));
+    if (Math.abs(cosH) > 1) return null;
+    return Math.acos(cosH) * 180 / Math.PI / 15;
+  };
+
+  const fmtTime = (h) => {
+    if (h === null) return '--:--';
+    const total = ((h % 24) + 24) % 24;
+    const hh = Math.floor(total);
+    const mm = Math.floor((total - hh) * 60);
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  };
+
+  // Asr shadow factor: Shafi = 1, Hanafi = 2
+  const asrFactor = madhab === 'Hanafi' ? 2 : 1;
+  const asrElevation = Math.atan(asrFactor + Math.tan(toRad(Math.abs(lat - decl)))) * 180 / Math.PI;
+
+  const H_fajr    = hourAngle(-fajrAngle);
+  const H_sunrise = hourAngle(-0.833);
+  const H_asr     = hourAngle(90 - asrElevation);
+  const H_maghrib = hourAngle(-0.833);
+  const H_isha    = hourAngle(-ishaAngle);
+
+  return {
+    fajr:    fmtTime(transit - H_fajr),
+    shurkuk: fmtTime(transit - H_sunrise),
+    dhuhr:   fmtTime(transit + 0.033),
+    asr:     fmtTime(transit + H_asr),
+    maghrib: fmtTime(transit + H_maghrib),
+    isha:    fmtTime(transit + H_isha),
+  };
+}
+
+// ── Time helpers ─────────────────────────────────────────────────────────────
+function toMinutes(timeStr) {
+  if (!timeStr || timeStr === '--:--') return -1;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function nowMinutes() {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+// Returns the key of the currently active prayer from a PrayerSchedule
+function currentPrayerKey(schedule) {
+  const order = ['fajr', 'shurkuk', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const now = nowMinutes();
+  let current = 'isha';
+  for (let i = order.length - 1; i >= 0; i--) {
+    const t = toMinutes(schedule[order[i]]);
+    if (t !== -1 && now >= t) { current = order[i]; break; }
+  }
+  return current;
+}
+
+// Returns { name, time, minsRemaining, tomorrow } for the next prayer
+function nextPrayerInfo(schedule) {
+  const order = ['fajr', 'shurkuk', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const now = nowMinutes();
+  for (const p of order) {
+    const t = toMinutes(schedule[p]);
+    if (t !== -1 && now < t) return { name: p, time: schedule[p], minsRemaining: t - now, tomorrow: false };
+  }
+  // After Isha → next is tomorrow's Fajr (approx using today's Fajr time)
+  const fajrT = toMinutes(schedule.fajr);
+  const mins = fajrT === -1 ? 0 : (24 * 60 - now) + fajrT;
+  return { name: 'fajr', time: schedule.fajr, minsRemaining: mins, tomorrow: true };
+}
+
+// Returns info about the prayer period currently in effect, plus what's next.
+// Shurkuk (sunrise) is a time marker, not a prayer period — between Shurkuk
+// and Dhuhr we treat the "current" state as a waiting window with no active prayer.
+// Returns:
+//   { active: false, waitingFor: { name, time, minsRemaining } }  — no prayer in effect
+//   { active: true,  name, startTime, endTime, minsUntilEnd,
+//                    next: { name, time, tomorrow } }              — prayer in effect
+function currentPrayerInfo(schedule) {
+  // Only real prayers, not Shurkuk
+  const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const now = nowMinutes();
+
+  // Find most-recent prayer whose start time has passed today
+  let activeKey = null;
+  for (let i = prayers.length - 1; i >= 0; i--) {
+    const t = toMinutes(schedule[prayers[i]]);
+    if (t !== -1 && now >= t) { activeKey = prayers[i]; break; }
+  }
+
+  // Before Fajr today — no prayer active (technically Isha from yesterday,
+  // but without yesterday's schedule we present it as "waiting for Fajr")
+  if (!activeKey) {
+    const fajrT = toMinutes(schedule.fajr);
+    return {
+      active: false,
+      waitingFor: { name: 'fajr', time: schedule.fajr, minsRemaining: fajrT === -1 ? 0 : fajrT - now },
+    };
+  }
+
+  // Between Fajr and Shurkuk → Fajr is active, ends at Shurkuk
+  // Between Shurkuk and Dhuhr → no prayer active (sunrise window)
+  // Between Dhuhr/Asr/Maghrib/Isha → that prayer is active
+  if (activeKey === 'fajr') {
+    const shurkukT = toMinutes(schedule.shurkuk);
+    const dhuhrT   = toMinutes(schedule.dhuhr);
+    if (shurkukT !== -1 && now >= shurkukT) {
+      // Past sunrise — Fajr period has closed
+      return {
+        active: false,
+        waitingFor: { name: 'dhuhr', time: schedule.dhuhr, minsRemaining: dhuhrT === -1 ? 0 : dhuhrT - now },
+      };
     }
-  </style>
-  </head>
-<body class="antialiased min-h-screen flex flex-col pb-24 md:pb-0">
-<!-- TopAppBar -->
-<header class="docked full-width top-0 border-b border-stone-200/50 bg-stone-50/80 backdrop-blur-md shadow-sm z-40 sticky">
-<div class="flex justify-between items-center w-full px-6 py-4">
-<button class="text-emerald-900 hover:bg-emerald-50/50 transition-colors scale-95 duration-200 ease-out p-2 rounded-full">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-<h1 class="font-serif italic font-semibold text-emerald-900 text-lg tracking-wide">Sakinah Bloom</h1>
-<button class="text-emerald-900 hover:bg-emerald-50/50 transition-colors scale-95 duration-200 ease-out p-2 rounded-full">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-</button>
-</div>
-</header>
-<!-- Main Content -->
-<main class="flex-1 w-full max-w-2xl mx-auto px-container-padding pt-6 pb-section-gap flex flex-col gap-section-gap">
-<!-- Location & Date -->
-<section class="flex flex-col items-center text-center space-y-2">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span class="font-body-md text-body-md">Stockholm, SE</span>
-</div>
-<div class="text-on-surface-variant/70 font-label-sm text-label-sm uppercase tracking-widest">
-                12 Rabi' al-Awwal / 27 September 2023
+    return {
+      active: true,
+      name: 'fajr',
+      startTime: schedule.fajr,
+      endTime: schedule.shurkuk,
+      minsUntilEnd: shurkukT === -1 ? 0 : shurkukT - now,
+      next: { name: 'dhuhr', time: schedule.dhuhr, tomorrow: false },
+    };
+  }
+
+  // Active is dhuhr | asr | maghrib | isha
+  const next = nextPrayerInfo(schedule);
+  return {
+    active: true,
+    name: activeKey,
+    startTime: schedule[activeKey],
+    endTime: next.time,
+    minsUntilEnd: next.minsRemaining,
+    next: { name: next.name, time: next.time, tomorrow: next.tomorrow },
+  };
+}
+
+function formatRemainingTime(mins) {
+  if (mins <= 0) return 'Now';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h > 0) return `${h}h ${m}m remaining`;
+  return `${m}m remaining`;
+}
+
+function formatDisplayDate(date) {
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── Hijri conversion (Kuwaiti algorithm) ─────────────────────────────────────
+const HIJRI_MONTHS = [
+  'Muharram', 'Safar', "Rabi' al-Awwal", "Rabi' al-Thani",
+  'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', "Sha'ban",
+  'Ramadan', 'Shawwal', "Dhu al-Qi'dah", 'Dhu al-Hijjah',
+];
+
+function toHijri(date) {
+  const jd = julianDate(date);
+  const l = jd - 1948440 + 10632;
+  const n = Math.floor((l - 1) / 10631);
+  const l2 = l - 10631 * n + 354;
+  const j = Math.floor((10985 - l2) / 5316) * Math.floor((50 * l2) / 17719)
+    + Math.floor(l2 / 5670) * Math.floor((43 * l2) / 15238);
+  const l3 = l2 - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
+    - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const month = Math.floor((24 * (l3 + 1)) / 709);
+  const day = l3 - Math.floor((709 * month) / 24);
+  return { day, month: HIJRI_MONTHS[month - 1], year: 30 * n + j - 30 };
+}
+
+// ── Qibla bearing from a lat/lon ──────────────────────────────────────────────
+// Returns bearing in degrees (0–360, clockwise from North)
+function calcQiblaBearing(lat, lon) {
+  const KAABA_LAT = 21.4225;
+  const KAABA_LON = 39.8262;
+  const toRad = x => x * Math.PI / 180;
+  const toDeg = x => x * 180 / Math.PI;
+  const dLon = toRad(KAABA_LON - lon);
+  const lat1 = toRad(lat);
+  const lat2 = toRad(KAABA_LAT);
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+// Expose to window for cross-module use
+Object.assign(window, {
+  julianDate,
+  calcPrayerTimes,
+  toMinutes,
+  nowMinutes,
+  currentPrayerKey,
+  nextPrayerInfo,
+  currentPrayerInfo,
+  formatRemainingTime,
+  formatDisplayDate,
+  toHijri,
+  HIJRI_MONTHS,
+  calcQiblaBearing,
+  CALC_METHOD_ANGLES,
+});
+</script>
+<script type="text/babel">// lib/storage.jsx
+// Persistence helpers for Sweden Prayer.
+// Wraps localStorage so the rest of the app never calls localStorage directly.
+// Cache entries carry a timestamp; callers can show "Updated N minutes ago."
+// In production (React Native), these would wrap AsyncStorage.
+
+const STORAGE_KEYS = {
+  SCHEDULE_CACHE:   'sp:schedule_cache',
+  SELECTED_CITY:    'sp:selected_city',
+  RECENT_CITIES:    'sp:recent_cities',
+  REMINDER_SETTINGS:'sp:reminder_settings',
+};
+
+// ── Schedule cache ────────────────────────────────────────────────────────────
+// Key: "<cityName>:<YYYY-MM-DD>"
+function scheduleCacheKey(cityName, date) {
+  const iso = date.toISOString().slice(0, 10);
+  return `${STORAGE_KEYS.SCHEDULE_CACHE}:${cityName}:${iso}`;
+}
+
+function saveSchedule(cityName, date, schedule) {
+  try {
+    const entry = { schedule, cachedAt: new Date().toISOString() };
+    localStorage.setItem(scheduleCacheKey(cityName, date), JSON.stringify(entry));
+  } catch (_) { /* storage full or unavailable — fail silently */ }
+}
+
+function loadSchedule(cityName, date) {
+  try {
+    const raw = localStorage.getItem(scheduleCacheKey(cityName, date));
+    if (!raw) return null;
+    return JSON.parse(raw); // { schedule, cachedAt }
+  } catch (_) { return null; }
+}
+
+function clearScheduleCache() {
+  const toRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(STORAGE_KEYS.SCHEDULE_CACHE)) toRemove.push(k);
+  }
+  toRemove.forEach(k => localStorage.removeItem(k));
+}
+
+// ── Selected city ────────────────────────────────────────────────────────────
+function saveSelectedCity(city) {
+  try { localStorage.setItem(STORAGE_KEYS.SELECTED_CITY, JSON.stringify(city)); } catch (_) {}
+}
+
+function loadSelectedCity() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.SELECTED_CITY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) { return null; }
+}
+
+// ── Recent cities (max 5) ────────────────────────────────────────────────────
+function saveRecentCities(cities) {
+  try { localStorage.setItem(STORAGE_KEYS.RECENT_CITIES, JSON.stringify(cities.slice(0, 5))); } catch (_) {}
+}
+
+function loadRecentCities() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.RECENT_CITIES);
+    return raw ? JSON.parse(raw) : [];
+  } catch (_) { return []; }
+}
+
+function addRecentCity(city, existing) {
+  const filtered = (existing || []).filter(c => c.name !== city.name);
+  return [city, ...filtered].slice(0, 5);
+}
+
+// ── Reminder settings ────────────────────────────────────────────────────────
+const DEFAULT_REMINDER_SETTINGS = {
+  globalEnabled: true,
+  prayers: {
+    fajr:    { enabled: true,  type: 'adhan+15m' },
+    shurkuk: { enabled: false, type: 'silent'    },
+    dhuhr:   { enabled: true,  type: 'adhan'     },
+    asr:     { enabled: true,  type: 'adhan'     },
+    maghrib: { enabled: true,  type: 'adhan+10m' },
+    isha:    { enabled: false,  type: 'silent'   },
+  },
+};
+
+function saveReminderSettings(settings) {
+  try { localStorage.setItem(STORAGE_KEYS.REMINDER_SETTINGS, JSON.stringify(settings)); } catch (_) {}
+}
+
+function loadReminderSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.REMINDER_SETTINGS);
+    return raw ? JSON.parse(raw) : DEFAULT_REMINDER_SETTINGS;
+  } catch (_) { return DEFAULT_REMINDER_SETTINGS; }
+}
+
+Object.assign(window, {
+  STORAGE_KEYS,
+  saveSchedule, loadSchedule, clearScheduleCache,
+  saveSelectedCity, loadSelectedCity,
+  saveRecentCities, loadRecentCities, addRecentCity,
+  DEFAULT_REMINDER_SETTINGS, saveReminderSettings, loadReminderSettings,
+});
+</script>
+<script type="text/babel">// features/schedule/types.jsx
+// Domain types and constants for the schedule feature.
+// In TypeScript this would be .ts with proper type definitions.
+
+// PrayerSchedule — the set of prayers for a single day at a single location.
+// Keys match the domain language in ARCHITECTURE.md exactly.
+// { fajr, shurkuk, dhuhr, asr, maghrib, isha } — all "HH:MM" strings or "--:--"
+
+// Prayer display labels — canonical UI copy
+const PRAYER_LABELS = {
+  fajr:    'Fajr',
+  shurkuk: 'Shurkuk',
+  dhuhr:   'Dhuhr',
+  asr:     'Asr',
+  maghrib: 'Maghrib',
+  isha:    'Isha',
+};
+
+// Prayer order for display
+const PRAYER_ORDER = ['fajr', 'shurkuk', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+// Reminder notification types
+const REMINDER_TYPES = {
+  'adhan+15m': 'Adhan & 15m pre-alert',
+  'adhan+10m': 'Adhan & 10m pre-alert',
+  'adhan':     'Adhan only',
+  'silent':    'Silent',
+};
+
+// Calculation method display names — reserved for future API integration
+// const CALC_METHOD_LABELS = { ... }
+
+Object.assign(window, {
+  PRAYER_LABELS,
+  PRAYER_ORDER,
+  REMINDER_TYPES,
+});
+</script>
+<script type="text/babel">// features/location/types.jsx
+// Domain types and constants for the location feature.
+
+// Full list of supported Swedish cities with coordinates.
+// Sorted by population (largest first) for default display order.
+const SWEDISH_CITIES = [
+  { name: 'Stockholm',   lat: 59.3293, lon: 18.0686 },
+  { name: 'Gothenburg',  lat: 57.7089, lon: 11.9746 },
+  { name: 'Malmö',       lat: 55.6049, lon: 13.0038 },
+  { name: 'Uppsala',     lat: 59.8586, lon: 17.6389 },
+  { name: 'Västerås',    lat: 59.6099, lon: 16.5448 },
+  { name: 'Örebro',      lat: 59.2753, lon: 15.2134 },
+  { name: 'Linköping',   lat: 58.4108, lon: 15.6214 },
+  { name: 'Helsingborg', lat: 56.0465, lon: 12.6945 },
+  { name: 'Jönköping',   lat: 57.7826, lon: 14.1618 },
+  { name: 'Norrköping',  lat: 58.5877, lon: 16.1924 },
+  { name: 'Lund',        lat: 55.7047, lon: 13.1910 },
+  { name: 'Umeå',        lat: 63.8258, lon: 20.2630 },
+  { name: 'Gävle',       lat: 60.6749, lon: 17.1413 },
+  { name: 'Borås',       lat: 57.7210, lon: 12.9401 },
+  { name: 'Sundsvall',   lat: 62.3908, lon: 17.3069 },
+  { name: 'Eskilstuna',  lat: 59.3710, lon: 16.5077 },
+  { name: 'Södertälje',  lat: 59.1955, lon: 17.6253 },
+  { name: 'Karlstad',    lat: 59.4022, lon: 13.5115 },
+  { name: 'Växjö',       lat: 56.8777, lon: 14.8091 },
+  { name: 'Halmstad',    lat: 56.6745, lon: 12.8578 },
+];
+
+// Popular cities shown as quick-select chips on the Location screen
+const POPULAR_CITIES = ['Uppsala', 'Västerås', 'Örebro', 'Linköping', 'Helsingborg', 'Jönköping', 'Lund'];
+
+// Default city (Stockholm) used before location is resolved
+const DEFAULT_CITY = SWEDISH_CITIES[0];
+
+// Find the nearest city to a lat/lon using Euclidean distance (good enough for Sweden's size)
+function findNearestCity(lat, lon) {
+  let nearest = SWEDISH_CITIES[0];
+  let minDist = Infinity;
+  for (const city of SWEDISH_CITIES) {
+    const dist = Math.sqrt(Math.pow(city.lat - lat, 2) + Math.pow(city.lon - lon, 2));
+    if (dist < minDist) { minDist = dist; nearest = city; }
+  }
+  return nearest;
+}
+
+Object.assign(window, {
+  SWEDISH_CITIES,
+  POPULAR_CITIES,
+  DEFAULT_CITY,
+  findNearestCity,
+});
+</script>
+<script type="text/babel">// features/schedule/hooks.jsx
+// useSchedule — loads and caches prayer times for a city + date.
+// Exposes { schedule, loading, error, cachedAt, refresh }
+// Follows the hook contract from ARCHITECTURE.md:
+//   - never calls fetch directly (uses lib/time.jsx for calculation)
+//   - integrates with lib/storage.jsx for caching
+//   - always returns cached data while revalidating
+
+// Prayer time calculation uses MWL (Muslim World League) angles and Shafi madhab by default.
+// These are hardcoded; configurable via API integration in a future update.
+const DEFAULT_CALC_METHOD = 'MWL';
+const DEFAULT_MADHAB = 'Shafi';
+
+function useSchedule(city, date) {
+  const [schedule, setSchedule] = React.useState(null);
+  const [loading, setLoading]   = React.useState(true);
+  const [error, setError]       = React.useState(null);
+  const [cachedAt, setCachedAt] = React.useState(null);
+
+  const load = React.useCallback(() => {
+    if (!city || !date) return;
+    setLoading(true);
+    setError(null);
+
+    // 1. Try cache first — show immediately if present
+    const cached = loadSchedule(city.name, date);
+    if (cached) {
+      setSchedule(cached.schedule);
+      setCachedAt(cached.cachedAt);
+      setLoading(false);
+    }
+
+    // 2. Compute (or recompute) times — in production this would be an API call
+    //    via lib/api/aladhan.ts; here we use the local astronomical calculation.
+    try {
+      const computed = calcPrayerTimes(date, city.lat, city.lon, DEFAULT_CALC_METHOD, DEFAULT_MADHAB);
+      setSchedule(computed);
+      const now = new Date().toISOString();
+      setCachedAt(now);
+      saveSchedule(city.name, date, computed);
+      setError(null);
+    } catch (err) {
+      if (!cached) setError('Could not calculate prayer times.');
+      // If we have cached data, keep showing it silently
+    } finally {
+      setLoading(false);
+    }
+  }, [city && city.name, date && date.toDateString()]);
+
+  React.useEffect(() => { load(); }, [load]);
+
+  return { schedule, loading, error, cachedAt, refresh: load };
+}
+
+Object.assign(window, { useSchedule });
+</script>
+<script type="text/babel">// features/location/hooks.jsx
+// useLocation — manages selected city, recent cities, and geolocation detection.
+// Exposes { city, recentCities, detecting, error, selectCity, detectLocation }
+
+function useLocation() {
+  const [city, setCity] = React.useState(() => loadSelectedCity() || DEFAULT_CITY);
+  const [recentCities, setRecentCities] = React.useState(() => {
+    const stored = loadRecentCities();
+    // Always ensure current city is in recents
+    return stored.length ? stored : [DEFAULT_CITY];
+  });
+  const [detecting, setDetecting] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const selectCity = React.useCallback((newCity) => {
+    setCity(newCity);
+    saveSelectedCity(newCity);
+    setRecentCities(prev => {
+      const updated = addRecentCity(newCity, prev);
+      saveRecentCities(updated);
+      return updated;
+    });
+  }, []);
+
+  const detectLocation = React.useCallback(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocation not supported on this device.');
+      return;
+    }
+    setDetecting(true);
+    setError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nearest = findNearestCity(pos.coords.latitude, pos.coords.longitude);
+        selectCity(nearest);
+        setDetecting(false);
+      },
+      (_err) => {
+        // Fallback: simulate detection with Stockholm for the prototype
+        setTimeout(() => {
+          selectCity(DEFAULT_CITY);
+          setDetecting(false);
+        }, 1200);
+      },
+      { timeout: 8000 }
+    );
+  }, [selectCity]);
+
+  return { city, recentCities, detecting, error, selectCity, detectLocation };
+}
+
+Object.assign(window, { useLocation });
+</script>
+<script type="text/babel">// features/reminders/hooks.jsx
+// useReminders — manages per-prayer notification settings.
+// Exposes { settings, setGlobal, setPrayerEnabled, setPrayerType, clearCache }
+// In production this schedules local notifications via lib/notifications/.
+
+function useReminders() {
+  const [settings, setSettings] = React.useState(() => loadReminderSettings());
+
+  const persist = React.useCallback((updated) => {
+    setSettings(updated);
+    saveReminderSettings(updated);
+  }, []);
+
+  const setGlobal = React.useCallback((enabled) => {
+    persist({ ...settings, globalEnabled: enabled });
+  }, [settings, persist]);
+
+  const setPrayerEnabled = React.useCallback((prayerKey, enabled) => {
+    persist({
+      ...settings,
+      prayers: {
+        ...settings.prayers,
+        [prayerKey]: { ...settings.prayers[prayerKey], enabled },
+      },
+    });
+  }, [settings, persist]);
+
+  const setPrayerType = React.useCallback((prayerKey, type) => {
+    persist({
+      ...settings,
+      prayers: {
+        ...settings.prayers,
+        [prayerKey]: { ...settings.prayers[prayerKey], type },
+      },
+    });
+  }, [settings, persist]);
+
+  return { settings, setGlobal, setPrayerEnabled, setPrayerType };
+}
+
+Object.assign(window, { useReminders });
+</script>
+<script type="text/babel">// components/ui.jsx
+// Shared, feature-agnostic UI primitives for Sweden Prayer.
+// These are the lowest-level building blocks used across all feature screens.
+// No business logic lives here — only visual components.
+
+// ── Prayer icons ──────────────────────────────────────────────────────────────
+function PrayerIcon({ name, size = 20, color = '#6b7c72' }) {
+  const s = size;
+  const icons = {
+    fajr: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <path d="M12 3C7.03 3 3 7.03 3 12H21C21 7.03 16.97 3 12 3Z" fill={color} opacity="0.3"/>
+        <path d="M3 12H21" stroke={color} strokeWidth="1.5"/>
+        <path d="M8 8L12 12L16 8" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    shurkuk: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <path d="M12 4V6M12 18V20M4 12H2M22 12H20M6.34 6.34L4.93 4.93M19.07 4.93L17.66 6.34" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="4" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15"/>
+        <path d="M4 16H20" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    dhuhr: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.2"/>
+        <path d="M12 2V4M12 20V22M2 12H4M20 12H22M4.93 4.93L6.34 6.34M17.66 6.34L19.07 4.93M4.93 19.07L6.34 17.66M17.66 17.66L19.07 19.07" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    asr: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="4" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.2"/>
+        <path d="M12 2V5M12 19V22M2 12H5M19 12H22M5.64 5.64L7.76 7.76M16.24 16.24L18.36 18.36M18.36 5.64L16.24 7.76M7.76 16.24L5.64 18.36" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+    maghrib: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <path d="M20 12C20 16.42 16.42 20 12 20C7.58 20 4 16.42 4 12H20Z" fill={color} opacity="0.2"/>
+        <path d="M4 12H20" stroke={color} strokeWidth="1.5"/>
+        <path d="M8 16L12 12L16 16" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    isha: (
+      <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill={color} fillOpacity="0.25" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  };
+  return icons[name] || icons.dhuhr;
+}
+
+// ── Tab bar icons ─────────────────────────────────────────────────────────────
+function TabIcon({ tab, active, color }) {
+  const icons = {
+    prayer: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M2 17L12 3L22 17H2Z" stroke={color} strokeWidth="1.6" strokeLinejoin="round" fill={active ? color : 'none'} fillOpacity="0.15"/>
+        <path d="M8 17V21H16V17" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      </svg>
+    ),
+    qibla: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.6"/>
+        <path d="M12 3V5M12 19V21M3 12H5M19 12H21" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="2" fill={color}/>
+        <path d="M12 8L14 12L12 10L10 12L12 8Z" fill={color}/>
+      </svg>
+    ),
+    settings: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.6"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke={color} strokeWidth="1.6"/>
+      </svg>
+    ),
+    about: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.6" fill={active ? color : 'none'} fillOpacity="0.1"/>
+        <path d="M12 8v1M12 11v5" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    ),
+  };
+  return icons[tab] || null;
+}
+
+// ── Toggle switch ─────────────────────────────────────────────────────────────
+function Toggle({ value, onChange, accentColor }) {
+  return (
+    <div
+      onClick={onChange}
+      style={{
+        width: 44, height: 26, borderRadius: 13,
+        background: value ? accentColor : '#d0d0d0',
+        cursor: 'pointer', position: 'relative',
+        transition: 'background 0.25s', flexShrink: 0,
+      }}
+    >
+      <div style={{
+        position: 'absolute', top: 3,
+        left: value ? 21 : 3,
+        width: 20, height: 20, borderRadius: '50%',
+        background: '#fff',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+        transition: 'left 0.25s',
+      }}></div>
+    </div>
+  );
+}
+
+// ── Notification bell button ──────────────────────────────────────────────────
+function NotifBell({ enabled, onToggle, color }) {
+  return (
+    <button
+      onClick={onToggle}
+      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: enabled ? 1 : 0.3, transition: 'opacity 0.2s' }}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"
+          stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          fill={enabled ? color + '33' : 'none'}/>
+      </svg>
+    </button>
+  );
+}
+
+// ── Icon circle container ─────────────────────────────────────────────────────
+function IconCircle({ children, bg, size = 36, radius = 10 }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: radius,
+      background: bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// ── Section header (settings-style) ──────────────────────────────────────────
+function SectionHeader({ title, color }) {
+  return (
+    <div style={{
+      fontSize: 12, fontWeight: 700, letterSpacing: 1.2,
+      color: color, textTransform: 'uppercase',
+      padding: '0 20px', marginBottom: 8,
+    }}>
+      {title}
+    </div>
+  );
+}
+
+// ── Settings card wrapper ─────────────────────────────────────────────────────
+function SettingsCard({ children, bg }) {
+  return (
+    <div style={{
+      background: '#ffffff', margin: '0 20px',
+      borderRadius: 16, overflow: 'hidden',
+      boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// ── Settings row ──────────────────────────────────────────────────────────────
+function SettingsRow({ icon, title, subtitle, right, divider, dividerColor }) {
+  return (
+    <div style={{
+      padding: '13px 16px',
+      display: 'flex', alignItems: 'center', gap: 12,
+      borderBottom: divider ? `1px solid ${dividerColor}` : 'none',
+    }}>
+      {icon}
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: 'inherit' }}>{title}</div>
+        {subtitle && <div style={{ fontSize: 12, marginTop: 1 }}>{subtitle}</div>}
+      </div>
+      {right}
+    </div>
+  );
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+function Spinner({ size = 16, color }) {
+  return (
+    <div style={{
+      width: size, height: size,
+      border: `2px solid ${color}`,
+      borderTopColor: 'transparent',
+      borderRadius: '50%',
+      animation: 'sp-spin 0.8s linear infinite',
+    }}></div>
+  );
+}
+
+Object.assign(window, {
+  PrayerIcon, TabIcon, Toggle, NotifBell,
+  IconCircle, SectionHeader, SettingsCard, SettingsRow, Spinner,
+});
+</script>
+<script type="text/babel">// features/schedule/PrayerScreen.jsx
+// Prayer times home screen.
+// Consumes: useSchedule (hook), useLocation (via props), THEMES, lib/time utilities.
+// Displays: header, date navigator, next-prayer hero, prayer list with per-row notif toggles.
+
+function PrayerScreen({ theme, city, date, setDate, onCityPress, reminderSettings, onToggleReminder }) {
+  const T = THEMES[theme];
+  const { schedule, loading, error, cachedAt } = useSchedule(city, date);
+
+  const isToday = date.toDateString() === new Date().toDateString();
+  const hijri   = toHijri(date);
+
+  const current = schedule ? currentPrayerKey(schedule) : null;
+  const next    = schedule ? nextPrayerInfo(schedule) : null;
+  const cur     = schedule && isToday ? currentPrayerInfo(schedule) : null;
+
+  // Highlight the active prayer in the list — only when there's an active prayer
+  // (not during the sunrise / pre-Fajr waiting windows)
+  const activeListKey = cur && cur.active ? cur.name : null;
+
+  // Progress through the current prayer period (0–1)
+  const progress = (() => {
+    if (!cur || !cur.active) return 0;
+    const startM = toMinutes(cur.startTime);
+    const endM   = toMinutes(cur.endTime);
+    if (startM === -1 || endM === -1) return 0;
+    const total = endM > startM ? endM - startM : (24 * 60 - startM) + endM;
+    const elapsed = total - cur.minsUntilEnd;
+    return Math.max(0, Math.min(1, elapsed / total));
+  })();
+
+  const changeDate = delta => {
+    const nd = new Date(date);
+    nd.setDate(nd.getDate() + delta);
+    setDate(nd);
+  };
+
+  return (
+    <div style={{ background: T.bg, minHeight: '100%', paddingBottom: 12 }}>
+
+      {/* ── Header ── */}
+      <div style={{ padding: '14px 22px 12px', background: T.headerBg }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          {/* Location button */}
+          <button onClick={onCityPress} style={{ width: 36, height: 36, borderRadius: 12, background: T.primaryLight, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={T.primary}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </button>
+          {/* App name */}
+          <div style={{ fontFamily: 'Lora, serif', fontSize: 20, fontWeight: 600, color: T.primary, letterSpacing: '-0.3px' }}>
+            Sweden Prayer
+          </div>
+          {/* Notification bell */}
+          <div style={{ width: 36, height: 36, borderRadius: 12, background: T.primaryLight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke={T.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+        </div>
+
+        {/* Date navigator inline with city + Hijri */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <button onClick={() => changeDate(-1)} style={{ width: 30, height: 30, borderRadius: 9, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke={T.textSub} strokeWidth="2" strokeLinecap="round"/></svg>
+          </button>
+          <button onClick={onCityPress} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: 0, flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill={T.primary}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+              <span style={{ fontSize: 15, fontWeight: 600, color: T.text }}>{city.name}</span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: isToday ? T.primary : T.text }}>· {isToday ? 'Today' : formatDisplayDate(date)}</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke={T.textSub} strokeWidth="2" strokeLinecap="round"/></svg>
             </div>
-</section>
-<!-- Hero Card (Next Prayer) -->
-<section class="relative w-full rounded-[32px] overflow-hidden bg-white shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-8 flex flex-col items-center justify-center text-center">
-<div class="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1542451313056-b7c8e6266459?q=80&amp;w=2000&amp;auto=format&amp;fit=crop')] bg-cover bg-center" data-alt="minimalist abstract architectural geometric patterns in soft warm light"></div>
-<div class="relative z-10 flex flex-col items-center gap-4">
-<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase">Next</span>
-<div class="flex flex-col items-center">
-<h2 class="font-display-lg text-display-lg text-primary">Asr</h2>
-<div class="font-headline-xl text-headline-xl text-on-surface mt-2">15:35</div>
-</div>
-<div class="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant">
-<span class="material-symbols-outlined text-[16px]">schedule</span>
-<span class="font-label-sm text-label-sm">-00:45 remaining</span>
-</div>
-</div>
-</section>
-<!-- Prayer List -->
-<section class="flex flex-col gap-4">
-<!-- Fajr -->
-<div class="flex items-center justify-between p-4 rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-variant/50">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[20px]">clear_night</span>
-</div>
-<span class="font-headline-md text-headline-md text-on-surface">Fajr</span>
-</div>
-<span class="font-body-lg text-body-lg text-on-surface-variant">04:32</span>
-</div>
-<!-- Shuruk -->
-<div class="flex items-center justify-between p-4 rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-variant/50">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[20px]">wb_twilight</span>
-</div>
-<span class="font-headline-md text-headline-md text-on-surface">Shuruk</span>
-</div>
-<span class="font-body-lg text-body-lg text-on-surface-variant">06:45</span>
-</div>
-<!-- Dhuhr -->
-<div class="flex items-center justify-between p-4 rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-variant/50">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[20px]">light_mode</span>
-</div>
-<span class="font-headline-md text-headline-md text-on-surface">Dhuhr</span>
-</div>
-<span class="font-body-lg text-body-lg text-on-surface-variant">12:50</span>
-</div>
-<!-- Asr (Current) -->
-<div class="relative flex items-center justify-between p-5 rounded-2xl bg-secondary-fixed/30 border border-secondary-container shadow-sm overflow-hidden">
-<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary"></div>
-<div class="flex items-center gap-4 pl-2">
-<div class="w-12 h-12 rounded-full bg-secondary-container/50 flex items-center justify-center text-on-secondary-container">
-<span class="material-symbols-outlined text-[24px] filled">wb_sunny</span>
-</div>
-<div class="flex flex-col">
-<span class="font-headline-md text-headline-md text-on-secondary-fixed">Asr</span>
-<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mt-1">Current</span>
-</div>
-</div>
-<span class="font-body-lg text-body-lg text-on-secondary-fixed font-semibold">15:35</span>
-</div>
-<!-- Maghrib -->
-<div class="flex items-center justify-between p-4 rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-variant/50">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[20px]">nights_stay</span>
-</div>
-<span class="font-headline-md text-headline-md text-on-surface">Maghrib</span>
-</div>
-<span class="font-body-lg text-body-lg text-on-surface-variant">18:42</span>
-</div>
-<!-- Isha -->
-<div class="flex items-center justify-between p-4 rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-variant/50">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline">
-<span class="material-symbols-outlined text-[20px]">dark_mode</span>
-</div>
-<span class="font-headline-md text-headline-md text-on-surface">Isha</span>
-</div>
-<span class="font-body-lg text-body-lg text-on-surface-variant">20:15</span>
-</div>
-</section>
-</main>
-<!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-white/70 backdrop-blur-2xl rounded-t-[32px] border-t border-white/20 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
-<button class="flex flex-col items-center justify-center text-amber-600 scale-110 transition-transform group">
-<div class="p-2 rounded-2xl bg-amber-50 group-hover:bg-amber-100 transition-colors mb-1">
-<span class="material-symbols-outlined filled text-[24px]">schedule</span>
-</div>
-<span class="font-sans text-[11px] font-medium tracking-tight text-amber-800">Prayer</span>
-</button>
-<button class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 vibration-feedback-subtle transition-all duration-300">
-<div class="p-2 mb-1">
-<span class="material-symbols-outlined text-[24px]" data-icon="explore">explore</span>
-</div>
-<span class="font-sans text-[11px] font-medium tracking-tight text-emerald-900">Qibla</span>
-</button>
-<button class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 vibration-feedback-subtle transition-all duration-300">
-<div class="p-2 mb-1">
-<span class="material-symbols-outlined text-[24px]" data-icon="settings">settings</span>
-</div>
-<span class="font-sans text-[11px] font-medium tracking-tight text-emerald-900">Settings</span>
-</button>
-<button class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 vibration-feedback-subtle transition-all duration-300">
-<div class="p-2 mb-1">
-<span class="material-symbols-outlined text-[24px]" data-icon="info">info</span>
-</div>
-<span class="font-sans text-[11px] font-medium tracking-tight text-emerald-900">About</span>
-</button>
-</nav>
-</body></html>
+            <div style={{ fontSize: 11, color: T.textSub, letterSpacing: 0.3 }}>
+              {hijri.day} {hijri.month}
+            </div>
+          </button>
+          <button onClick={() => changeDate(1)} style={{ width: 30, height: 30, borderRadius: 9, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke={T.textSub} strokeWidth="2" strokeLinecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      {/* ── Hero: Current prayer (compact) ── */}
+      {schedule && isToday && cur && cur.active && (
+        <div style={{ margin: '10px 16px 14px', background: T.card, borderRadius: 20, padding: '16px 20px', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -24, right: -24, width: 110, height: 110, borderRadius: '50%', background: T.accentLight, opacity: 0.55 }}></div>
+          <div style={{ position: 'absolute', bottom: -28, left: -14, width: 70, height: 70, borderRadius: '50%', background: T.primaryLight, opacity: 0.45 }}></div>
+          <div style={{ position: 'relative' }}>
+            {/* Eyebrow */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: T.accent, boxShadow: `0 0 0 4px ${T.accent}22` }}></span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, color: T.accent, textTransform: 'uppercase' }}>
+                Current Prayer
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: 0.5, color: T.textSub, textTransform: 'uppercase' }}>
+                · started {cur.startTime}
+              </span>
+            </div>
+
+            {/* Name + Ends-in stats on one row */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+              <div style={{ fontFamily: 'Lora, serif', fontSize: 40, fontWeight: 700, color: T.primary, lineHeight: 1 }}>
+                {PRAYER_LABELS[cur.name]}
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 1.2, color: T.textSub, textTransform: 'uppercase' }}>Ends in</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: T.accent, letterSpacing: '-0.3px', lineHeight: 1.1 }}>
+                  {formatRemainingTime(cur.minsUntilEnd).replace(' remaining', '')}
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: T.textSub }}>at {cur.endTime}</div>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 4, borderRadius: 2, background: T.primary + '12', overflow: 'hidden', marginBottom: 12 }}>
+              <div style={{ height: '100%', width: `${progress * 100}%`, background: T.accent, borderRadius: 2, transition: 'width 0.4s ease' }}></div>
+            </div>
+
+            {/* Next */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTop: `1px solid ${T.primary}10` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, color: T.textSub, textTransform: 'uppercase' }}>Then</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{PRAYER_LABELS[cur.next.name]}</span>
+                {cur.next.tomorrow && (
+                  <span style={{ fontSize: 10, fontWeight: 500, color: T.textSub, textTransform: 'uppercase', letterSpacing: 0.5 }}>· tomorrow</span>
+                )}
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: T.primary, letterSpacing: '-0.2px' }}>{cur.next.time}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Hero: Waiting state (compact) ── */}
+      {schedule && isToday && cur && !cur.active && (
+        <div style={{ margin: '8px 16px 12px', background: T.card, borderRadius: 18, padding: '14px 18px', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -24, right: -24, width: 100, height: 100, borderRadius: '50%', background: T.primaryLight, opacity: 0.55 }}></div>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, color: T.textSub, textTransform: 'uppercase', marginBottom: 4 }}>Up Next</div>
+              <div style={{ fontFamily: 'Lora, serif', fontSize: 32, fontWeight: 700, color: T.primary, lineHeight: 1, marginBottom: 2 }}>
+                {PRAYER_LABELS[cur.waitingFor.name]}
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 500, color: T.text, letterSpacing: '-0.4px' }}>{cur.waitingFor.time}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 1.2, color: T.textSub, textTransform: 'uppercase' }}>Starts in</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: T.accent, letterSpacing: '-0.3px', lineHeight: 1.1 }}>
+                {formatRemainingTime(cur.waitingFor.minsRemaining).replace(' remaining', '')}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Hero: Other days (schedule preview, compact) ── */}
+      {schedule && !isToday && next && (
+        <div style={{ margin: '8px 16px 12px', background: T.card, borderRadius: 18, padding: '14px 18px', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -24, right: -24, width: 100, height: 100, borderRadius: '50%', background: T.primaryLight, opacity: 0.55 }}></div>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, color: T.textSub, textTransform: 'uppercase', marginBottom: 4 }}>Prayer Schedule</div>
+              <div style={{ fontFamily: 'Lora, serif', fontSize: 32, fontWeight: 700, color: T.primary, lineHeight: 1, marginBottom: 2 }}>
+                {PRAYER_LABELS.fajr}
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 500, color: T.text, letterSpacing: '-0.4px' }}>{schedule.fajr}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Loading / Error states ── */}
+      {loading && !schedule && (
+        <div style={{ textAlign: 'center', padding: '32px 20px', color: T.textSub, fontSize: 13 }}>
+          Calculating prayer times…
+        </div>
+      )}
+      {error && !schedule && (
+        <div style={{ margin: '0 20px 16px', background: '#fff3f3', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#c0392b' }}>
+          {error}
+        </div>
+      )}
+
+      {/* ── Prayer List (compact) ── */}
+      {schedule && (
+        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {PRAYER_ORDER.map(p => {
+            const isCurrent = isToday && p === activeListKey;
+            const nowMins   = nowMinutes();
+            const pMins     = toMinutes(schedule[p]);
+            const isPassed  = isToday && pMins !== -1 && pMins < nowMins && !isCurrent;
+            const notifOn   = reminderSettings.prayers[p]?.enabled ?? false;
+
+            return (
+              <div key={p} style={{
+                background: isCurrent ? T.currentRow : T.card,
+                borderRadius: 13,
+                padding: '11px 14px',
+                display: 'flex', alignItems: 'center', gap: 12,
+                boxShadow: isCurrent ? `0 2px 12px ${T.accent}20` : '0 1px 4px rgba(0,0,0,0.05)',
+                borderLeft: isCurrent ? `3px solid ${T.currentBorder}` : '3px solid transparent',
+                opacity: isPassed ? 0.55 : 1,
+                transition: 'all 0.2s',
+              }}>
+                <IconCircle bg={isCurrent ? T.accent + '22' : T.primaryLight} size={34} radius={10}>
+                  <PrayerIcon name={p} size={17} color={isCurrent ? T.accent : T.primary} />
+                </IconCircle>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: T.text }}>{PRAYER_LABELS[p]}</span>
+                    {isCurrent && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.8, color: T.accent, textTransform: 'uppercase' }}>· Now</span>}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <NotifBell
+                    enabled={notifOn}
+                    onToggle={() => onToggleReminder(p)}
+                    color={isCurrent ? T.accent : T.primary}
+                  />
+                  <div style={{ fontSize: 16, fontWeight: 600, color: isCurrent ? T.accent : T.text, letterSpacing: '-0.3px', minWidth: 44, textAlign: 'right' }}>
+                    {schedule[p]}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+Object.assign(window, { PrayerScreen });
+</script>
+<script type="text/babel">
+function App() {
+  const theme = 'sage';
+  const T = THEMES[theme];
+  const [date, setDate] = React.useState(new Date());
+  const { city } = useLocation();
+  const { settings: reminderSettings, setPrayerEnabled } = useReminders();
+  return (
+    <div className="phone-shell">
+      <div className="status-bar" style={{ color: T.text }}>
+        <div className="notch"></div>
+        <span>9:41</span>
+        <span style={{ fontSize: 12, opacity: 0.6 }}>•••</span>
+      </div>
+      <div className="screen-content" style={{ background: T.bg }}>
+        <PrayerScreen theme={theme} city={city} date={date} setDate={setDate}
+          onCityPress={() => {}}
+          reminderSettings={reminderSettings}
+          onToggleReminder={(k) => setPrayerEnabled(k, !(reminderSettings.prayers[k]?.enabled ?? false))} />
+      </div>
+      <div className="tab-bar"></div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

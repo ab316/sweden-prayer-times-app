@@ -29,8 +29,8 @@ export default function SelectCityScreen() {
     return SWEDISH_CITIES.filter((c) => c.name.toLowerCase().includes(trimmed)).slice(0, 20);
   }, [trimmed]);
 
-  const handleSelect = async (c: City) => {
-    await selectCity(c);
+  const handleSelect = (c: City) => {
+    void selectCity(c).catch(() => undefined);
     router.back();
   };
 
@@ -129,9 +129,9 @@ export default function SelectCityScreen() {
               {recentCities.length > 0 ? (
                 <View className="gap-2">
                   <SectionHeader>Recently Used</SectionHeader>
-                  {recentCities.map((c) => (
+                  {recentCities.map((c, index) => (
                     <CityOption
-                      key={c.id}
+                      key={`recent-${c.id}-${index}`}
                       name={c.name}
                       subtitle={c.id === selectedCity.id ? 'Current Location' : 'Sweden'}
                       active={c.id === selectedCity.id}

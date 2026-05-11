@@ -9,7 +9,7 @@ import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
 import { useReminders } from '@/features/reminders';
 import { isSameDay } from '@/lib/time/format';
-import { formatHijri } from '@/lib/time/hijri';
+import { formatScheduleHijri } from '@/lib/time/hijri';
 import { currentPrayerInfo } from '@/lib/time/prayer-state';
 
 import { PrayerRow } from '../components/prayer-row';
@@ -87,7 +87,7 @@ export default function PrayerTimesScreen() {
               <MaterialIcons name="keyboard-arrow-down" size={13} color={theme.textSub} />
             </View>
             <Text className="font-caption text-[11px] leading-4 text-text-sub" numberOfLines={1}>
-              {formatHijri(date)}
+              {day ? formatScheduleHijri(day.hijri) : ''}
             </Text>
           </Pressable>
 

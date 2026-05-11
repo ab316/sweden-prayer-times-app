@@ -20,8 +20,16 @@ export const PRAYER_LABELS: Record<PrayerKey, string> = {
   isha: 'Isha',
 };
 
+export type ScheduleHijriDate = {
+  short: string;
+  long: string;
+  shortIso8601: string | null;
+  longIso8601: string | null;
+};
+
 export type DaySchedule = {
   date: string;
+  hijri: ScheduleHijriDate;
   prayers: Record<PrayerKey, string>;
 };
 

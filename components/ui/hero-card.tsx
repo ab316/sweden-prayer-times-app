@@ -1,4 +1,3 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
@@ -18,7 +17,7 @@ export function HeroCard({ currentInfo }: Props) {
 
   return (
     <View
-      className="relative overflow-hidden rounded-hero-card bg-card px-card-pad py-card-pad"
+      className="relative mx-4 mb-3.5 mt-2.5 overflow-hidden rounded-hero-card bg-card px-card-pad py-4"
       style={{
         shadowColor: '#000',
         shadowOpacity: 0.06,
@@ -29,18 +28,18 @@ export function HeroCard({ currentInfo }: Props) {
       {currentInfo.active ? (
         <View
           className="absolute rounded-full bg-accent-light"
-          style={{ width: 120, height: 120, right: -20, top: -20, opacity: 0.6 }}
+          style={{ width: 110, height: 110, right: -24, top: -24, opacity: 0.55 }}
         />
       ) : (
         <View
           className="absolute rounded-full bg-primary-light"
-          style={{ width: 120, height: 120, right: -20, top: -20, opacity: 0.6 }}
+          style={{ width: 100, height: 100, right: -24, top: -24, opacity: 0.55 }}
         />
       )}
       {currentInfo.active ? (
         <View
           className="absolute rounded-full bg-primary-light"
-          style={{ width: 80, height: 80, left: -10, bottom: -30, opacity: 0.5 }}
+          style={{ width: 70, height: 70, left: -14, bottom: -28, opacity: 0.45 }}
         />
       ) : null}
 
@@ -62,7 +61,7 @@ function ActiveHeroContent({
 }) {
   return (
     <View>
-      <View className="mb-1.5 flex-row items-center gap-2">
+      <View className="mb-2 flex-row items-center gap-2">
         <View
           className="h-1.5 w-1.5 rounded-full bg-accent"
           style={{ shadowColor: theme.accent, shadowOpacity: 0.35, shadowRadius: 4 }}
@@ -75,28 +74,28 @@ function ActiveHeroContent({
         </Text>
       </View>
 
-      <Text className="mb-3.5 font-display-lg text-display-lg text-primary">
-        {PRAYER_LABELS[currentInfo.name]}
-      </Text>
+      <View className="mb-3 flex-row items-end justify-between gap-3">
+        <Text className="shrink font-display-lg text-[40px] leading-10 text-primary">
+          {PRAYER_LABELS[currentInfo.name]}
+        </Text>
 
-      <View className="mb-3.5 flex-row self-start items-center gap-2 rounded-full border border-accent/30 bg-accent-light px-3.5 py-1.5">
-        <MaterialIcons name="schedule" size={13} color={theme.accent} />
-        <Text className="font-body-md text-[13px] leading-4 text-accent">
-          Ends in {formatRemainingTime(currentInfo.minsUntilEnd)}
-        </Text>
-        <Text className="font-caption text-xs text-accent opacity-70">
-          {'\u00b7'} {currentInfo.endTime}
-        </Text>
+        <View className="items-end">
+          <Text className="font-label text-[9px] uppercase leading-3 text-text-sub">Ends in</Text>
+          <Text className="font-label text-xl leading-[22px] text-accent">
+            {formatRemainingTime(currentInfo.minsUntilEnd)}
+          </Text>
+          <Text className="font-caption text-[11px] leading-4 text-text-sub">at {currentInfo.endTime}</Text>
+        </View>
       </View>
 
-      <View className="mb-3.5 h-1 overflow-hidden rounded-full bg-primary-light">
+      <View className="mb-3 h-1 overflow-hidden rounded-full bg-primary-light">
         <View
           className="h-full rounded-full bg-accent"
           style={{ width: `${progress * 100}%` }}
         />
       </View>
 
-      <View className="flex-row items-center justify-between border-t border-primary/10 pt-3">
+      <View className="flex-row items-center justify-between border-t border-primary/10 pt-2.5">
         <View className="flex-row items-center gap-2">
           <Text className="font-label text-[10px] uppercase leading-3 text-text-sub">Then</Text>
           <Text className="font-body-md text-sm leading-5 text-text">
@@ -120,20 +119,20 @@ function WaitingHeroContent({
   currentInfo: Extract<CurrentPrayerInfo, { active: false }>;
 }) {
   return (
-    <View>
-      <Text className="mb-1.5 font-label text-[10px] uppercase leading-3 text-text-sub">
-        Up Next
-      </Text>
-      <Text className="font-display-lg text-display-lg text-primary">
-        {PRAYER_LABELS[currentInfo.waitingFor.name]}
-      </Text>
-      <Text className="mb-3 font-time-lg text-time-lg text-text">
-        {currentInfo.waitingFor.time}
-      </Text>
-      <View className="flex-row self-start items-center gap-1.5 rounded-full border border-accent/30 bg-accent-light px-3 py-1.5">
-        <MaterialIcons name="schedule" size={12} color={theme.accent} />
-        <Text className="font-caption text-xs text-accent">
-          Starts in {formatRemainingTime(currentInfo.waitingFor.minsRemaining)}
+    <View className="flex-row items-end justify-between gap-3">
+      <View>
+        <Text className="mb-1 font-label text-[10px] uppercase leading-3 text-text-sub">Up Next</Text>
+        <Text className="font-display-lg text-[32px] leading-9 text-primary">
+          {PRAYER_LABELS[currentInfo.waitingFor.name]}
+        </Text>
+        <Text className="font-time-lg text-xl leading-7 text-text">
+          {currentInfo.waitingFor.time}
+        </Text>
+      </View>
+      <View className="items-end">
+        <Text className="font-label text-[9px] uppercase leading-3 text-text-sub">Starts in</Text>
+        <Text className="font-label text-lg leading-5 text-accent">
+          {formatRemainingTime(currentInfo.waitingFor.minsRemaining)}
         </Text>
       </View>
     </View>

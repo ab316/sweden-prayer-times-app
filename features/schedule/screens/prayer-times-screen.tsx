@@ -8,12 +8,13 @@ import { HeroCard } from '@/components/ui/hero-card';
 import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
 import { useReminders } from '@/features/reminders';
-import { formatLongDate, isSameDay } from '@/lib/time/format';
+import { isSameDay } from '@/lib/time/format';
 import { formatHijri } from '@/lib/time/hijri';
 import { currentPrayerInfo } from '@/lib/time/prayer-state';
 
 import { PrayerRow } from '../components/prayer-row';
 import { useSchedule } from '../hooks/use-schedule';
+import { PRAYER_LABELS } from '../types';
 
 export default function PrayerTimesScreen() {
   const { city } = useLocation();
@@ -21,10 +22,12 @@ export default function PrayerTimesScreen() {
   const [date, setDate] = useState<Date>(() => new Date());
   const today = new Date();
 
-  const { day, prayers, next, error } = useSchedule(city.id, date);
+  const { day, prayers, error } = useSchedule(city.id, date);
 
   const isToday = isSameDay(date, today);
-  const dateLabel = isToday ? 'Today' : formatLongDate(date);
+  const dateLabel = isToday
+    ? 'Today'
+    : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const currentInfo = day && isToday ? currentPrayerInfo(day.prayers) : null;
   const activeListKey = currentInfo?.active ? currentInfo.name : null;
 
@@ -36,69 +39,81 @@ export default function PrayerTimesScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-bg">
-      {/* Header */}
-      <View className="px-screen-pad pb-3 pt-4">
-        <View className="flex-row items-center justify-between">
+      <View className="px-[22px] pb-3 pt-3.5">
+        <View className="mb-2.5 flex-row items-center justify-between">
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Change city, currently ${city.name}`}
             onPress={() => router.push('/select-city')}
-            className="flex-row items-center gap-1 p-1">
-            <MaterialIcons name="location-on" size={18} color={theme.primary} />
-            <Text className="font-body-sm text-body-sm text-text">{city.name}</Text>
+            className="h-9 w-9 items-center justify-center rounded-xl bg-primary-light">
+            <MaterialIcons name="location-on" size={16} color={theme.primary} />
           </Pressable>
-          <Text className="font-app-title text-app-title text-text">Sweden Prayer</Text>
+
+          <Text className="font-app-title text-app-title text-primary">Sweden Prayer</Text>
+
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Notifications"
             onPress={() => router.push('/(tabs)/settings')}
-            className="p-1">
-            <MaterialIcons name="notifications-none" size={22} color={theme.text} />
+            className="h-9 w-9 items-center justify-center rounded-xl bg-primary-light">
+            <MaterialIcons name="notifications-none" size={16} color={theme.primary} />
           </Pressable>
         </View>
-        <View className="mt-2 items-center">
-          <Text className="font-caption text-caption text-text-sub">
-            {formatHijri(date)} · {date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-          </Text>
+
+        <View className="flex-row items-center justify-between gap-2">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Previous day"
+            onPress={() => stepDays(-1)}
+            className="h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px]">
+            <MaterialIcons name="chevron-left" size={19} color={theme.textSub} />
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Change city, currently ${city.name}`}
+            onPress={() => router.push('/select-city')}
+            className="min-w-0 flex-1 items-center">
+            <View className="max-w-full flex-row items-center justify-center gap-[5px]">
+              <MaterialIcons name="location-on" size={12} color={theme.primary} />
+              <Text className="font-body-md text-body-md text-text" numberOfLines={1}>
+                {city.name}
+              </Text>
+              <Text
+                className={`font-caption text-sm leading-5 ${isToday ? 'text-primary' : 'text-text'}`}
+                numberOfLines={1}>
+                {'\u00b7'} {dateLabel}
+              </Text>
+              <MaterialIcons name="keyboard-arrow-down" size={13} color={theme.textSub} />
+            </View>
+            <Text className="font-caption text-[11px] leading-4 text-text-sub" numberOfLines={1}>
+              {formatHijri(date)}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Next day"
+            onPress={() => stepDays(1)}
+            className="h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px]">
+            <MaterialIcons name="chevron-right" size={19} color={theme.textSub} />
+          </Pressable>
         </View>
       </View>
 
-      {/* Date navigator */}
-      <View className="flex-row items-center justify-center gap-4 px-screen-pad pb-4">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Previous day"
-          onPress={() => stepDays(-1)}
-          className="rounded-full bg-card p-2"
-          style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }}>
-          <MaterialIcons name="chevron-left" size={20} color={theme.text} />
-        </Pressable>
-        <Text className="font-body-md text-body-md text-text">{dateLabel}</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Next day"
-          onPress={() => stepDays(1)}
-          className="rounded-full bg-card p-2"
-          style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }}>
-          <MaterialIcons name="chevron-right" size={20} color={theme.text} />
-        </Pressable>
-      </View>
-
-      <ScrollView
-        contentContainerClassName="px-screen-pad pb-12"
-        className="flex-1">
-        <View className="gap-section-gap">
+      <ScrollView contentContainerClassName="pb-12" className="flex-1">
+        <View>
           {error ? (
-            <Text className="font-body-md text-body-md text-text-sub">
+            <Text className="mx-screen-pad mt-6 rounded-md bg-card px-4 py-3 font-body-md text-body-md text-text-sub">
               {error}
             </Text>
           ) : null}
 
           {currentInfo ? (
             <HeroCard currentInfo={currentInfo} />
-          ) : next ? (
+          ) : day ? (
             <View
-              className="relative overflow-hidden rounded-hero-card bg-card px-card-pad py-8"
+              className="relative mx-4 mb-3 mt-2 overflow-hidden rounded-[18px] bg-card px-[18px] py-3.5"
               style={{
                 shadowColor: '#000',
                 shadowOpacity: 0.06,
@@ -108,18 +123,27 @@ export default function PrayerTimesScreen() {
               }}>
               <View
                 className="absolute rounded-full bg-primary-light"
-                style={{ width: 120, height: 120, right: -20, top: -20, opacity: 0.6 }}
+                style={{ width: 100, height: 100, right: -24, top: -24, opacity: 0.55 }}
               />
-              <Text className="font-label text-label uppercase text-text-sub">Prayer Schedule</Text>
-              <Text className="mt-2 font-display-lg text-display-lg text-primary">{next.label}</Text>
-              <Text className="mt-1 font-time-lg text-time-lg text-text">{next.time}</Text>
+              <View className="relative flex-row items-end justify-between gap-3">
+                <View>
+                  <Text className="mb-1 font-label text-[10px] uppercase leading-3 text-text-sub">
+                    Prayer Schedule
+                  </Text>
+                  <Text className="font-display-lg text-[32px] leading-9 text-primary">
+                    {PRAYER_LABELS.fajr}
+                  </Text>
+                  <Text className="font-time-lg text-xl leading-7 text-text">{day.prayers.fajr}</Text>
+                </View>
+              </View>
             </View>
           ) : null}
 
-          <View className="gap-row-gap">
+          <View className="gap-[7px] px-4">
             {prayers.map((p) => {
               const isCurrent = isToday && activeListKey === p.key;
-              const isPast = !isCurrent && p.date.getTime() < new Date().getTime();
+              const isPast = isToday && !isCurrent && p.date.getTime() < new Date().getTime();
+
               return (
                 <PrayerRow
                   key={p.key}

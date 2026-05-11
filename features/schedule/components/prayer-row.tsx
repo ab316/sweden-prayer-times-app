@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { NotifBell } from '@/components/ui/notif-bell';
 import { PrayerIcon } from '@/components/ui/prayer-icon';
@@ -29,7 +29,7 @@ export function PrayerRow({
       accessible
       accessibilityRole="text"
       accessibilityLabel={`${name}, ${time}${current ? ', current prayer' : ''}`}
-      className={`relative flex-row items-center justify-between rounded-prayer-row bg-card px-row-pad-x py-row-pad-y ${current ? 'border-l-[3px] border-current-border bg-current-row' : ''}`}
+      className={`relative flex-row items-center justify-between rounded-[13px] bg-card px-3.5 py-[11px] ${current ? 'border-l-[3px] border-current-border bg-current-row' : 'border-l-[3px] border-transparent'}`}
       style={{
         opacity: past ? 0.55 : 1,
         shadowColor: current ? '#c8892a' : '#000',
@@ -38,20 +38,27 @@ export function PrayerRow({
         shadowOffset: { width: 0, height: 2 },
         elevation: 1,
       }}>
-      <View className="flex-row items-center gap-3">
-        <PrayerIcon prayer={prayerKey} size={36} emphasized={current} />
-        <View className="flex-col">
-          <Text className="font-body-md text-body-md text-text">{name}</Text>
+      <View className="min-w-0 flex-1 flex-row items-center gap-3">
+        <PrayerIcon prayer={prayerKey} size={34} emphasized={current} />
+        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+          <Text className="font-body-md text-body-md text-text" numberOfLines={1}>
+            {name}
+          </Text>
           {current ? (
-            <Text className="mt-0.5 font-label text-label uppercase text-accent">Current</Text>
+            <Text className="font-label text-[10px] uppercase leading-3 text-accent">Now</Text>
           ) : null}
         </View>
       </View>
-      <View className="flex-row items-center gap-2">
-        <Pressable onPress={onToggleReminder} hitSlop={8}>
-          <NotifBell active={reminderActive} onPress={onToggleReminder} />
-        </Pressable>
-        <Text className="font-time-md text-time-md text-text">{time}</Text>
+      <View className="flex-row items-center gap-1.5">
+        <NotifBell
+          active={reminderActive}
+          onPress={onToggleReminder}
+          size={18}
+          accessibilityLabel={`${reminderActive ? 'Disable' : 'Enable'} ${name} reminder`}
+        />
+        <Text className={`min-w-[44px] text-right font-time-md text-time-md ${current ? 'text-accent' : 'text-text'}`}>
+          {time}
+        </Text>
       </View>
     </View>
   );

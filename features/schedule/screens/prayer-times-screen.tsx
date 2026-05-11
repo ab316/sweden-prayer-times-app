@@ -4,15 +4,16 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HeroCard } from '@/components/ui/hero-card';
 import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
 import { useReminders } from '@/features/reminders';
-import { diffToHHMM, formatLongDate, isSameDay } from '@/lib/time/format';
+import { formatLongDate, isSameDay } from '@/lib/time/format';
 import { formatHijri } from '@/lib/time/hijri';
+import { currentPrayerInfo } from '@/lib/time/prayer-state';
 
 import { PrayerRow } from '../components/prayer-row';
 import { useSchedule } from '../hooks/use-schedule';
-import { HeroCard } from '@/components/ui/hero-card';
 
 export default function PrayerTimesScreen() {
   const { city } = useLocation();
@@ -20,10 +21,12 @@ export default function PrayerTimesScreen() {
   const [date, setDate] = useState<Date>(() => new Date());
   const today = new Date();
 
-  const { prayers, current, next, error } = useSchedule(city.id, date);
+  const { day, prayers, next, error } = useSchedule(city.id, date);
 
   const isToday = isSameDay(date, today);
   const dateLabel = isToday ? 'Today' : formatLongDate(date);
+  const currentInfo = day && isToday ? currentPrayerInfo(day.prayers) : null;
+  const activeListKey = currentInfo?.active ? currentInfo.name : null;
 
   const stepDays = (delta: number) => {
     const d = new Date(date);
@@ -91,17 +94,31 @@ export default function PrayerTimesScreen() {
             </Text>
           ) : null}
 
-          {next ? (
-            <HeroCard
-              prayerName={next.label}
-              time={next.time}
-              countdown={diffToHHMM(next.date, new Date())}
-            />
+          {currentInfo ? (
+            <HeroCard currentInfo={currentInfo} />
+          ) : next ? (
+            <View
+              className="relative overflow-hidden rounded-hero-card bg-card px-card-pad py-8"
+              style={{
+                shadowColor: '#000',
+                shadowOpacity: 0.06,
+                shadowRadius: 16,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}>
+              <View
+                className="absolute rounded-full bg-primary-light"
+                style={{ width: 120, height: 120, right: -20, top: -20, opacity: 0.6 }}
+              />
+              <Text className="font-label text-label uppercase text-text-sub">Prayer Schedule</Text>
+              <Text className="mt-2 font-display-lg text-display-lg text-primary">{next.label}</Text>
+              <Text className="mt-1 font-time-lg text-time-lg text-text">{next.time}</Text>
+            </View>
           ) : null}
 
           <View className="gap-row-gap">
             {prayers.map((p) => {
-              const isCurrent = current?.key === p.key;
+              const isCurrent = isToday && activeListKey === p.key;
               const isPast = !isCurrent && p.date.getTime() < new Date().getTime();
               return (
                 <PrayerRow

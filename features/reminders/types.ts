@@ -26,12 +26,12 @@ export type ReminderSettings = {
 };
 
 export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
-  global: true,
+  global: false,
   prayers: {
-    fajr: { enabled: true, type: 'adhan+15m' },
-    dhuhr: { enabled: true, type: 'adhan' },
-    asr: { enabled: true, type: 'adhan' },
-    maghrib: { enabled: true, type: 'adhan+10m' },
-    isha: { enabled: true, type: 'adhan' },
+    fajr: { enabled: false, type: 'adhan+15m' },
+    dhuhr: { enabled: false, type: 'adhan' },
+    asr: { enabled: false, type: 'adhan' },
+    maghrib: { enabled: false, type: 'adhan+10m' },
+    isha: { enabled: false, type: 'adhan' },
   },
 };

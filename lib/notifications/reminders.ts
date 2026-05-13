@@ -47,6 +47,13 @@ function buildReminderBody(prayerName: string) {
   return `${prayerName} prayer time`;
 }
 
+function hasEnabledReminder(settings: ReminderSettings) {
+  return REMINDER_PRAYERS.some((prayerKey) => {
+    const reminder = settings.prayers[prayerKey];
+    return reminder.enabled && reminder.type !== 'silent';
+  });
+}
+
 async function ensureNotificationChannel() {
   if (Platform.OS !== 'android') return;
 
@@ -131,7 +138,7 @@ export async function rebuildReminderSchedule({
     return { status: 'unsupported', scheduledCount: 0 };
   }
 
-  if (!settings.global) {
+  if (!settings.global || !hasEnabledReminder(settings)) {
     return cancelReminderSchedule();
   }
 

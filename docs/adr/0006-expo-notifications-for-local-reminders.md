@@ -17,7 +17,9 @@ We will use `expo-notifications` for prayer reminders. Reminders are scheduled a
 For the first implementation:
 
 - `Sunrise` is not schedulable.
-- Reminder settings are enabled by default for the five daily prayers.
+- Reminder settings are disabled by default, including the global notification switch and each
+  prayer reminder.
+- Notification permission is requested when the user enables the first schedulable reminder.
 - Each enabled prayer schedules one notification at prayer time.
 - Adhan means the platform default notification sound.
 - Notification copy matches the current English UI.

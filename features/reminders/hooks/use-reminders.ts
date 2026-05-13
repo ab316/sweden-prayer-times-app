@@ -36,6 +36,12 @@ function normalizeReminderSettings(value: ReminderSettings | null): ReminderSett
   };
 }
 
+function hasEnabledReminder(settings: ReminderSettings) {
+  return Object.values(settings.prayers).some(
+    (reminder) => reminder.enabled && reminder.type !== 'silent',
+  );
+}
+
 export function useReminders(): UseRemindersResult {
   const { city, hydrated: locationHydrated } = useLocation();
   const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_REMINDER_SETTINGS);
@@ -75,7 +81,11 @@ export function useReminders(): UseRemindersResult {
   useEffect(() => {
     if (!hydrated || !locationHydrated) return;
 
-    const requestPermission = hasStoredSettings === false && !hasRequestedPermission && settings.global;
+    const requestPermission =
+      hasStoredSettings === false &&
+      !hasRequestedPermission &&
+      settings.global &&
+      hasEnabledReminder(settings);
     void rebuildReminderSchedule({
       cityId: city.id,
       settings,

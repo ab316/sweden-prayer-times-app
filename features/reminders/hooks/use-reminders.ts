@@ -8,8 +8,8 @@ import { isoDateKey } from '@/lib/time/format';
 import {
   DEFAULT_REMINDER_SETTINGS,
   isReminderPrayerKey,
-  type ReminderSettings,
   type ReminderPrayerKey,
+  type ReminderSettings,
   type ReminderType,
 } from '../types';
 
@@ -40,6 +40,8 @@ export function useReminders(): UseRemindersResult {
   const { city, hydrated: locationHydrated } = useLocation();
   const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_REMINDER_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
+  const [hasStoredSettings, setHasStoredSettings] = useState<boolean | null>(null);
+  const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
   const [scheduleDateKey, setScheduleDateKey] = useState(() => isoDateKey(new Date()));
 
   useEffect(() => {
@@ -47,7 +49,12 @@ export function useReminders(): UseRemindersResult {
     (async () => {
       const stored = normalizeReminderSettings(await loadReminderSettings());
       if (cancelled) return;
-      if (stored) setSettings(stored);
+      if (stored) {
+        setSettings(stored);
+        setHasStoredSettings(true);
+      } else {
+        setHasStoredSettings(false);
+      }
       setHydrated(true);
     })();
     return () => {
@@ -68,12 +75,17 @@ export function useReminders(): UseRemindersResult {
   useEffect(() => {
     if (!hydrated || !locationHydrated) return;
 
+    const requestPermission = hasStoredSettings === false && !hasRequestedPermission && settings.global;
     void rebuildReminderSchedule({
       cityId: city.id,
       settings,
-      requestPermission: false,
+      requestPermission,
     });
-  }, [city.id, hydrated, locationHydrated, scheduleDateKey, settings]);
+
+    if (requestPermission) {
+      setHasRequestedPermission(true);
+    }
+  }, [city.id, hydrated, locationHydrated, scheduleDateKey, settings, hasStoredSettings, hasRequestedPermission]);
 
   useEffect(() => {
     const now = new Date();

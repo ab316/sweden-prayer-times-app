@@ -1,5 +1,11 @@
 import type { PrayerKey } from '@/features/schedule/types';
 
+export type ReminderPrayerKey = Exclude<PrayerKey, 'sunrise'>;
+
+export function isReminderPrayerKey(key: PrayerKey): key is ReminderPrayerKey {
+  return key !== 'sunrise';
+}
+
 export type ReminderType = 'adhan+15m' | 'adhan+10m' | 'adhan' | 'silent';
 
 export const REMINDER_TYPE_LABELS: Record<ReminderType, string> = {
@@ -16,14 +22,13 @@ export type PrayerReminder = {
 
 export type ReminderSettings = {
   global: boolean;
-  prayers: Record<PrayerKey, PrayerReminder>;
+  prayers: Record<ReminderPrayerKey, PrayerReminder>;
 };
 
 export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
   global: true,
   prayers: {
     fajr: { enabled: true, type: 'adhan+15m' },
-    sunrise: { enabled: false, type: 'silent' },
     dhuhr: { enabled: true, type: 'adhan' },
     asr: { enabled: true, type: 'adhan' },
     maghrib: { enabled: true, type: 'adhan+10m' },

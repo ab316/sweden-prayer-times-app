@@ -14,10 +14,13 @@ import {
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import '../global.css';
+
+import { configureLocalNotifications } from '@/lib/notifications/reminders';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -35,6 +38,10 @@ export default function RootLayout() {
     DMSans_600SemiBold,
     DMSans_700Bold,
   });
+
+  useEffect(() => {
+    configureLocalNotifications();
+  }, []);
 
   if (!fontsLoaded) {
     return null;

@@ -50,6 +50,7 @@
           "locationWhenInUsePermission": "Allow Sakinah Bloom to use your location to choose the nearest Swedish city for prayer times."
         }
       ],
+      "expo-notifications",
       [
         "expo-build-properties",
         {

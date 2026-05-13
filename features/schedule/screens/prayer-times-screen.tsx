@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { HeroCard } from '@/components/ui/hero-card';
 import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
-import { useReminders } from '@/features/reminders';
+import { isReminderPrayerKey, useReminders } from '@/features/reminders';
 import { isSameDay } from '@/lib/time/format';
 import { formatScheduleHijri } from '@/lib/time/hijri';
 import { currentPrayerInfo } from '@/lib/time/prayer-state';
@@ -143,6 +143,23 @@ export default function PrayerTimesScreen() {
             {prayers.map((p) => {
               const isCurrent = isToday && activeListKey === p.key;
               const isPast = isToday && !isCurrent && p.date.getTime() < new Date().getTime();
+              if (isReminderPrayerKey(p.key)) {
+                const prayerKey = p.key;
+                const reminderEnabled = settings.prayers[prayerKey]?.enabled ?? false;
+
+                return (
+                  <PrayerRow
+                    key={p.key}
+                    prayerKey={prayerKey}
+                    name={p.label}
+                    time={p.time}
+                    current={isCurrent}
+                    past={isPast}
+                    reminderActive={settings.global && reminderEnabled}
+                    onToggleReminder={() => setPrayerEnabled(prayerKey, !reminderEnabled)}
+                  />
+                );
+              }
 
               return (
                 <PrayerRow
@@ -152,10 +169,7 @@ export default function PrayerTimesScreen() {
                   time={p.time}
                   current={isCurrent}
                   past={isPast}
-                  reminderActive={settings.global && (settings.prayers[p.key]?.enabled ?? false)}
-                  onToggleReminder={() =>
-                    setPrayerEnabled(p.key, !(settings.prayers[p.key]?.enabled ?? false))
-                  }
+                  reminderActive={false}
                 />
               );
             })}

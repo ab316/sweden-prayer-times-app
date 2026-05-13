@@ -12,7 +12,7 @@ export type PrayerRowProps = {
   current?: boolean;
   past?: boolean;
   reminderActive: boolean;
-  onToggleReminder: () => void;
+  onToggleReminder?: () => void;
 };
 
 export function PrayerRow({
@@ -50,12 +50,14 @@ export function PrayerRow({
         </View>
       </View>
       <View className="flex-row items-center gap-1.5">
-        <NotifBell
-          active={reminderActive}
-          onPress={onToggleReminder}
-          size={18}
-          accessibilityLabel={`${reminderActive ? 'Disable' : 'Enable'} ${name} reminder`}
-        />
+        {onToggleReminder ? (
+          <NotifBell
+            active={reminderActive}
+            onPress={onToggleReminder}
+            size={18}
+            accessibilityLabel={`${reminderActive ? 'Disable' : 'Enable'} ${name} reminder`}
+          />
+        ) : null}
         <Text className={`min-w-[44px] text-right font-time-md text-time-md ${current ? 'text-accent' : 'text-text'}`}>
           {time}
         </Text>

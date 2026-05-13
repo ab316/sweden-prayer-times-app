@@ -10,21 +10,38 @@ import { SettingsCard } from '@/components/ui/settings-card';
 import { Toggle } from '@/components/ui/toggle';
 import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
-import { useReminders, REMINDER_TYPE_LABELS } from '@/features/reminders';
+import { useReminders, REMINDER_TYPE_LABELS, isReminderPrayerKey } from '@/features/reminders';
 import { PRAYER_LABELS, PRAYER_ORDER } from '@/features/schedule';
+import { cancelReminderSchedule, scheduleTestNotification } from '@/lib/notifications/reminders';
 import { clearAll } from '@/lib/storage';
 
-const SETTINGS_PRAYERS = PRAYER_ORDER.filter((k) => k !== 'sunrise');
+const SETTINGS_PRAYERS = PRAYER_ORDER.filter(isReminderPrayerKey);
 
 export default function SettingsScreen() {
   const { city } = useLocation();
   const { settings, setPrayerEnabled, setGlobal } = useReminders();
   const [cleared, setCleared] = useState(false);
+  const [testStatus, setTestStatus] = useState<'idle' | 'scheduled' | 'denied' | 'unsupported'>(
+    'idle',
+  );
 
   const handleClear = async () => {
-    await clearAll();
+    await Promise.all([clearAll(), cancelReminderSchedule()]);
     setCleared(true);
     setTimeout(() => setCleared(false), 1500);
+  };
+
+  const handleTestNotification = async () => {
+    const result = await scheduleTestNotification();
+    const nextStatus =
+      result.status === 'scheduled'
+        ? 'scheduled'
+        : result.status === 'unsupported'
+          ? 'unsupported'
+          : 'denied';
+
+    setTestStatus(nextStatus);
+    setTimeout(() => setTestStatus('idle'), 2500);
   };
 
   return (
@@ -118,6 +135,37 @@ export default function SettingsScreen() {
                   onValueChange={setGlobal}
                   accessibilityLabel="Global notifications"
                 />
+              </View>
+              <View className="flex-row items-center justify-between gap-3 px-row-pad-x py-row-pad-y">
+                <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                    <MaterialIcons name="notification-add" size={20} color={theme.primary} />
+                  </View>
+                  <View className="min-w-0 flex-1">
+                    <Text className="font-body-md text-body-md text-text" numberOfLines={1}>
+                      Test Notification
+                    </Text>
+                    <Text className="font-caption text-caption text-text-sub" numberOfLines={1}>
+                      Test alert in 1 minute
+                    </Text>
+                  </View>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Schedule test notification"
+                  onPress={handleTestNotification}
+                  className={`min-w-[70px] shrink-0 items-center rounded-full px-3 py-1.5 ${testStatus === 'scheduled' ? 'bg-accent' : 'border border-text-sub'}`}>
+                  <Text
+                    className={`font-label text-label uppercase ${testStatus === 'scheduled' ? 'text-card' : 'text-text-sub'}`}>
+                    {testStatus === 'scheduled'
+                      ? 'Set'
+                      : testStatus === 'denied'
+                        ? 'Denied'
+                        : testStatus === 'unsupported'
+                          ? 'Web'
+                          : 'Test'}
+                  </Text>
+                </Pressable>
               </View>
               <View className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
                 <View className="flex-row items-center gap-3">

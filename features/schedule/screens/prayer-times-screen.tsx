@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,7 +20,13 @@ export default function PrayerTimesScreen() {
   const { city } = useLocation();
   const { settings, setPrayerEnabled } = useReminders();
   const [date, setDate] = useState<Date>(() => new Date());
-  const today = new Date();
+  const [now, setNow] = useState(() => new Date());
+  const today = now;
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const { day, prayers, error } = useSchedule(city.id, date);
 
@@ -28,7 +34,7 @@ export default function PrayerTimesScreen() {
   const dateLabel = isToday
     ? 'Today'
     : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  const currentInfo = day && isToday ? currentPrayerInfo(day.prayers) : null;
+  const currentInfo = day && isToday ? currentPrayerInfo(day.prayers, now) : null;
   const activeListKey = currentInfo?.active ? currentInfo.name : null;
 
   const stepDays = (delta: number) => {
@@ -142,7 +148,7 @@ export default function PrayerTimesScreen() {
           <View className="gap-[7px] px-4">
             {prayers.map((p) => {
               const isCurrent = isToday && activeListKey === p.key;
-              const isPast = isToday && !isCurrent && p.date.getTime() < new Date().getTime();
+              const isPast = isToday && !isCurrent && p.date.getTime() < now.getTime();
               if (isReminderPrayerKey(p.key)) {
                 const prayerKey = p.key;
                 const reminderEnabled = settings.prayers[prayerKey]?.enabled ?? false;

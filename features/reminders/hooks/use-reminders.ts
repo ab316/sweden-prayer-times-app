@@ -1,18 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useLocation } from '@/features/location';
-import { rebuildReminderSchedule } from '@/lib/notifications/reminders';
+import { ensureReminderScheduleFresh } from '@/lib/notifications/reminders';
 import { loadReminderSettings, saveReminderSettings } from '@/lib/storage';
-import { isoDateKey } from '@/lib/time/format';
 
 import {
   DEFAULT_REMINDER_SETTINGS,
   isReminderPrayerKey,
+  normalizeReminderSettings,
   type ReminderPrayerKey,
   type ReminderSettings,
   type ReminderType,
 } from '../types';
 
+/** Reminder settings state and mutation API used by reminder-aware screens. */
 export type UseRemindersResult = {
   settings: ReminderSettings;
   hydrated: boolean;
@@ -21,34 +22,11 @@ export type UseRemindersResult = {
   setGlobal: (enabled: boolean) => void;
 };
 
-function normalizeReminderSettings(value: ReminderSettings | null): ReminderSettings | null {
-  if (!value) return null;
-
-  return {
-    global: typeof value.global === 'boolean' ? value.global : DEFAULT_REMINDER_SETTINGS.global,
-    prayers: {
-      fajr: value.prayers?.fajr ?? DEFAULT_REMINDER_SETTINGS.prayers.fajr,
-      dhuhr: value.prayers?.dhuhr ?? DEFAULT_REMINDER_SETTINGS.prayers.dhuhr,
-      asr: value.prayers?.asr ?? DEFAULT_REMINDER_SETTINGS.prayers.asr,
-      maghrib: value.prayers?.maghrib ?? DEFAULT_REMINDER_SETTINGS.prayers.maghrib,
-      isha: value.prayers?.isha ?? DEFAULT_REMINDER_SETTINGS.prayers.isha,
-    },
-  };
-}
-
-function hasEnabledReminder(settings: ReminderSettings) {
-  return Object.values(settings.prayers).some(
-    (reminder) => reminder.enabled && reminder.type !== 'silent',
-  );
-}
-
+/** Loads reminder settings for UI controls and persists changes through the app-level scheduler. */
 export function useReminders(): UseRemindersResult {
-  const { city, hydrated: locationHydrated } = useLocation();
+  const { city } = useLocation();
   const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_REMINDER_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
-  const [hasStoredSettings, setHasStoredSettings] = useState<boolean | null>(null);
-  const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
-  const [scheduleDateKey, setScheduleDateKey] = useState(() => isoDateKey(new Date()));
 
   useEffect(() => {
     let cancelled = false;
@@ -57,9 +35,6 @@ export function useReminders(): UseRemindersResult {
       if (cancelled) return;
       if (stored) {
         setSettings(stored);
-        setHasStoredSettings(true);
-      } else {
-        setHasStoredSettings(false);
       }
       setHydrated(true);
     })();
@@ -68,48 +43,19 @@ export function useReminders(): UseRemindersResult {
     };
   }, []);
 
+  /** Persists settings changes and forces the app-level scheduler to rebuild immediately. */
   const persist = useCallback((next: ReminderSettings, requestPermission: boolean) => {
     setSettings(next);
     void saveReminderSettings(next);
-    void rebuildReminderSchedule({
+    void ensureReminderScheduleFresh({
       cityId: city.id,
       settings: next,
       requestPermission,
+      force: true,
     });
   }, [city.id]);
 
-  useEffect(() => {
-    if (!hydrated || !locationHydrated) return;
-
-    const requestPermission =
-      hasStoredSettings === false &&
-      !hasRequestedPermission &&
-      settings.global &&
-      hasEnabledReminder(settings);
-    void rebuildReminderSchedule({
-      cityId: city.id,
-      settings,
-      requestPermission,
-    });
-
-    if (requestPermission) {
-      setHasRequestedPermission(true);
-    }
-  }, [city.id, hydrated, locationHydrated, scheduleDateKey, settings, hasStoredSettings, hasRequestedPermission]);
-
-  useEffect(() => {
-    const now = new Date();
-    const nextDay = new Date(now);
-    nextDay.setDate(nextDay.getDate() + 1);
-    nextDay.setHours(0, 0, 5, 0);
-
-    const timeout = setTimeout(() => {
-      setScheduleDateKey(isoDateKey(new Date()));
-    }, nextDay.getTime() - now.getTime());
-
-    return () => clearTimeout(timeout);
-  }, [scheduleDateKey]);
-
+  /** Enables or disables reminders for one prayer. */
   const setPrayerEnabled = useCallback(
     (key: ReminderPrayerKey, enabled: boolean) => {
       if (!isReminderPrayerKey(key)) return;
@@ -124,6 +70,7 @@ export function useReminders(): UseRemindersResult {
     [persist, settings],
   );
 
+  /** Updates the reminder delivery mode for one prayer. */
   const setPrayerType = useCallback(
     (key: ReminderPrayerKey, type: ReminderType) => {
       persist({
@@ -137,6 +84,7 @@ export function useReminders(): UseRemindersResult {
     [persist, settings],
   );
 
+  /** Enables or disables all prayer reminders. */
   const setGlobal = useCallback(
     (enabled: boolean) => {
       persist({ ...settings, global: enabled }, enabled);

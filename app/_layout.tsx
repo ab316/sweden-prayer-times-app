@@ -20,12 +20,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { ReminderScheduler } from '@/lib/notifications/reminder-scheduler';
 import { configureLocalNotifications } from '@/lib/notifications/reminders';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+/** Root app shell that configures notifications, fonts, theme, and routes. */
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
@@ -50,6 +52,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ReminderScheduler />
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="select-city" options={{ headerShown: false }} />

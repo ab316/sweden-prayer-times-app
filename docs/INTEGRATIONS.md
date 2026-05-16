@@ -68,9 +68,47 @@ Because prayer times shift daily, reminders are rebuilt from generated/cached sc
 
 Local notifications do not need network. The only data dependency is prayer schedules, which should come from bundled/generated data or local cache.
 
+### Renewal and Android cap
+
+Reminder scheduling is app-level, not Settings-screen-level. The app persists reminder schedule
+metadata and renews on launch, foreground, city/settings changes, a daily in-app timer, and a
+best-effort background task.
+
+Android must not have more than 50 pending prayer reminders scheduled by the app. The same cap is
+used on all platforms until device testing proves a separate iOS cap is needed.
+
+Android declares `SCHEDULE_EXACT_ALARM` so Expo Notifications can use exact alarms when Android
+allows it. If exact alarms are not available, Expo Notifications falls back to inexact alarms.
+
 ---
 
-## 3. Awqat Salah + Nominatim Prayer Data Generator
+## 3. Expo Background Task (local reminder renewal)
+
+**Purpose:** best-effort renewal of local prayer reminders when the app is not foregrounded.
+
+**Docs:** https://docs.expo.dev/versions/latest/sdk/background-task/
+
+### What we use
+
+| API | Purpose |
+| --- | --- |
+| `TaskManager.defineTask()` | Define the renewal task at module scope. |
+| `BackgroundTask.registerTaskAsync()` | Register periodic best-effort renewal. |
+| `BackgroundTask.getStatusAsync()` | Skip registration when background tasks are unavailable. |
+| `TaskManager.isTaskRegisteredAsync()` | Avoid duplicate registration. |
+
+### Scheduling pattern
+
+The background task does not own reminder scheduling. It calls the same reminder scheduler used by
+app launch and foreground renewal, and only rebuilds if the persisted reminder schedule is missing,
+stale, near expiry, or no longer matches the stored city/settings.
+
+Background execution is best effort. It is not a guarantee that reminders will renew at a specific
+time.
+
+---
+
+## 4. Awqat Salah + Nominatim Prayer Data Generator
 
 **Purpose:** generate storage-neutral Swedish city and yearly prayer-time JSON for the app/API layer.
 

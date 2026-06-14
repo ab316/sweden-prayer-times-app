@@ -73,7 +73,7 @@ export default function AboutScreen() {
               }}>
               <MaterialIcons name="mosque" size={36} color={theme.card} />
             </View>
-            <Text className="mt-4 font-headline-md text-headline-md text-text">Sweden Prayer</Text>
+            <Text className="mt-4 font-headline-md text-headline-md text-text">Sakinah Bloom</Text>
             <Text className="mt-1 font-label text-label uppercase text-text-sub">Version 1.0.0</Text>
             <Text className="mt-3 max-w-sm text-center font-body-sm text-body-sm text-text-sub">
               Spiritual precision for the modern Muslim. Built with dedication in Sweden.
@@ -105,7 +105,7 @@ export default function AboutScreen() {
           </SettingsCard>
 
           <Text className="pt-4 text-center font-label text-label uppercase text-text-sub">
-            © 2026 Sweden Prayer · Peace & Blessings
+            © 2026 Sakinah Bloom · Peace & Blessings
           </Text>
         </View>
       </ScrollView>

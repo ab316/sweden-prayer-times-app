@@ -32,7 +32,7 @@ export function PrayerRow({
       className={`relative flex-row items-center justify-between rounded-[13px] bg-card px-3.5 py-[11px] ${current ? 'border-l-[3px] border-current-border bg-current-row' : 'border-l-[3px] border-transparent'}`}
       style={{
         opacity: past ? 0.55 : 1,
-        shadowColor: current ? '#c8892a' : '#000',
+        shadowColor: current ? '#d96a4a' : '#000',
         shadowOpacity: current ? 0.18 : 0.05,
         shadowRadius: current ? 12 : 4,
         shadowOffset: { width: 0, height: 2 },

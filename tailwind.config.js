@@ -9,23 +9,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ── Active theme: Sage ──────────────────────────────────────────
-        // Mirrors design/Design.md. constants/theme.ts holds the same
-        // token set in JS object form for runtime (theme switching, etc.).
-        bg: "#f5ede4",
-        card: "#ffffff",
-        primary: "#2d5a42",
-        "primary-light": "#e8f0eb",
-        accent: "#c8892a",
-        "accent-light": "#fdf3e3",
-        text: "#1e2c24",
-        "text-sub": "#6b7c72",
-        "tab-bg": "rgba(255,255,255,0.95)",
-        "current-row": "#fdf3e3",
-        "current-border": "#c8892a",
+        // ── Active theme: Maghrib Horizon · Mihrab Window ───────────────
+        // Mirrors brand tokens in constants/brand.ts. tailwind drives JSX
+        // className styling; constants/theme.ts holds the same values for
+        // runtime reads (icon colors, animated values, etc.).
+        bg:               "#fde6cf",           // brand.cream
+        card:             "#fef2e1",           // colors.light.surface
+        primary:          "#9c3b50",           // brand.rose
+        "primary-light":  "rgba(156,59,80,0.08)",  // rose tint — icon bgs, tracks
+        accent:           "#d96a4a",           // brand.ember
+        "accent-light":   "rgba(217,106,74,0.12)", // ember tint — active row, hero
+        text:             "#3a1638",           // brand.plumDeep
+        "text-sub":       "#7a6a7a",           // brand.inkMute
+        "tab-bg":         "rgba(253,230,207,0.95)", // cream-based tab bar
+        "current-row":    "rgba(217,106,74,0.08)",  // ember row highlight
+        "current-border": "#d96a4a",           // brand.ember
 
         // ── Reserved themes (preserved for a future theme picker) ───────
-        // Kept by request of design/Design.md — do not delete.
         "_rose-bg": "#fdf0f3",
         "_rose-primary": "#8b1a3a",
         "_rose-primary-light": "#fde8ef",
@@ -41,7 +41,7 @@ module.exports = {
       },
       fontFamily: {
         // Semantic aliases per Design.md typography table.
-        "app-title": ["Lora_600SemiBold"],
+        "app-title": ["Lora_700Bold"],
         "display-lg": ["Lora_700Bold"],
         "headline-xl": ["Lora_700Bold"],
         "headline-md": ["Lora_700Bold"],

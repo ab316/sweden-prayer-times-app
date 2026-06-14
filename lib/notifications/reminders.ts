@@ -266,7 +266,7 @@ export async function scheduleTestNotification(): Promise<ReminderScheduleResult
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Prayer reminder test',
-      body: 'This is a test notification from Sweden Prayer.',
+      body: 'This is a test notification from Sakinah Bloom.',
       sound: true,
       data: {
         kind: 'prayer-reminder-test',

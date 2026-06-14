@@ -1,7 +1,6 @@
-// Mirrors the token table in design/Design.md. Tailwind also has these
-// values in tailwind.config.js — both must agree. tailwind drives JSX
-// className styling; this map is for runtime reads (decorative SVG fills,
-// React Navigation tints, animated colors, etc.).
+// Mirrors the brand tokens in constants/brand.ts and tailwind.config.js.
+// All three must agree. Tailwind drives JSX className styling; this map is
+// for runtime reads (SVG fills, React Navigation tints, animated colors).
 
 export type ThemeName = 'sage' | 'rose' | 'slate';
 
@@ -20,18 +19,19 @@ export type ThemeTokens = {
 };
 
 export const THEMES: Record<ThemeName, ThemeTokens> = {
+  // Maghrib Horizon · Mihrab Window — active palette
   sage: {
-    bg: '#f5ede4',
-    card: '#ffffff',
-    primary: '#2d5a42',
-    primaryLight: '#e8f0eb',
-    accent: '#c8892a',
-    accentLight: '#fdf3e3',
-    text: '#1e2c24',
-    textSub: '#6b7c72',
-    tabBg: 'rgba(255,255,255,0.95)',
-    currentRow: '#fdf3e3',
-    currentBorder: '#c8892a',
+    bg:           '#fde6cf',                  // brand.cream
+    card:         '#fef2e1',                  // colors.light.surface
+    primary:      '#9c3b50',                  // brand.rose
+    primaryLight: 'rgba(156,59,80,0.08)',      // rose tint — icon bgs, tracks
+    accent:       '#d96a4a',                  // brand.ember
+    accentLight:  'rgba(217,106,74,0.12)',     // ember tint — active row, hero
+    text:         '#3a1638',                  // brand.plumDeep
+    textSub:      '#7a6a7a',                  // brand.inkMute
+    tabBg:        'rgba(253,230,207,0.95)',    // cream-based tab bar
+    currentRow:   'rgba(217,106,74,0.08)',     // ember row highlight
+    currentBorder:'#d96a4a',                  // brand.ember
   },
   // Reserved — wired up when the theme picker feature lands.
   rose: {

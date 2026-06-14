@@ -55,7 +55,7 @@ export default function PrayerTimesScreen() {
             <MaterialIcons name="location-on" size={16} color={theme.primary} />
           </Pressable>
 
-          <Text className="font-app-title text-app-title text-primary">Sweden Prayer</Text>
+          <Text className="font-app-title text-app-title text-primary">Sakinah Bloom</Text>
 
           <Pressable
             accessibilityRole="button"

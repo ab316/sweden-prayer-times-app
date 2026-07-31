@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import { useLocation } from '@/features/location';
+import { loadReminderDebugMode } from '@/lib/storage';
 
+import { emitScheduleDebugEvent, setReminderDebugEnabled } from './debug-events';
 import { registerReminderBackgroundTask } from './reminder-background-task';
 import { ensureReminderScheduleFresh } from './reminders';
 
@@ -15,11 +17,21 @@ function millisecondsUntilNextDailyRenewal() {
   return nextDay.getTime() - now.getTime();
 }
 
+async function scheduleAndEmit(label: string, cityId: number) {
+  const result = await ensureReminderScheduleFresh({ cityId });
+  emitScheduleDebugEvent(label, result);
+}
+
 /** App-level component that keeps reminder registration fresh without screen-specific visits. */
 export function ReminderScheduler() {
   const { city, hydrated } = useLocation();
   const appState = useRef<AppStateStatus>(AppState.currentState);
   const [dailyTick, setDailyTick] = useState(0);
+
+  // Hydrate the debug-events module flag from storage once on mount.
+  useEffect(() => {
+    loadReminderDebugMode().then((v) => setReminderDebugEnabled(v ?? false));
+  }, []);
 
   useEffect(() => {
     void registerReminderBackgroundTask();
@@ -27,7 +39,7 @@ export function ReminderScheduler() {
 
   useEffect(() => {
     if (!hydrated) return;
-    void ensureReminderScheduleFresh({ cityId: city.id });
+    void scheduleAndEmit('startup / city-change', city.id);
   }, [city.id, hydrated, dailyTick]);
 
   useEffect(() => {
@@ -36,7 +48,7 @@ export function ReminderScheduler() {
       appState.current = nextState;
 
       if (wasBackgrounded && nextState === 'active') {
-        void ensureReminderScheduleFresh({ cityId: city.id });
+        void scheduleAndEmit('foreground', city.id);
       }
     });
 

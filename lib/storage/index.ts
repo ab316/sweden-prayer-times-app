@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   recentCities: 'sp.location.recentCities',
   reminderSettings: 'sp.reminders.settings',
   reminderScheduleMetadata: 'sp.reminders.scheduleMetadata',
+  reminderDebugMode: 'sp.debug.reminderAlerts',
 } as const;
 
 const RECENTS_LIMIT = 5;
@@ -123,6 +124,16 @@ export function saveReminderScheduleMetadata(
 /** Clears reminder schedule metadata when prayer reminders are cancelled or reset. */
 export function clearReminderScheduleMetadata(): Promise<void> {
   return removeKey(STORAGE_KEYS.reminderScheduleMetadata);
+}
+
+/** Loads the debug reminder alerts preference. Returns null if never set. */
+export function loadReminderDebugMode(): Promise<boolean | null> {
+  return readJson<boolean>(STORAGE_KEYS.reminderDebugMode);
+}
+
+/** Persists the debug reminder alerts preference. */
+export function saveReminderDebugMode(enabled: boolean): Promise<void> {
+  return writeJson(STORAGE_KEYS.reminderDebugMode, enabled);
 }
 
 /** Clears all app preferences and reminder schedule metadata. */

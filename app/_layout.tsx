@@ -20,6 +20,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { DebugScheduleToast } from '@/components/ui/debug-schedule-toast';
 import { ReminderScheduler } from '@/lib/notifications/reminder-scheduler';
 import { configureLocalNotifications } from '@/lib/notifications/reminders';
 
@@ -53,6 +54,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <ReminderScheduler />
+        <DebugScheduleToast />
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="select-city" options={{ headerShown: false }} />

@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrayerIcon } from '@/components/ui/prayer-icon';
@@ -10,10 +10,20 @@ import { SettingsCard } from '@/components/ui/settings-card';
 import { Toggle } from '@/components/ui/toggle';
 import { theme } from '@/constants/theme';
 import { useLocation } from '@/features/location';
-import { useReminders, REMINDER_TYPE_LABELS, isReminderPrayerKey } from '@/features/reminders';
+import { REMINDER_TYPE_LABELS, isReminderPrayerKey, useReminders } from '@/features/reminders';
 import { PRAYER_LABELS, PRAYER_ORDER } from '@/features/schedule';
-import { cancelReminderSchedule, scheduleTestNotification } from '@/lib/notifications/reminders';
-import { clearAll } from '@/lib/storage';
+import { setReminderDebugEnabled } from '@/lib/notifications/debug-events';
+import {
+  cancelReminderSchedule,
+  ensureReminderScheduleFresh,
+  scheduleTestNotification,
+} from '@/lib/notifications/reminders';
+import {
+  clearAll,
+  loadReminderDebugMode,
+  loadReminderScheduleMetadata,
+  saveReminderDebugMode,
+} from '@/lib/storage';
 
 const SETTINGS_PRAYERS = PRAYER_ORDER.filter(isReminderPrayerKey);
 
@@ -24,6 +34,45 @@ export default function SettingsScreen() {
   const [testStatus, setTestStatus] = useState<'idle' | 'scheduled' | 'denied' | 'unsupported'>(
     'idle',
   );
+  const [debugMode, setDebugMode] = useState(false);
+
+  useEffect(() => {
+    loadReminderDebugMode().then((v) => setDebugMode(v ?? false));
+  }, []);
+
+  const handleDebugModeToggle = async (value: boolean) => {
+    setDebugMode(value);
+    setReminderDebugEnabled(value);
+    await saveReminderDebugMode(value);
+  };
+
+  const handleInspectSchedule = async () => {
+    const [meta, result] = await Promise.all([
+      loadReminderScheduleMetadata(),
+      ensureReminderScheduleFresh({ cityId: city.id, force: false }),
+    ]);
+    const through = meta?.scheduledThrough
+      ? new Date(meta.scheduledThrough).toLocaleDateString('sv-SE')
+      : 'none';
+    const rebuilt = meta?.lastRebuiltAt
+      ? new Date(meta.lastRebuiltAt).toLocaleString('sv-SE')
+      : 'never';
+    Alert.alert(
+      'Schedule Debug',
+      `Status: ${result.status}\nCount: ${result.scheduledCount}\nThrough: ${through}\nLast rebuilt: ${rebuilt}\nCity ID: ${meta?.cityId ?? 'unknown'}`,
+    );
+  };
+
+  const handleForceRebuild = async () => {
+    const result = await ensureReminderScheduleFresh({ cityId: city.id, force: true });
+    const through = result.scheduledThrough
+      ? new Date(result.scheduledThrough).toLocaleDateString('sv-SE')
+      : 'none';
+    Alert.alert(
+      'Force Rebuild',
+      `Status: ${result.status}\nScheduled: ${result.scheduledCount}\nThrough: ${through}`,
+    );
+  };
 
   const handleClear = async () => {
     await Promise.all([clearAll(), cancelReminderSchedule()]);
@@ -33,6 +82,21 @@ export default function SettingsScreen() {
 
   const handleTestNotification = async () => {
     const result = await scheduleTestNotification();
+
+    if (result.status === 'permission-denied') {
+      setTestStatus('scheduled');
+      setTimeout(() => setTestStatus('idle'), 2500);
+      Alert.alert(
+        'Notifications Disabled',
+        'To receive prayer reminders, please enable notifications for this app in your device settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+      return;
+    }
+
     const nextStatus =
       result.status === 'scheduled'
         ? 'scheduled'
@@ -192,6 +256,74 @@ export default function SettingsScreen() {
               </View>
             </SettingsCard>
           </View>
+          {/* Debug */}
+          <View className="gap-2">
+            <SectionHeader>Debug</SectionHeader>
+              <SettingsCard>
+                <View className="flex-row items-center justify-between px-row-pad-x py-row-pad-y">
+                  <View className="flex-row items-center gap-3">
+                    <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                      <MaterialIcons name="bug-report" size={20} color={theme.primary} />
+                    </View>
+                    <View>
+                      <Text className="font-body-md text-body-md text-text">Schedule Toasts</Text>
+                      <Text className="font-caption text-caption text-text-sub">
+                        Show toast on reminder rebuild
+                      </Text>
+                    </View>
+                  </View>
+                  <Toggle
+                    value={debugMode}
+                    onValueChange={handleDebugModeToggle}
+                    accessibilityLabel="Reminder debug toasts"
+                  />
+                </View>
+                <View className="flex-row items-center justify-between gap-3 px-row-pad-x py-row-pad-y">
+                  <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                    <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                      <MaterialIcons name="info-outline" size={20} color={theme.primary} />
+                    </View>
+                    <View className="min-w-0 flex-1">
+                      <Text className="font-body-md text-body-md text-text" numberOfLines={1}>
+                        Inspect Schedule
+                      </Text>
+                      <Text className="font-caption text-caption text-text-sub" numberOfLines={1}>
+                        Show current metadata
+                      </Text>
+                    </View>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Inspect reminder schedule"
+                    onPress={handleInspectSchedule}
+                    className="min-w-[70px] shrink-0 items-center rounded-full border border-text-sub px-3 py-1.5">
+                    <Text className="font-label text-label uppercase text-text-sub">Inspect</Text>
+                  </Pressable>
+                </View>
+                <View className="flex-row items-center justify-between gap-3 px-row-pad-x py-row-pad-y">
+                  <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                    <View className="h-10 w-10 items-center justify-center rounded-full bg-primary-light">
+                      <MaterialIcons name="refresh" size={20} color={theme.primary} />
+                    </View>
+                    <View className="min-w-0 flex-1">
+                      <Text className="font-body-md text-body-md text-text" numberOfLines={1}>
+                        Force Rebuild
+                      </Text>
+                      <Text className="font-caption text-caption text-text-sub" numberOfLines={1}>
+                        Re-register all reminders now
+                      </Text>
+                    </View>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Force rebuild reminder schedule"
+                    onPress={handleForceRebuild}
+                    className="min-w-[70px] shrink-0 items-center rounded-full border border-text-sub px-3 py-1.5">
+                    <Text className="font-label text-label uppercase text-text-sub">Rebuild</Text>
+                  </Pressable>
+                </View>
+              </SettingsCard>
+            </View>
         </View>
       </ScrollView>
     </SafeAreaView>

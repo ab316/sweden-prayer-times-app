@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useLocation } from '@/features/location';
+import { emitScheduleDebugEvent } from '@/lib/notifications/debug-events';
 import { ensureReminderScheduleFresh } from '@/lib/notifications/reminders';
 import { loadReminderSettings, saveReminderSettings } from '@/lib/storage';
 
@@ -52,7 +53,7 @@ export function useReminders(): UseRemindersResult {
       settings: next,
       requestPermission,
       force: true,
-    });
+    }).then((result) => emitScheduleDebugEvent('settings-change', result));
   }, [city.id]);
 
   /** Enables or disables reminders for one prayer. */

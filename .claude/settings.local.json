@@ -8,7 +8,8 @@
       "Read(//tmp/**)",
       "Bash(curl -sI -m 5 'http://localhost:8081/index.bundle?platform=web&dev=true')",
       "Bash(curl -sI -m 30 'http://127.0.0.1:8081/')",
-      "Bash(curl -sI -m 30 'http://[::1]:8081/')"
+      "Bash(curl -sI -m 30 'http://[::1]:8081/')",
+      "Bash(node \"design/branding-handoff/scripts/generate-pngs.mjs\")"
     ]
   }
 }
